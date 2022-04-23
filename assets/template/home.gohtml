@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="description" content="Quotle - Guess the movie based on the quote.">
+  <meta name="viewport" content="width=device-width">
+  <title>{{ .Title }}</title>
+
+  {{range .CSS }}
+    <link rel="stylesheet" type="text/css" href="{{ . }}">
+  {{end}}
+
+</head>
+
+<body>
+
+  <div class="heading">
+    <div class="about">
+      <img src="/images/help-circle-black.svg" alt="Question Mark in a Circle, indicating help." width="24" height="24">
+    </div>
+
+    <div class="title-card">
+      <p>Quotle</p>
+    </div>
+
+    <div class="stats">
+      <img src="/images/award-black.svg" alt="Award Icon" width="24" height="24">
+    </div>
+
+    <div class="settings">
+      <img src="/images/settings-black.svg" alt="Traditional Settings Gear Icon" width="24" height="24">
+    </div>
+
+  </div>
+
+  <div class="gameBoard">
+
+  </div>
+
+  <footer>
+    <a href="go.dev">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg" alt="Golang Logo" with="32" height="32">
+      <p>Open Source, Made with Golang & ❤</p>
+    </a>
+
+    <a href="https://github.com/confused-Techie/Quotle">
+      <img src="/images/github-black.svg" alt="Github's Octocat Icon" width="24" height="24">
+      <p>Source Code</p>
+    </a>
+
+    <a href="https://feathericons.com">
+      <img src="/images/feather-black.svg" alt="Feather Icon Project Logo" width="24" height="24">
+      <p>Feather Icons</p>
+    </a>
+
+  </footer>
+
+  {{range .JS }}
+    <script src="{{ . }}"></script>
+    {{end}}
+
+    <noscript>
+
+    </noscript>
+
+</body>
+</html>
