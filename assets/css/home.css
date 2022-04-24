@@ -65,6 +65,19 @@ body.light-theme {
   cursor: pointer;
 }
 
+.user-guess .searchResult {
+  position: absolute;
+  background-color: var(--modal-background-colour);
+  width: 18%;
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  text-align: center;
+  margin-right: auto;
+  margin-left: auto;
+  display: block;
+  color: var(--modal-text-colour);
+}
+
 .heading .stats {
   grid-column: 4;
   grid-row: 1;

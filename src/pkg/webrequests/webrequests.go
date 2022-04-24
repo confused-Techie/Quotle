@@ -4,7 +4,9 @@ import (
   "html/template"
   "net/http"
   "fmt"
+  "encoding/json"
   models "github.com/confused-Techie/Quotle/src/pkg/models"
+  search "github.com/confused-Techie/Quotle/src/pkg/search"
 )
 
 var tmpl = make(map[string]*template.Template)
@@ -40,4 +42,11 @@ func errorPage(err error, w http.ResponseWriter, r *http.Request) {
     }
 
   }
+}
+
+func SearchHandler(w http.ResponseWriter, r *http.Request) {
+  // First lets get the values we care about
+  value := r.URL.Query().Get("value")
+
+  json.NewEncoder(w).Encode(search.SearchIndex(value))
 }

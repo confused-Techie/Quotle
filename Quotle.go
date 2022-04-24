@@ -9,9 +9,13 @@ import (
   "sync"
   "strings"
   webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
+  search "github.com/confused-Techie/Quotle/src/pkg/search"
 )
 
 func main() {
+
+  search.BuildIndex()
+  
   mux := http.NewServeMux()
 
   // =========== Standard Page Endpoints ==========
@@ -22,6 +26,9 @@ func main() {
   mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir("./assets/js")))))
   mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./assets/images"))))
   mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir("./assets/static")))))
+
+  // ========== API Endpoints ====================
+  mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
 
   // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
   log.Fatal(http.ListenAndServe(":8080", mux))

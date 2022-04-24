@@ -80,6 +80,13 @@ function settingsBtnEvent(event) {
 function mediaSearch(e) {
   var search = e.target.value;
 
+  fetch(`/api/search?value=${search}`)
+    .then((res) =>  res.json())
+    .then((result) => {
+      console.log(`Search Returned:`);
+      console.log(result);
+      searchResults(result);
+    });
 
 }
 
@@ -89,13 +96,14 @@ function searchResults(results) {
     var searchRes = document.getElementById("searchResult");
 
     // first we want to remove all previous search results.
-    while (searchResults.firstChild) {
-      searchResults.removeChild(searchResults.lastChild);
+    while (searchRes.firstChild) {
+      searchRes.removeChild(searchRes.lastChild);
     }
 
     // then craft the result to return
-    for (let i = 0; i < results.length; i++) {
-      // add the smart stuff here.
+    for (let i = 0; i < results.Results.length; i++) {
+      var tmpHTML = `<p>${results.Results[i].Name}</p>`;
+      searchRes.insertAdjacentHTML("beforeend", tmpHTML);
     }
 
   } catch(err) {
