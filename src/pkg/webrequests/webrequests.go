@@ -14,6 +14,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
   data := models.PageTemplate{
     Title: "Quotle",
     CSS: []string{"/css/home.css"},
+    JS: []string{"/js/home.js"},
   }
 
   // While tradditionally I would include a Template Array here, since this will be a SPA thats not a concern.

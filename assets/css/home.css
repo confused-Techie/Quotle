@@ -1,4 +1,33 @@
 
+:root {
+  --size-bezel: .5rem;
+  --size-radius: 4px;
+
+  --major-background-colour: #262626; /* Setting dark theme background to avoid white flash as content changes during load. */
+}
+
+body {
+  background-color: var(--major-background-colour);
+}
+
+body.dark-theme {
+  --title-background-colour: purple;
+  --modal-background-colour: #3b3b3b;
+  --modal-text-colour: white;
+  --major-background-colour: #262626;
+  --border-colour: black;
+  --guesses-text-colour: white;
+}
+
+body.light-theme {
+  --title-background-colour: purple;
+  --modal-background-colour: #e8e8e8;
+  --modal-text-colour: black;
+  --major-background-colour: white;
+  --border-colour: black;
+  --guesses-text-colour: black;
+}
+
 .heading {
   text-align: center;
   display: grid;
@@ -17,6 +46,16 @@
   grid-row: 1;
 }
 
+.heading .title-card span {
+  font-size: 1.8rem;
+  line-height: 2rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--title-background-colour);
+  border-radius: var(--size-radius);
+  font-family: 'Oswald', sans-serif;
+}
+
 .heading .stats {
   grid-column: 4;
   grid-row: 1;
@@ -28,11 +67,75 @@
 }
 
 .gameBoard {
+  width: 60%;
+  text-align: center;
+  margin: auto;
+  padding: 20px;
+}
 
+.guesses div[class^="guess-"] {
+  box-sizing: border-box;
+  width: 100%;
+  display: block;
+  border: .18rem solid var(--border-colour);
+  padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
+  margin-bottom: 2vh;
+  color: var(--guesses-text-colour);
+  background: transparent;
+  border-radius: var(--size-radius);
+  opacity: 0;
+}
+
+.guesses div[class^="guess-"].guessed {
+  opacity: 1;
+}
+
+.user-guess .input_field {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  border: .18rem solid var(--border-colour);
+  padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
+  margin-bottom: 5vh;
+  margin-top: 3vh;
+  color: var(--guesses-text-colour);
+  background: transparent;
+  border-radius: var(--size-radius);
+}
+
+
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal .modal-content {
+  background-color: var(--modal-background-colour);
+  margin: 15% auto;
+  padding: 3rem;
+  border: .08rem solid var(--border-colour);
+  width: 40%;
+  border-radius: var(--size-radius);
+  text-align: center;
+  color: var(--modal-text-colour);
+}
+
+/* Warning this is not yet tailored to theme */
+.modal .modal-content.polka {
+  background-image: radial-gradient(red, #212121 20%);
+  background-position: 0, 0;
+  background-size: 30px 30px;
 }
 
 footer {
-  border-top: 2px solid black;
+  border-top: 2px solid var(--border-colour);
   text-align: center;
   padding: 5px;
   position: fixed;
@@ -45,4 +148,29 @@ footer p {
   font-family: "consolas", sans-serif;
   display: inline;
   margin-right: 10px;
+}
+
+/* Originally there was a collection of breakpoints per device resolutions based on Bootstraps breakpoint targets. But for the simplicity of this site, and my CSS capabilities, it may be more realistic */
+/* To have breakpoints based on width and height values, to be more flexible */
+
+/* ========== Small Width Breakpoint ============ */
+
+@media screen and (max-width: 769px) {
+  footer p {
+    display: block;
+  }
+}
+
+/* ========== EXTRA Small Width Breakpoint ========= */
+
+@media screen and (max-width: 360px) {
+  footer p {
+    display: none;
+  }
+}
+
+/* ========= Small Height Breakpoint ============ */
+
+@media screen and (max-height: 1024px) {
+
 }

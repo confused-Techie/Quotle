@@ -21,6 +21,7 @@ func main() {
   mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir("./assets/css")))))
   mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir("./assets/js")))))
   mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./assets/images"))))
+  mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir("./assets/static")))))
 
   // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
   log.Fatal(http.ListenAndServe(":8080", mux))

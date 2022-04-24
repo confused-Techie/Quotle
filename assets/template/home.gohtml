@@ -6,6 +6,9 @@
   <meta name="viewport" content="width=device-width">
   <title>{{ .Title }}</title>
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
   {{range .CSS }}
     <link rel="stylesheet" type="text/css" href="{{ . }}">
   {{end}}
@@ -15,41 +18,70 @@
 <body>
 
   <div class="heading">
-    <div class="about">
-      <img src="/images/help-circle-black.svg" alt="Question Mark in a Circle, indicating help." width="24" height="24">
+    <div class="about" id="about_btn">
+      <img src="/images/help-circle-black.svg" alt="Question Mark in a Circle, indicating help." width="24" height="24" id="help-circle-img">
     </div>
 
     <div class="title-card">
-      <p>Quotle</p>
+      <span>Quotle</span>
     </div>
 
-    <div class="stats">
-      <img src="/images/award-black.svg" alt="Award Icon" width="24" height="24">
+    <div class="stats" id="stats_btn">
+      <img src="/images/award-black.svg" alt="Award Icon" width="24" height="24" id="award-img">
     </div>
 
-    <div class="settings">
-      <img src="/images/settings-black.svg" alt="Traditional Settings Gear Icon" width="24" height="24">
+    <div class="settings" id="settings_btn">
+      <img src="/images/settings-black.svg" alt="Traditional Settings Gear Icon" width="24" height="24" id="settings-img">
     </div>
 
   </div>
 
   <div class="gameBoard">
 
+    <div class="audio-player">
+      <audio controls preload="auto" >
+
+        <p>Your browser doesn't support HTML5 audio.</p>
+      </audio>
+    </div>
+
+    <div class="user-guess">
+      <input class="input_field" type="text" placeholder="Enter a Guess" id="user_guess_input"/>
+    </div>
+
+    <div class="guesses">
+      <div class="guess-one guessed"> </div>
+      <div class="guess-two guessed"> </div>
+      <div class="guess-three"> </div>
+      <div class="guess-four"> </div>
+      <div class="guess-five"> </div>
+      <div class="guess-six guessed"> </div>
+    </div>
+
+  </div>
+
+  <div class="modal" id="about_modal">
+    <div class="modal-content">
+
+      <div class="msg">
+        <p>This is some generic text on how to play the dang game.</p>
+      </div>
+    </div>
   </div>
 
   <footer>
-    <a href="go.dev">
-      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg" alt="Golang Logo" with="32" height="32">
+    <a href="https://go.dev">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg" alt="Golang Logo" with="32" height="32" id="footer-golang-img">
       <p>Open Source, Made with Golang & ❤</p>
     </a>
 
     <a href="https://github.com/confused-Techie/Quotle">
-      <img src="/images/github-black.svg" alt="Github's Octocat Icon" width="24" height="24">
+      <img src="/images/github-black.svg" alt="Github's Octocat Icon" width="24" height="24" id="footer-github-img">
       <p>Source Code</p>
     </a>
 
     <a href="https://feathericons.com">
-      <img src="/images/feather-black.svg" alt="Feather Icon Project Logo" width="24" height="24">
+      <img src="/images/feather-black.svg" alt="Feather Icon Project Logo" width="24" height="24" id="footer-feather-icon-img">
       <p>Feather Icons</p>
     </a>
 
