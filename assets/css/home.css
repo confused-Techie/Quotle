@@ -65,10 +65,14 @@ body.light-theme {
   cursor: pointer;
 }
 
+.user-guess {
+  position: relative;
+}
+
 .user-guess .searchResult {
   position: absolute;
   background-color: var(--modal-background-colour);
-  width: 18%;
+  width: 80%;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   z-index: 1;
   text-align: center;
@@ -76,6 +80,32 @@ body.light-theme {
   margin-left: auto;
   display: block;
   color: var(--modal-text-colour);
+  top: 6rem;
+}
+
+.user-guess .searchResult p {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  cursor: pointer;
+}
+
+.user-guess button {
+  display: inline-block;
+  width: 19%;
+  height: 2.5rem;
+  margin: 0;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--title-background-colour);
+  border-radius: var(--size-radius);
+  border: none;
+  cursor: pointer;
+}
+
+.user-guess button span {
+  font-size: 1.5rem;
 }
 
 .heading .stats {
@@ -120,8 +150,8 @@ body.light-theme {
 
 .user-guess .input_field {
   box-sizing: border-box;
-  display: block;
-  width: 100%;
+  display: inline-block;
+  width: 80%;
   border: .18rem solid var(--border-colour);
   padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
   margin-bottom: 5vh;
@@ -129,6 +159,7 @@ body.light-theme {
   color: var(--guesses-text-colour);
   background: transparent;
   border-radius: var(--size-radius);
+  position: relative;
 }
 
 

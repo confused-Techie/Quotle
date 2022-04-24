@@ -102,13 +102,17 @@ function searchResults(results) {
 
     // then craft the result to return
     for (let i = 0; i < results.Results.length; i++) {
-      var tmpHTML = `<p>${results.Results[i].Name}</p>`;
+      var tmpHTML = `<p onclick="enterText('${results.Results[i].Name}');">${results.Results[i].Name}</p>`;
       searchRes.insertAdjacentHTML("beforeend", tmpHTML);
     }
 
   } catch(err) {
     console.log(`Error Occured crafting Search Results: ${err}`);
   }
+}
+
+function enterText(text) {
+  document.getElementById("user_guess_input").value = text;
 }
 
 function audioController() {
