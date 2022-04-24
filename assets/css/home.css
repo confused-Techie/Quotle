@@ -11,7 +11,7 @@ body {
 }
 
 body.dark-theme {
-  --title-background-colour: purple;
+  --title-background-colour: #6c0082;
   --modal-background-colour: #3b3b3b;
   --modal-text-colour: white;
   --major-background-colour: #262626;
@@ -20,7 +20,7 @@ body.dark-theme {
 }
 
 body.light-theme {
-  --title-background-colour: purple;
+  --title-background-colour: #6c0082;
   --modal-background-colour: #e8e8e8;
   --modal-text-colour: black;
   --major-background-colour: white;
@@ -54,6 +54,15 @@ body.light-theme {
   background-color: var(--title-background-colour);
   border-radius: var(--size-radius);
   font-family: 'Oswald', sans-serif;
+}
+
+.gameBoard .audio-player button {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--title-background-colour);
+  border-radius: var(--size-radius);
+  border: none;
+  cursor: pointer;
 }
 
 .heading .stats {

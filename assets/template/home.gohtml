@@ -39,10 +39,15 @@
   <div class="gameBoard">
 
     <div class="audio-player">
-      <audio controls preload="auto" >
-
+      <button id="play-icon">
+        <span>
+          <img src="/images/loader.svg" alt="Play Audio Icon" width="48" height="48" id="play-icon-img">
+        </span>
+      </button>
+      <audio src="/static/test.ogg" preload="auto" id="audio-element">
         <p>Your browser doesn't support HTML5 audio.</p>
       </audio>
+
     </div>
 
     <div class="user-guess">
