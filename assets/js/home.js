@@ -62,16 +62,16 @@ function aboutBtnEvent(event) {
 }
 
 function statsBtnEvent(event) {
-
+  document.getElementById("stats_modal").style.display = "block";
 }
 
 function settingsBtnEvent(event) {
-
+  document.getElementById("settings_modal").style.display = "block";
 }
 
 function mediaSearch(e) {
   var search = e.srcElement.value;
-  
+
 }
 
 function searchResults(results) {

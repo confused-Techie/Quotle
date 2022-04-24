@@ -66,6 +66,12 @@ body.light-theme {
   grid-row: 1
 }
 
+.heading .stats img,
+.heading .settings img,
+.heading .about img {
+  cursor: pointer;
+}
+
 .gameBoard {
   width: 60%;
   text-align: center;
