@@ -17,6 +17,16 @@ body.dark-theme {
   --major-background-colour: #262626;
   --border-colour: black;
   --guesses-text-colour: white;
+  --guesses-bg-colour-lost: #ff0022;
+  --guesses-bg-colour-correct: #00ff00;
+  --guesses-bg-colour-director: #0008ff;
+  --guesses-bg-colour-genre: #ff9900;
+  --guesses-bg-colour-both: #fff700;
+  --guesses-text-colour-lost: white;
+  --guesses-text-colour-correct: black;
+  --guesses-text-colour-director: white;
+  --guesses-text-colour-genre: black;
+  --guesses-text-colour-both: black;
 }
 
 body.light-theme {
@@ -26,6 +36,16 @@ body.light-theme {
   --major-background-colour: white;
   --border-colour: black;
   --guesses-text-colour: black;
+  --guesses-bg-colour-lost: #ff0022;
+  --guesses-bg-colour-correct: #00ff00;
+  --guesses-bg-colour-director: #0008ff;
+  --guesses-bg-colour-genre: #ff9900;
+  --guesses-bg-colour-both: #fff700;
+  --guesses-text-colour-lost: white;
+  --guesses-text-colour-correct: black;
+  --guesses-text-colour-director: white;
+  --guesses-text-colour-genre: black;
+  --guesses-text-colour-both: black;
 }
 
 .heading {
@@ -148,6 +168,31 @@ body.light-theme {
   opacity: 1;
 }
 
+.guesses div[class^="guess-"].lost {
+  background-color: var(--guesses-bg-colour-lost);
+  color: var(--guesses-text-colour-lost);
+}
+
+.guesses div[class^="guess-"].correct {
+  background-color: var(--guesses-bg-colour-correct);
+  color: var(--guesses-text-colour-correct);
+}
+
+.guesses div[class^="guess-"].director {
+  background-color: var(--guesses-bg-colour-director);
+  color: var(--guesses-text-colour-director);
+}
+
+.guesses div[class^="guess-"].genre {
+  background-color: var(--guesses-bg-colour-genre);
+  color: var(--guesses-text-colour-genre);
+}
+
+.guesses div[class^="guess-"].both {
+  background-color: var(--guesses-bg-colour-both);
+  color: var(--guesses-text-colour-both);
+}
+
 .user-guess .input_field {
   box-sizing: border-box;
   display: inline-block;
@@ -173,6 +218,10 @@ body.light-theme {
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal.show {
+  display: block;
 }
 
 .modal .modal-content {

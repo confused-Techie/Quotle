@@ -7,5 +7,32 @@
       "Drama",
       "Action"
     ]
+  },
+  {
+    "name": "The Lord of the Rings: The Fellowship of the Ring (2001)",
+    "director": "Peter Jackson",
+    "genre": [
+      "Adventure",
+      "Fantasy",
+      "Action"
+    ]
+  },
+  {
+    "name": "Encanto (2021)",
+    "director": "Jared Bush",
+    "genre": [
+      "Animation",
+      "Comedy",
+      "Family",
+      "Fantasy"
+    ]
+  },
+  {
+    "name": "The Beatles: Get Back - The Rooftop Convert (2022)",
+    "director": "Peter Jackson",
+    "genre": [
+      "Music",
+      "Documentary"
+    ]
   }
 ]

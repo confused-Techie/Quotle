@@ -46,6 +46,21 @@ func SearchIndex(search string) models.SearchResultCollection {
   return res
 }
 
+func FindInIndex(search string) models.SearchResultItem {
+  var res models.SearchResultItem
+
+  for _, itm := range searchList.Values {
+    if search == itm.Original {
+      res.Name = itm.Original
+      res.Director = itm.Director
+      res.Genre = itm.Genre
+      return res
+    }
+  }
+
+  return models.SearchResultItem{ Name: "", Director: "", Genre: []string{ "" } }
+}
+
 func loadItems() {
   au := models.GetMediaDB()
 

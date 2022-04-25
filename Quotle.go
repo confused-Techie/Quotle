@@ -15,7 +15,7 @@ import (
 func main() {
 
   search.BuildIndex()
-  
+
   mux := http.NewServeMux()
 
   // =========== Standard Page Endpoints ==========
@@ -29,6 +29,7 @@ func main() {
 
   // ========== API Endpoints ====================
   mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
+  mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
   // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
   log.Fatal(http.ListenAndServe(":8080", mux))

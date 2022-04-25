@@ -16,7 +16,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
   data := models.PageTemplate{
     Title: "Quotle",
     CSS: []string{"/css/home.css"},
-    JS: []string{"/js/home.js"},
+    JS: []string{"/js/home.js", "/static/answer.js"},
   }
 
   // While tradditionally I would include a Template Array here, since this will be a SPA thats not a concern.
@@ -49,4 +49,10 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
   value := r.URL.Query().Get("value")
 
   json.NewEncoder(w).Encode(search.SearchIndex(value))
+}
+
+func MovieMatchHandler(w http.ResponseWriter, r *http.Request) {
+  value := r.URL.Query().Get("value")
+
+  json.NewEncoder(w).Encode(search.FindInIndex(value))
 }

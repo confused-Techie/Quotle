@@ -62,3 +62,12 @@ The header will contain the following:
 * Instructions Modal
 * Settings Modal
 * Stats Modal
+
+---------------
+
+## Todo
+
+* Finish Modals
+* Style winning and losing modal
+* Change audio and answer every day
+* JS Cookies and stats.

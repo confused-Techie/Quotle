@@ -1,5 +1,91 @@
-
 var theme;
+
+// An array representation of the game board.
+// 0 = Unplayed Guess.
+// 1 = Winning Guess.
+// 2 = Director Correct
+// 3 = Genre Correct
+// 4 = Both Correct
+// 5 = nothing correct.
+// 0 is guess 1, 5 is guess 6.
+var board = [ 0, 0, 0, 0, 0, 0 ];
+
+class GameMaster {
+  constructor() {
+    this.GuessNumber = 1;
+  }
+
+  addGuess() {
+    this.GuessNumber++;
+  }
+
+  get guessNumber() {
+    return this.GuessNumber;
+  }
+
+  localStorageAvailable() {
+    try {
+      var x = '__stroage_test__';
+      localStorage.setItem(x, x);
+      localStorage.removeItem(x);
+      return true;
+    } catch(e) {
+      return e instanceof DOMException && (
+        // everything except firefox
+        e.code === 22 ||
+        // firefox
+        e.code === 1012 ||
+        // test name field too, because code might not be present
+        // everything except firefox
+        e.name === 'QuotaExceededError' ||
+        // firefox
+        e.name === 'NS_ERROR_DOM_QUOTA_REACHED') &&
+        // acknowledge quotaexceedederror only if theres something already stored
+        (localStorage && localStorage.length !== 0);
+    }
+  }
+
+  setWinnerCookie() {
+    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, win: true, board: board };
+
+    if (localStorageAvailable) {
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+    } else {
+      console.log('Unable to save data into local storage.');
+    }
+
+  }
+
+  setLosingCookie() {
+    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, win: false, board: board };
+
+    if (localStorageAvailable) {
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+    } else {
+      console.log('Unable to save data into local storage.');
+    }
+
+  }
+
+  themeCookie(value) {
+    if (localStorageAvailable) {
+      localStorage.setItem('theme', value);
+    } else {
+      console.log('Unable to save data into local storage');
+    }
+  }
+
+  get themeCookieValue() {
+    if (!localStorage.getItem('theme')) {
+      return "";
+    } else {
+      return localStorage.getItem('theme');
+    }
+  }
+}
+
+var gameMaster = new GameMaster();
+
 
 window.onload = function() {
   // first we check the colour
@@ -13,30 +99,50 @@ window.onload = function() {
   document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
   document.getElementById("settings_btn").addEventListener("click", settingsBtnEvent);
   document.getElementById("user_guess_input").addEventListener("input", mediaSearch);
+
+  document.getElementById("user_guess_input").addEventListener("keyup", function(event) {
+    if (event.key === "Enter" || event.keyCode === 13) {
+      checkAnswer(document.getElementById("user_guess_input").value);
+    }
+  });
+  document.getElementById("submit_btn").addEventListener("click", checkAnswerViaBtn);
 }
 
 function themeCheck() {
-  if (window.matchMedia) {
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      console.log('Dark Mode preffered.');
-      enableDarkTheme();
+  if (gameMaster.themeCookieValue == "light") {
+    console.log('Light Mode Enabled via Cookies.');
+    enableLightTheme();
 
-    } else if (window.matchMedia('(prefers-color-scheme: light)')) {
-      console.log('White Mode preffered.');
-      enableLightTheme();
+  } else if (gameMaster.themeCookieValue == "dark") {
+    console.log('Dark Mode Enabled via Cookies.');
+    enableDarkTheme();
 
+  } else if (gameMaster.themeCookieValue == "") {
+
+    if (window.matchMedia) {
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        console.log('Dark Mode preffered.');
+        enableDarkTheme();
+
+      } else if (window.matchMedia('(prefers-color-scheme: light)')) {
+        console.log('White Mode preffered.');
+        enableLightTheme();
+
+      } else {
+        console.log('prefers-color-scheme not supported via Media Query. Are you using IE still?');
+        enableDarkTheme();
+      }
     } else {
-      console.log('prefers-color-scheme not supported via Media Query. Are you using IE still?');
+      console.log('Match Media not supported.');
       enableDarkTheme();
     }
-  } else {
-    console.log('Match Media not supported.');
-    enableDarkTheme();
+
   }
 }
 
 function enableLightTheme() {
   theme = 'light';
+  gameMaster.themeCookie('light');
 
   document.body.classList.remove('dark-theme'); // Remove Dark Theme if present. If not will throw no error.
   document.body.classList.add('light-theme');
@@ -52,6 +158,7 @@ function enableLightTheme() {
 
 function enableDarkTheme() {
   theme = 'dark';
+  gameMaster.themeCookie('dark');
 
   document.body.classList.remove('light-theme');  // Remove Light Theme if present. If not will throw no error.
   document.body.classList.add('dark-theme');
@@ -66,15 +173,15 @@ function enableDarkTheme() {
 }
 
 function aboutBtnEvent(event) {
-  document.getElementById("about_modal").style.display = "block";
+  document.getElementById("about_modal").classList.add("show");
 }
 
 function statsBtnEvent(event) {
-  document.getElementById("stats_modal").style.display = "block";
+  document.getElementById("stats_modal").classList.add("show");
 }
 
 function settingsBtnEvent(event) {
-  document.getElementById("settings_modal").style.display = "block";
+  document.getElementById("settings_modal").classList.add("show");
 }
 
 function mediaSearch(e) {
@@ -164,4 +271,109 @@ function audioController() {
       state = "play";
     }
   });
+}
+
+function checkAnswerViaBtn() {
+  checkAnswer(document.getElementById("user_guess_input").value);
+}
+
+function checkAnswer(guess) {
+  // we also want to clear the guess field.
+  document.getElementById("user_guess_input").value = "";
+  // and we want to clear the search results
+  while(document.getElementById("searchResult").firstChild) {
+    document.getElementById("searchResult").removeChild(document.getElementById("searchResult").lastChild);
+  }
+
+  if (gameMaster.guessNumber === 1) {
+    displayAnswer(guess, "guess-one");
+  } else if (gameMaster.guessNumber === 2) {
+    displayAnswer(guess, "guess-two");
+  } else if (gameMaster.guessNumber === 3) {
+    displayAnswer(guess, "guess-three");
+  } else if (gameMaster.guessNumber === 4) {
+    displayAnswer(guess, "guess-four");
+  } else if (gameMaster.guessNumber === 5) {
+    displayAnswer(guess, "guess-five");
+  } else if (gameMaster.guessNumber === 6) {
+    displayAnswer(guess, "guess-six");
+    document.getElementById("guess-six").classList.add("lost");
+    document.getElementById("loser_modal").classList.add("show");
+    gameMaster.setLosingCookie();
+  } else {
+    console.log("Had trouble displaying the guess results.");
+    // or alternatively the game is over and they didn't win. at all.
+  }
+}
+
+function displayAnswer(guess, eleID ) {
+
+  fetch(`/api/movie_match?value=${guess}`)
+    .then((res) => res.json())
+    .then((result) => {
+      try {
+        if (guess == answer.name) {
+          // its correct!
+          document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
+          document.getElementById(eleID).classList.add("guessed");
+          document.getElementById(eleID).classList.add("correct");
+
+          document.getElementById("winner_modal").classList.add("show");
+
+          board[gameMaster.guessNumber -1] = 1;
+          gameMaster.setWinnerCookie();
+
+        } else {
+          gameMaster.addGuess();
+          // its incorrect, lets see if they got any parts right.
+          document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
+          document.getElementById(eleID).classList.add("guessed");
+
+          var correctGenre = checkGenre(result.Genre, answer.genre);
+          var amountCorrect = "none";
+
+          if (result.Director == answer.director && !correctGenre) {
+            document.getElementById(eleID).classList.add("director");
+            amountCorrect = "director";
+          }
+
+          if (correctGenre && result.Director != answer.director) {
+            document.getElementById(eleID).classList.add("genre");
+            amountCorrect = "genre";
+          }
+
+          if (correctGenre && result.Director == answer.director) {
+            document.getElementById(eleID).classList.add("both");
+            amountCorrect = "both";
+          }
+
+          if (amountCorrect == "none") {
+            board[gameMaster.guessNumber -1] = 5;
+          } else if (amountCorrect == "director") {
+            board[gameMaster.guessNumber -1] = 2;
+          } else if (amountCorrect == "genre") {
+            board[gameMaster.guessNumber -1] = 3;
+          } else if (amountCorrect == "both") {
+            board[gameMaster.guessNumber -1] = 4;
+          }
+
+        }
+      } catch(err) {
+        console.log("Well shit you made a bad guess, buddy. This one caused an error. But heres your guess.");
+        gameMaster.addGuess();
+        document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
+        document.getElementById(eleID).classList.add("guessed");
+
+        board[gameMaster.guessNumber -1] = 5;
+      }
+    });
+}
+
+function checkGenre(guess, correct) {
+  for (let i = 0; i < guess.length; i++) {
+    if (correct.includes(guess[i])) {
+      return true;
+    }
+  }
+  return false;
 }

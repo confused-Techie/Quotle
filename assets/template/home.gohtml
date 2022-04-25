@@ -59,12 +59,12 @@
     </div>
 
     <div class="guesses">
-      <div class="guess-one guessed"> </div>
-      <div class="guess-two guessed"> </div>
-      <div class="guess-three"> </div>
-      <div class="guess-four"> </div>
-      <div class="guess-five"> </div>
-      <div class="guess-six guessed"> </div>
+      <div class="guess-one" id="guess-one"> </div>
+      <div class="guess-two" id="guess-two"> </div>
+      <div class="guess-three" id="guess-three"> </div>
+      <div class="guess-four" id="guess-four"> </div>
+      <div class="guess-five" id="guess-five"> </div>
+      <div class="guess-six" id="guess-six"> </div>
     </div>
 
   </div>
@@ -87,6 +87,24 @@
   <div class="modal" id="settings_modal">
     <div class="modal-content">
 
+    </div>
+  </div>
+
+  <div class="modal" id="winner_modal">
+    <div class="modal-content">
+      <div class="msg">
+        <h3>You gussed Correctly!</h3>
+      </div>
+      <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">Close</button>
+    </div>
+  </div>
+
+  <div class="modal" id="loser_modal">
+    <div class="modal-content">
+      <div class="msg">
+        <h3>Better luck next time.</h3>
+      </div>
+      <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">Close</button>
     </div>
   </div>
 
