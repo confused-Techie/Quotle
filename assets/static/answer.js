@@ -6,5 +6,6 @@ var answer = {
     "Drama",
     "Action"
   ],
-  "gameID": 1
+  "gameID": 1,
+  "audioSrc": [ "test1", "test2", "test3", "", "", "" ]
 }

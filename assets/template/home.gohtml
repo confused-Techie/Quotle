@@ -75,18 +75,31 @@
       <div class="msg">
         <p>This is some generic text on how to play the dang game.</p>
       </div>
+      <button class="close" onclick="document.getElementById('about_modal').classList.remove('show');">
+        <span>Close</span>
+      </button>
     </div>
   </div>
 
   <div class="modal" id="stats_modal">
     <div class="modal-content">
+      <div class="msg" id="stats_modal_msg">
 
+      </div>
+      <button class="close" onclick="document.getElementById('stats_modal').classList.remove('show');">
+        <span>Close</span>
+      </button>
     </div>
   </div>
 
   <div class="modal" id="settings_modal">
     <div class="modal-content">
-
+      <div class="msg">
+        <p>Issues? Submit Issue on Github, or email 'admin@lhbasics.com'.</p>
+      </div>
+      <button class="close" onclick="document.getElementById('settings_modal').classList.remove('show');">
+        <span>Close</span>
+      </button>
     </div>
   </div>
 
@@ -95,7 +108,9 @@
       <div class="msg">
         <h3>You gussed Correctly!</h3>
       </div>
-      <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">Close</button>
+      <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">
+        <span>Close</span>
+      </button>
     </div>
   </div>
 
@@ -104,7 +119,9 @@
       <div class="msg">
         <h3>Better luck next time.</h3>
       </div>
-      <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">Close</button>
+      <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">
+        <span>Close</span>
+      </button>
     </div>
   </div>
 

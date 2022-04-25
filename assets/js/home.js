@@ -13,10 +13,15 @@ var board = [ 0, 0, 0, 0, 0, 0 ];
 class GameMaster {
   constructor() {
     this.GuessNumber = 1;
+    this.GuessesString = [];
   }
 
   addGuess() {
     this.GuessNumber++;
+  }
+
+  addGuessString(guess) {
+    this.GuessesString.push(guess);
   }
 
   get guessNumber() {
@@ -45,11 +50,28 @@ class GameMaster {
     }
   }
 
-  setWinnerCookie() {
-    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, win: true, board: board };
+  cleanLastGameCookie() {
+    var allCookieKeys = Object.keys(localStorage);
 
-    if (localStorageAvailable) {
+    for (let i = 0; i < allCookieKeys.length; i++) {
+      var curKey = allCookieKeys[i];
+
+      if (curKey != `game-${answer.gameID}` && curKey.startsWith('game-')) {
+        // as long as it isn't our current game, but is a game key, remove it.
+        localStorage.removeItem(curKey);
+      }
+    }
+  }
+
+  setWinnerCookie() {
+    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, guesses: this.GuessesString, complete: true, win: true, board: board };
+
+    if (this.localStorageAvailable) {
       localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+
+      this.updateStatsCookie(true, this.GuessNumber-1);
+
+      this.cleanLastGameCookie();
     } else {
       console.log('Unable to save data into local storage.');
     }
@@ -57,18 +79,68 @@ class GameMaster {
   }
 
   setLosingCookie() {
-    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, win: false, board: board };
+    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, guesses: this.GuessesString, complete: true, win: false, board: board };
 
-    if (localStorageAvailable) {
+    if (this.localStorageAvailable) {
       localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+
+      this.updateStatsCookie(false, this.GuessNumber-1);
+
+      this.cleanLastGameCookie();
     } else {
       console.log('Unable to save data into local storage.');
     }
+  }
 
+  setProgressCookie() {
+    var tmpObj = { gameid: answer.gameID, guessesAmount: this.GuessNumber, complete: false, win: false, board: board };
+
+    if (this.localStorageAvailable) {
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+    } else {
+      console.log("Unable to save data into local storage.");
+    }
+  }
+
+  updateStatsCookie(gameWon, guessIdx) {
+    if (this.localStorageAvailable) {
+
+      if (!localStorage.getItem('stats')) {
+
+        var tmpObj = { gamesWon: 0, gamesPlayed: 0, guessDistro: [0, 0, 0, 0, 0, 0] };
+
+        tmpObj.gamesPlayed++;
+
+        if (gameWon) {
+          tmpObj.gamesWon++;
+        }
+
+        tmpObj.guessDistro[guessIdx]++;
+
+        localStorage.setItem('stats', JSON.stringify(tmpObj));
+
+      } else {
+        var prev = localStorage.getItem('stats');
+        prev = JSON.parse(prev);
+
+        prev.gamesPlayed++;
+
+        if (gameWon) {
+          prev.gamesWon++;
+        }
+
+        prev.guessDistro[guessIdx]++;
+
+        localStorage.setItem('stats', JSON.stringify(prev));
+
+      }
+    } else {
+      console.log("Unable to access local storage.");
+    }
   }
 
   themeCookie(value) {
-    if (localStorageAvailable) {
+    if (this.localStorageAvailable) {
       localStorage.setItem('theme', value);
     } else {
       console.log('Unable to save data into local storage');
@@ -91,6 +163,7 @@ window.onload = function() {
   // first we check the colour
   themeCheck();
 
+  setAudioSrc();
   // call the function in charge of play/pause
   audioController();
 
@@ -177,6 +250,20 @@ function aboutBtnEvent(event) {
 }
 
 function statsBtnEvent(event) {
+  if (gameMaster.localStorageAvailable) {
+    if (localStorage.getItem('stats')) {
+      var stats = JSON.parse(localStorage.getItem('stats'));
+      var tmpString = `<p>You've played ${stats.gamesPlayed} times.</p><p>You've won ${stats.gamesWon} times.</p>`;
+      document.getElementById("stats_modal_msg").innerHTML = tmpString;
+    } else {
+      // no stats saved
+      var tmpString = `<p>You've played 0 times.</p><p>You've won 0 times.</p>`;
+      document.getElementById("stats_modal_msg").innerHTML = tmpString;
+    }
+  } else {
+    var tmpString = `<p>Without Cookies enabled this can't be shown 🙁</p>`;
+    document.getElementById("stats_modal_msg").innerHTML = tmpString;
+  }
   document.getElementById("stats_modal").classList.add("show");
 }
 
@@ -220,6 +307,11 @@ function searchResults(results) {
 
 function enterText(text) {
   document.getElementById("user_guess_input").value = text;
+}
+
+
+function setAudioSrc() {
+  document.getElementById("audio-element").src = answer.audioSrc[gameMaster.guessNumber -1];
 }
 
 function audioController() {
@@ -278,6 +370,7 @@ function checkAnswerViaBtn() {
 }
 
 function checkAnswer(guess) {
+  gameMaster.addGuessString(guess);
   // we also want to clear the guess field.
   document.getElementById("user_guess_input").value = "";
   // and we want to clear the search results
@@ -323,8 +416,10 @@ function displayAnswer(guess, eleID ) {
           board[gameMaster.guessNumber -1] = 1;
           gameMaster.setWinnerCookie();
 
-        } else {
           gameMaster.addGuess();
+          setAudioSrc();
+
+        } else {
           // its incorrect, lets see if they got any parts right.
           document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
           document.getElementById(eleID).classList.add("guessed");
@@ -357,14 +452,21 @@ function displayAnswer(guess, eleID ) {
             board[gameMaster.guessNumber -1] = 4;
           }
 
+          gameMaster.addGuess();
+          gameMaster.setProgressCookie();
+          setAudioSrc();
         }
       } catch(err) {
         console.log("Well shit you made a bad guess, buddy. This one caused an error. But heres your guess.");
-        gameMaster.addGuess();
+
         document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
         document.getElementById(eleID).classList.add("guessed");
 
         board[gameMaster.guessNumber -1] = 5;
+
+        gameMaster.addGuess();
+        gameMaster.setProgressCookie();
+        setAudioSrc();
       }
     });
 }

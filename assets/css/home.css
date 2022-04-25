@@ -48,6 +48,16 @@ body.light-theme {
   --guesses-text-colour-both: black;
 }
 
+a {
+  color: var(--modal-text-colour);
+  text-decoration: none;
+}
+
+a:visited {
+  color: var(--modal-text-colour);
+  text-decoration: none;
+}
+
 .heading {
   text-align: center;
   display: grid;
@@ -233,6 +243,27 @@ body.light-theme {
   border-radius: var(--size-radius);
   text-align: center;
   color: var(--modal-text-colour);
+}
+
+.modal .modal-content .msg {
+  font-size: 1.5rem;
+}
+
+.modal .modal-content button {
+  display: inline-block;
+  width: 19%;
+  height: 2.5rem;
+  margin: 0;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--title-background-colour);
+  border-radius: var(--size-radius);
+  border: none;
+  cursor: pointer;
+}
+
+.modal .modal-content button span {
+  font-size: 1.5rem;
 }
 
 /* Warning this is not yet tailored to theme */

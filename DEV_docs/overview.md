@@ -70,4 +70,4 @@ The header will contain the following:
 * Finish Modals
 * Style winning and losing modal
 * Change audio and answer every day
-* JS Cookies and stats.
+* JS stats.
