@@ -13,6 +13,9 @@ type PageTemplate struct {
   Data interface{}
   CSS []string
   JS []string
+  TargetStrings map[string]string
+  DefaultStrings map[string]string
+  TargetLanguage string 
 }
 
 type MediaDB struct {

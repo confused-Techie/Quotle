@@ -30,7 +30,7 @@ class GameMaster {
 
   localStorageAvailable() {
     try {
-      var x = '__stroage_test__';
+      var x = '__storage_test__';
       localStorage.setItem(x, x);
       localStorage.removeItem(x);
       return true;
@@ -253,7 +253,23 @@ function statsBtnEvent(event) {
   if (gameMaster.localStorageAvailable) {
     if (localStorage.getItem('stats')) {
       var stats = JSON.parse(localStorage.getItem('stats'));
-      var tmpString = `<p>You've played ${stats.gamesPlayed} times.</p><p>You've won ${stats.gamesWon} times.</p>`;
+      var findPercent = (x, y) => {
+        return (x / y) * 100;
+      };
+
+      var tmpBar = `
+        <div class="chart-wrap">
+          <div class="grid">
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[0], stats.gamesPlayed)}%;" data-name="Guess 1" title="Guess 1 ${findPercent(stats.guessDistro[0], stats.gamesPlayed)}%"> </div>
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[1], stats.gamesPlayed)}%;" data-name="Guess 2" title="Guess 2 ${findPercent(stats.guessDistro[1], stats.gamesPlayed)}%"> </div>
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[2], stats.gamesPlayed)}%;" data-name="Guess 3" title="Guess 3 ${findPercent(stats.guessDistro[2], stats.gamesPlayed)}%"> </div>
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[3], stats.gamesPlayed)}%;" data-name="Guess 4" title="Guess 4 ${findPercent(stats.guessDistro[3], stats.gamesPlayed)}%"> </div>
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[4], stats.gamesPlayed)}%;" data-name="Guess 5" title="Guess 5 ${findPercent(stats.guessDistro[4], stats.gamesPlayed)}%"> </div>
+            <div class="bar" style="--bar-value: ${findPercent(stats.guessDistro[5], stats.gamesPlayed)}%;" data-name="Guess 6" title="Guess 6 ${findPercent(stats.guessDistro[5], stats.gamesPlayed)}%"> </div>
+          </div>
+        </div>
+        `;
+      var tmpString = `<p>You've played ${stats.gamesPlayed} times.</p><p>You've won ${stats.gamesWon} times.</p>${tmpBar}`;
       document.getElementById("stats_modal_msg").innerHTML = tmpString;
     } else {
       // no stats saved
@@ -418,6 +434,23 @@ function displayAnswer(guess, eleID ) {
 
           gameMaster.addGuess();
           setAudioSrc();
+
+          // finally we also want to launch some confetti
+          var myCanvas = document.createElement('canvas');
+          myCanvas.width = window.innerWidth;
+          myCanvas.height = window.innerHeight;
+          document.body.appendChild(myCanvas);
+
+          var myConfetti = confetti.create(myCanvas, {
+            useWorker: true,
+            resize: true,
+          });
+
+          myConfetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.5, x: 0.5 }
+          });
 
         } else {
           // its incorrect, lets see if they got any parts right.

@@ -8,6 +8,7 @@
 
 body {
   background-color: var(--major-background-colour);
+  overflow: hidden;
 }
 
 body.dark-theme {
@@ -27,6 +28,8 @@ body.dark-theme {
   --guesses-text-colour-director: white;
   --guesses-text-colour-genre: black;
   --guesses-text-colour-both: black;
+  --graph-colour: var(--title-background-colour);
+  --bar-colour: var(--guesses-bg-colour-correct);
 }
 
 body.light-theme {
@@ -46,6 +49,8 @@ body.light-theme {
   --guesses-text-colour-director: white;
   --guesses-text-colour-genre: black;
   --guesses-text-colour-both: black;
+  --graph-colour: var(--title-background-colour);
+  --bar-colour: var(--guesses-bg-colour-correct);
 }
 
 a {
@@ -271,6 +276,48 @@ a:visited {
   background-image: radial-gradient(red, #212121 20%);
   background-position: 0, 0;
   background-size: 30px 30px;
+}
+
+.chart-wrap {
+
+  /* The height and width will match the sizes provided for additional elements. */
+  width: 100%;
+  height: 24rem;
+
+  --bar-height: 3rem;
+  --bar-gutter: 1rem;
+}
+
+.chart-wrap .grid {
+  width: 90%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border-left: 2px solid var(--graph-colour);
+  background: repeating-linear-gradient(90deg, transparent, transparent 19.5%, fadeout(var(--bar-colour), 30%) 20%);
+}
+
+.chart-wrap .grid .bar {
+  background-color: var(--bar-colour);
+  width: var(--bar-value);
+  height: var(--bar-height);
+  align-self: flex-start;
+  margin: 0 auto var(--bar-gutter) 0;
+  border-radius: var(--size-radius);
+  position: relative;
+}
+
+.chart-wrap .grid .bar::before {
+  content: attr(data-name);
+  top: initial;
+  left: 100%;
+  padding-left: 0.5rem;
+  display: inline-block;
+  white-space: nowrap;
+  position: absolute;
+  transform: rotate(0deg);
+  line-height: var(--bar-height);
 }
 
 footer {

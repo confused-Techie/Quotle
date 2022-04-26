@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html>
+<html lang="{{ . TargetLanguage }}">
+<html lang="{{ .TargetLanguage }}" xml:lang="{{ .TargetLanguage }}" xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
   <meta name="description" content="Quotle - Guess the movie based on the quote.">
   <meta name="viewport" content="width=device-width">
+  <meta http-equiv="Content-Language" content="{{ .TargetLanguage }}">
   <title>{{ .Title }}</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +48,12 @@
         </span>
       </button>
       <audio src="/static/test.ogg" preload="auto" id="audio-element">
-        <p>Your browser doesn't support HTML5 audio.</p>
+        <p>
+          {{ or
+            (index .TargetStrings "audio-support")
+            (index .DefaultStrings "audio-support")
+          }}
+        </p>
       </audio>
 
     </div>
@@ -53,7 +61,12 @@
     <div class="user-guess">
       <input class="input_field" type="text" placeholder="Enter a Guess" id="user_guess_input"/>
       <button id="submit_btn">
-        <span>Submit</span>
+        <span>
+          {{ or
+            (index .TargetStrings "submit")
+            (index .DefaultStrings "submit")
+          }}
+        </span>
       </button>
       <div class="searchResult" id="searchResult"> </div>
     </div>
@@ -73,10 +86,20 @@
     <div class="modal-content">
 
       <div class="msg">
-        <p>This is some generic text on how to play the dang game.</p>
+        <p>
+          {{ or
+            (index .TargetStrings "how-to")
+            (index .DefaultStrings "how-to")
+          }}
+        </p>
       </div>
       <button class="close" onclick="document.getElementById('about_modal').classList.remove('show');">
-        <span>Close</span>
+        <span>
+          {{ or
+            (index .TargetStrings "close")
+            (index .DefaultStrings "close")
+          }}
+        </span>
       </button>
     </div>
   </div>
@@ -87,7 +110,12 @@
 
       </div>
       <button class="close" onclick="document.getElementById('stats_modal').classList.remove('show');">
-        <span>Close</span>
+        <span>
+          {{ or
+            (index .TargetStrings "close")
+            (index .DefaultStrings "close")
+          }}
+        </span>
       </button>
     </div>
   </div>
@@ -95,10 +123,20 @@
   <div class="modal" id="settings_modal">
     <div class="modal-content">
       <div class="msg">
-        <p>Issues? Submit Issue on Github, or email 'admin@lhbasics.com'.</p>
+        <p>
+          {{ or
+            (index .TargetStrings "issue-text")
+            (index .DefaultStrings "issue-text")
+          }}
+        </p>
       </div>
       <button class="close" onclick="document.getElementById('settings_modal').classList.remove('show');">
-        <span>Close</span>
+        <span>
+          {{ or
+            (index .TargetStrings "close")
+            (index .DefaultStrings "close")
+          }}
+        </span>
       </button>
     </div>
   </div>
@@ -106,10 +144,20 @@
   <div class="modal" id="winner_modal">
     <div class="modal-content">
       <div class="msg">
-        <h3>You gussed Correctly!</h3>
+        <h3>
+          {{ or
+            (index .TargetStrings "winning-text")
+            (index .DefaultStrings "winning-text")
+          }}
+        </h3>
       </div>
       <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">
-        <span>Close</span>
+        <span>
+          {{ or
+            (index .TargetStrings "close")
+            (index .DefaultStrings "close")
+          }}
+        </span>
       </button>
     </div>
   </div>
@@ -117,10 +165,20 @@
   <div class="modal" id="loser_modal">
     <div class="modal-content">
       <div class="msg">
-        <h3>Better luck next time.</h3>
+        <h3>
+          {{ or
+            (index .TargetStrings "losing-text")
+            (index .DefaultStrings "losing-text")
+          }}
+        </h3>
       </div>
       <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">
-        <span>Close</span>
+        <span>
+          {{ or
+            (index .TargetStrings "close")
+            (index .DefaultStrings "close")
+          }}
+        </span>
       </button>
     </div>
   </div>
@@ -128,17 +186,32 @@
   <footer>
     <a href="https://go.dev">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg" alt="Golang Logo" with="32" height="32" id="footer-golang-img">
-      <p>Open Source, Made with Golang & ❤</p>
+      <p>
+        {{ or
+          (index .TargetStrings "footer-made-with")
+          (index .DefaultStrings "footer-made-with")
+        }}
+      </p>
     </a>
 
     <a href="https://github.com/confused-Techie/Quotle">
       <img src="/images/github-black.svg" alt="Github's Octocat Icon" width="24" height="24" id="footer-github-img">
-      <p>Source Code</p>
+      <p>
+        {{ or
+          (index .TargetStrings "footer-source")
+          (index .DefaultStrings "footer-source")
+        }}
+      </p>
     </a>
 
     <a href="https://feathericons.com">
       <img src="/images/feather-black.svg" alt="Feather Icon Project Logo" width="24" height="24" id="footer-feather-icon-img">
-      <p>Feather Icons</p>
+      <p>
+        {{ or
+          (index .TargetStrings "footer-feather")
+          (index .DefaultStrings "footer-feather")
+        }}
+      </p>
     </a>
 
   </footer>
@@ -146,6 +219,8 @@
   {{range .JS }}
     <script src="{{ . }}"></script>
   {{end}}
+
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 
     <noscript>
 
