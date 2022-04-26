@@ -15,7 +15,7 @@ type PageTemplate struct {
   JS []string
   TargetStrings map[string]string
   DefaultStrings map[string]string
-  TargetLanguage string 
+  TargetLanguage string
 }
 
 type MediaDB struct {

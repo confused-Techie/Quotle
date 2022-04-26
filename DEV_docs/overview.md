@@ -67,10 +67,8 @@ The header will contain the following:
 
 ## Todo
 
-* Finish Modals
-* Style winning and losing modal (confetti maybe on win)
+
 * Change audio and answer every day
-* JS stats distribution.
 * JS Settings, dark mode.
 
 * Start writing games.

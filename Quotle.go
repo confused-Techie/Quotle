@@ -8,13 +8,37 @@ import (
   "io"
   "sync"
   "strings"
+  "time"
   webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
   search "github.com/confused-Techie/Quotle/src/pkg/search"
+  cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
+ "github.com/robfig/cron/v3"
 )
 
 func main() {
 
   search.BuildIndex()
+
+  //setup the cron job
+
+  //pass in a specific time zone. Will use PST
+  customLocation, err := time.LoadLocation("America/Los_Angeles")
+
+  if err != nil {
+    log.Fatal(err)
+  }
+
+  // initialize new cron job runner, with custom location
+  cronHandler := cron.New(cron.WithLocation(customLocation))
+
+  // set the time and script to run.
+  cronHandler.AddFunc("* * * * *", func() {
+    cycledata.HelloWorld()
+  })
+  //cronHandler.AddFunc("0 0 * * *", cycledata.UpdateData);
+
+  // then run the first every instance of the cycledata package, to setup the data.
+  //cycledata.ManageData()
 
   mux := http.NewServeMux()
 
