@@ -1,0 +1,4 @@
+runtime: go117 # Tested and created with go1.17.3 windows/amd64
+
+env_variables:
+  PORT: 8080

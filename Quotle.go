@@ -80,9 +80,15 @@ func main() {
 	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
 	mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
-	logger.InfoLogger.Printf("Listening on %v...", viper.GetString("app.port"))
+  port := os.Getenv("PORT")
+  if port == "" {
+    port = viper.GetString("app.port")
+    logger.WarningLogger.Println("Port not available via Environment Variables. Falling back to Config File...")
+  }
+
+	logger.InfoLogger.Printf("Listening on %v...", port)
 	// Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
-	logger.ErrorLogger.Fatal(http.ListenAndServe(":"+viper.GetString("app.port"), mux))
+	logger.ErrorLogger.Fatal(http.ListenAndServe(":"+port, mux))
 }
 
 type gzipResponseWriter struct {
