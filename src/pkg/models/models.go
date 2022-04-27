@@ -2,10 +2,9 @@ package models
 
 import (
   "encoding/json"
-  "fmt"
   "io/ioutil"
   "os"
-  "log"
+  logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 )
 
 type PageTemplate struct {
@@ -31,14 +30,14 @@ type MediaDBCollection struct {
 func GetMediaDB() (au *MediaDBCollection) {
   file, err := os.OpenFile("./assets/static/media.json", os.O_RDWR|os.O_APPEND, 0666)
   if err != nil {
-    fmt.Println("Unable to build search Index")
-    log.Fatal(err)
+    logger.WarningLogger.Println("Unable to build search Index")
+    logger.ErrorLogger.Fatal(err)
   }
 
   b, err := ioutil.ReadAll(file)
   if err != nil {
-    fmt.Println("Unable to build search Index")
-    log.Fatal(err)
+    logger.WarningLogger.Println("Unable to build search Index")
+    logger.ErrorLogger.Fatal(err)
   }
 
   var mdia MediaDBCollection

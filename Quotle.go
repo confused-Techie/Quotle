@@ -2,43 +2,48 @@ package main
 
 import (
   "net/http"
-  "log"
   "compress/gzip"
   "io/ioutil"
   "io"
   "sync"
   "strings"
-  "time"
   webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
   search "github.com/confused-Techie/Quotle/src/pkg/search"
   cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
  "github.com/robfig/cron/v3"
+ logger "github.com/confused-Techie/Quotle/src/pkg/logger"
+ "os"
+ "os/signal"
+ "syscall"
 )
 
 func main() {
 
+  logger.InfoLogger.Println("Quotle Starting...")
+
+  // listen to SIGINT calls
+  captureExit := make(chan os.Signal)
+  signal.Notify(captureExit, os.Interrupt, syscall.SIGTERM)
+  go func() {
+    <-captureExit
+    logger.InfoLogger.Println("SIGINT Signal Captured. Exiting...")
+    logger.InfoLogger.Println("====================================")
+    logger.InfoLogger.Println("====================================")
+    os.Exit(1)
+  }()
+
+
   search.BuildIndex()
 
   //setup the cron job
+  cronHandler := cron.New()
 
-  //pass in a specific time zone. Will use PST
-  customLocation, err := time.LoadLocation("America/Los_Angeles")
+  cronHandler.AddFunc("CRON_TZ=America/Los_Angeles 00 00 * * *", cycledata.UpdateData)
 
-  if err != nil {
-    log.Fatal(err)
-  }
-
-  // initialize new cron job runner, with custom location
-  cronHandler := cron.New(cron.WithLocation(customLocation))
-
-  // set the time and script to run.
-  cronHandler.AddFunc("* * * * *", func() {
-    cycledata.HelloWorld()
-  })
-  //cronHandler.AddFunc("0 0 * * *", cycledata.UpdateData);
+  cronHandler.Start()
 
   // then run the first every instance of the cycledata package, to setup the data.
-  //cycledata.ManageData()
+  //cycledata.ManageData(true)  // TODO: Uncomment before production use.
 
   mux := http.NewServeMux()
 
@@ -55,8 +60,9 @@ func main() {
   mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
   mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
+  logger.InfoLogger.Println("Listening on 8080...")
   // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
-  log.Fatal(http.ListenAndServe(":8080", mux))
+  logger.ErrorLogger.Fatal(http.ListenAndServe(":8080", mux))
 }
 
 type gzipResponseWriter struct {

@@ -68,7 +68,15 @@ The header will contain the following:
 ## Todo
 
 
-* Change audio and answer every day
+* Server Settings:
+  - Port
+  - Game (Updated properly, so it can stop and start all it wants.) [Will need to update first call to cycledata]
+  - folder locations
+    ^ Logs
+    ^ Assets
+    ^ games 
 * JS Settings, dark mode.
 
 * Start writing games.
+
+* Build tools, minifying all files. code scanning.

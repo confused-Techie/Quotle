@@ -2,10 +2,10 @@ package search
 
 import (
   "time"
-  "fmt"
   "strings"
   "unicode"
   models "github.com/confused-Techie/Quotle/src/pkg/models"
+  logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 )
 
 var searchList models.SearchList
@@ -16,7 +16,7 @@ func BuildIndex() {
   loadItems()
 
   duration := time.Since(start)
-  fmt.Println("Done Building Search Index in:", duration, "-", duration.Nanoseconds(), "ns")
+  logger.InfoLogger.Println("Done Building Search Index in:", duration, "-", duration.Nanoseconds(), "ns")
 }
 
 func SearchIndex(search string) models.SearchResultCollection {
