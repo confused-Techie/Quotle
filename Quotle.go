@@ -1,127 +1,127 @@
 package main
 
 import (
-  "net/http"
-  "compress/gzip"
-  "io/ioutil"
-  "io"
-  "sync"
-  "strings"
-  webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
-  search "github.com/confused-Techie/Quotle/src/pkg/search"
-  cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
- "github.com/robfig/cron/v3"
- "github.com/spf13/viper"
- logger "github.com/confused-Techie/Quotle/src/pkg/logger"
- "os"
- "os/signal"
- "syscall"
+	"compress/gzip"
+	cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
+	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
+	search "github.com/confused-Techie/Quotle/src/pkg/search"
+	webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
+	"github.com/robfig/cron/v3"
+	"github.com/spf13/viper"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"os/signal"
+	"strings"
+	"sync"
+	"syscall"
 )
 
 func main() {
 
-  logger.InfoLogger.Println("Quotle Starting...")
+	logger.InfoLogger.Println("Quotle Starting...")
 
-  // listen to SIGINT calls
-  captureExit := make(chan os.Signal)
-  signal.Notify(captureExit, os.Interrupt, syscall.SIGTERM, syscall.SIGTERM)
-  go func() {
-    <-captureExit
-    logger.InfoLogger.Println("SIGINT/SIGTERM Signal Captured. Exiting...")
-    logger.InfoLogger.Println("====================================")
-    logger.InfoLogger.Println("====================================")
-    os.Exit(1)
-  }()
+	// listen to SIGINT calls
+	captureExit := make(chan os.Signal)
+	signal.Notify(captureExit, os.Interrupt, syscall.SIGTERM, syscall.SIGTERM)
+	go func() {
+		<-captureExit
+		logger.InfoLogger.Println("SIGINT/SIGTERM Signal Captured. Exiting...")
+		logger.InfoLogger.Println("====================================")
+		logger.InfoLogger.Println("====================================")
+		os.Exit(1)
+	}()
 
-  logger.InfoLogger.Println("Listening for SIGINT...")
+	logger.InfoLogger.Println("Listening for SIGINT...")
 
-  // setup viper
-  viper.SetConfigName("config")
-  viper.SetConfigType("yaml")
-  viper.AddConfigPath(".")
-  viper.ReadInConfig()
+	// setup viper
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.ReadInConfig()
 
-  logger.InfoLogger.Println("Setup config.yaml arguments...")
+	logger.InfoLogger.Println("Setup config.yaml arguments...")
 
-  search.BuildIndex()
+	search.BuildIndex()
 
-  //setup the cron job
-  cronHandler := cron.New(
-    cron.WithLogger(
-      cron.VerbosePrintfLogger(logger.CronLogger)))
+	//setup the cron job
+	cronHandler := cron.New(
+		cron.WithLogger(
+			cron.VerbosePrintfLogger(logger.CronLogger)))
 
-  cronHandler.AddFunc("CRON_TZ=America/Los_Angeles 00 00 * * *", cycledata.UpdateData)
+	cronHandler.AddFunc("CRON_TZ=America/Los_Angeles 00 00 * * *", cycledata.UpdateData)
 
-  cronHandler.Start()
+	cronHandler.Start()
 
-  // then run the first every instance of the cycledata package, to setup the data.
-  if viper.GetBool("app.production") {
-    cycledata.ManageData(true)
-  }
-  //cycledata.ManageData(true)  // TODO: Uncomment before production use.
+	// then run the first every instance of the cycledata package, to setup the data.
+	if viper.GetBool("app.production") {
+		cycledata.ManageData(true)
+	}
+	//cycledata.ManageData(true)  // TODO: Uncomment before production use.
 
-  logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("app.version"))
-  logger.InfoLogger.Printf("Running in Production Environment: %v", viper.GetString("app.production"))
-  logger.InfoLogger.Printf("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+")
-  logger.InfoLogger.Printf("Logs: %v; Assets: %v; Games: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"), viper.GetString("app.dir.games"))
+	logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("app.version"))
+	logger.InfoLogger.Printf("Running in Production Environment: %v", viper.GetString("app.production"))
+	logger.InfoLogger.Printf("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+")
+	logger.InfoLogger.Printf("Logs: %v; Assets: %v; Games: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"), viper.GetString("app.dir.games"))
 
-  mux := http.NewServeMux()
+	mux := http.NewServeMux()
 
-  // =========== Standard Page Endpoints ==========
-  mux.Handle("/", http.HandlerFunc(webrequests.HomeHandler))
+	// =========== Standard Page Endpoints ==========
+	mux.Handle("/", http.HandlerFunc(webrequests.HomeHandler))
 
-  // ========== Asset Endpoints ==================
-  mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/css")))))
-  mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
-  mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
-  mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
+	// ========== Asset Endpoints ==================
+	mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/css")))))
+	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
+	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
+	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
 
-  // ========== API Endpoints ====================
-  mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
-  mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
+	// ========== API Endpoints ====================
+	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
+	mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
-  logger.InfoLogger.Printf("Listening on %v...", viper.GetString("app.port"))
-  // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
-  logger.ErrorLogger.Fatal(http.ListenAndServe(":"+viper.GetString("app.port"), mux))
+	logger.InfoLogger.Printf("Listening on %v...", viper.GetString("app.port"))
+	// Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
+	logger.ErrorLogger.Fatal(http.ListenAndServe(":"+viper.GetString("app.port"), mux))
 }
 
 type gzipResponseWriter struct {
-  io.Writer
-  http.ResponseWriter
+	io.Writer
+	http.ResponseWriter
 }
 
 var gzPool = sync.Pool{
-  New: func() interface{} {
-    w := gzip.NewWriter(ioutil.Discard)
-    gzip.NewWriterLevel(w, gzip.BestCompression)
-    return w
-  },
+	New: func() interface{} {
+		w := gzip.NewWriter(ioutil.Discard)
+		gzip.NewWriterLevel(w, gzip.BestCompression)
+		return w
+	},
 }
 
 func (w *gzipResponseWriter) WriteHeader(status int) {
-  w.Header().Del("Content-Length")
-  w.ResponseWriter.WriteHeader(status)
+	w.Header().Del("Content-Length")
+	w.ResponseWriter.WriteHeader(status)
 }
 
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
-  return w.Writer.Write(b)
+	return w.Writer.Write(b)
 }
 
 func gzipHandler(h http.Handler) http.Handler {
-  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-    if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-      // cannot accept, return serving
-      h.ServeHTTP(w, r)
-      return
-    }
-    // can accept, set http headers
-    w.Header().Set("Content-Encoding", "gzip")
-    gz := gzPool.Get().(*gzip.Writer)
-    defer gzPool.Put(gz)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
+			// cannot accept, return serving
+			h.ServeHTTP(w, r)
+			return
+		}
+		// can accept, set http headers
+		w.Header().Set("Content-Encoding", "gzip")
+		gz := gzPool.Get().(*gzip.Writer)
+		defer gzPool.Put(gz)
 
-    gz.Reset(w)
-    defer gz.Close()
+		gz.Reset(w)
+		defer gz.Close()
 
-    h.ServeHTTP(&gzipResponseWriter{ResponseWriter: w, Writer: gz}, r)
-  })
+		h.ServeHTTP(&gzipResponseWriter{ResponseWriter: w, Writer: gz}, r)
+	})
 }
