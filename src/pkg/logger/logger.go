@@ -6,10 +6,15 @@ import (
 )
 
 var (
+  // WarningLogger logs to the generic log file, prefixed with WARNING:
 	WarningLogger *log.Logger
+  // InfoLogger logs to the generic log file, prefixed with INFO:
 	InfoLogger    *log.Logger
+  // ErrorLogger logs to the generic log file, prefixed with ERROR:
 	ErrorLogger   *log.Logger
+  // CronLogger logs to the generic log file, prefixed with CRON:
 	CronLogger    *log.Logger
+  // LangLogger logs to the telementy log file, prefixed with LANGUAGE:
 	LangLogger    *log.Logger
 )
 

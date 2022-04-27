@@ -98,11 +98,13 @@ var gzPool = sync.Pool{
 	},
 }
 
+// WriteHeader is used by the gzipResponseWriter to modify headers
 func (w *gzipResponseWriter) WriteHeader(status int) {
 	w.Header().Del("Content-Length")
 	w.ResponseWriter.WriteHeader(status)
 }
 
+// Write is used by gzipResponseWriter to modify the returned value.
 func (w *gzipResponseWriter) Write(b []byte) (int, error) {
 	return w.Writer.Write(b)
 }

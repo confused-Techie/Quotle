@@ -10,6 +10,7 @@ import (
 
 var searchList models.SearchList
 
+// BuildIndex must be called to construct the search tools internal index.
 func BuildIndex() {
 	start := time.Now()
 
@@ -19,6 +20,7 @@ func BuildIndex() {
 	logger.InfoLogger.Println("Done Building Search Index in:", duration, "-", duration.Nanoseconds(), "ns")
 }
 
+// SearchIndex takes a string search argument to return a collection of matching results
 func SearchIndex(search string) models.SearchResultCollection {
 	//start := time.Now()
 
@@ -46,6 +48,7 @@ func SearchIndex(search string) models.SearchResultCollection {
 	return res
 }
 
+// FindInIndex looks for an exact match within the search index.
 func FindInIndex(search string) models.SearchResultItem {
 	var res models.SearchResultItem
 

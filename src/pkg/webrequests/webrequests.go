@@ -54,6 +54,7 @@ func returnDefaultStrings() map[string]string {
 
 var tmpl = make(map[string]*template.Template)
 
+// HomeHandler is the http handler for the home page of Quotle.
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := models.PageTemplate{
@@ -90,6 +91,7 @@ func errorPage(err error, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// SearchHandler is the generic search api endpoint handler.
 func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	// First lets get the values we care about
 	value := r.URL.Query().Get("value")
@@ -97,6 +99,7 @@ func SearchHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(search.SearchIndex(value))
 }
 
+// MovieMatchHandler invokes search.FindInIndex to find an exact match within the movie db.
 func MovieMatchHandler(w http.ResponseWriter, r *http.Request) {
 	value := r.URL.Query().Get("value")
 

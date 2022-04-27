@@ -16,6 +16,7 @@ func UpdateData() {
 	ManageData(false)
 }
 
+// ManageData is used to remove and add the game files as needed.
 func ManageData(firstCall bool) {
 	// first remove the data that currently is in each folder.
 
@@ -35,6 +36,7 @@ func ManageData(firstCall bool) {
 		[]string{AUDIODEST + "/audio1.mp3", AUDIODEST + "/audio2.mp3", AUDIODEST + "/audio3.mp3", AUDIODEST + "/audio4.mp3", AUDIODEST + "/audio5.mp3", AUDIODEST + "/audio6.mp3"})
 }
 
+// RemoveAnswer statically removes the delivered answer JS file.
 func RemoveAnswer() {
 	err := os.Remove(viper.GetString("app.dir.assets") + "/static/answer.js")
 
@@ -43,6 +45,7 @@ func RemoveAnswer() {
 	}
 }
 
+// RemoveAudio statically removes delivered audio files.
 func RemoveAudio() {
 	err := os.RemoveAll(viper.GetString("app.dir.assets") + "/audio")
 
@@ -51,6 +54,7 @@ func RemoveAudio() {
 	}
 }
 
+// AddAnswer takes a src string and dest string to copy the game JS file.
 func AddAnswer(src string, dest string) {
 	b, err := ioutil.ReadFile(src)
 
@@ -65,6 +69,7 @@ func AddAnswer(src string, dest string) {
 	}
 }
 
+// AddAudio takes a src and destination slice of strings to copy audio game files.
 func AddAudio(files []string, destination []string) {
 	for i, file := range files {
 		b, err := ioutil.ReadFile(file)
