@@ -5,6 +5,7 @@ import (
   "net/http"
   "encoding/json"
   "os"
+  "errors"
   "io/ioutil"
   "strings"
   models "github.com/confused-Techie/Quotle/src/pkg/models"
@@ -30,6 +31,23 @@ func returnAgnosticStrings(langCode string) map[string]string {
   return objmap
 }
 
+func returnPrefferedStrings(langCode string) map[string]string {
+  // check for file existance
+  if _, err := os.Stat(viper.GetString("app.dir.assets")+"/lang/string."+langCode+".json"); err == nil {
+    // file exists
+    return returnAgnosticStrings(langCode)
+  } else if errors.Is(err, os.ErrNotExist) {
+    // file doesn't exist.
+    // since this language doesn't exist. Return default
+    logger.LangLogger.Println("Requested Language doesn't exist: %v", langCode)
+    return returnAgnosticStrings("en-US")
+  } else {
+    // error occured. Reguardless
+    logger.WarningLogger.Println("Schrodinger's Language File Access.")
+    logger.WarningLogger.Println(err)
+    return returnAgnosticStrings("en-US")
+  }
+}
 func returnDefaultStrings() map[string]string {
   return returnAgnosticStrings("en-US")
 }
@@ -43,7 +61,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
     CSS: []string{"/css/home.css"},
     JS: []string{"/js/home.js", "/static/answer.js"},
     DefaultStrings: returnDefaultStrings(),
-    TargetStrings: returnAgnosticStrings(strings.Split(r.Header.Get("Accept-Language"), ",")[0]),
+    TargetStrings: returnPrefferedStrings(strings.Split(r.Header.Get("Accept-Language"), ",")[0]),
     TargetLanguage: strings.Split(r.Header.Get("Accept-Language"), ",")[0],
   }
 
