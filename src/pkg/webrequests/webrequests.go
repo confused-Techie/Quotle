@@ -10,10 +10,11 @@ import (
   models "github.com/confused-Techie/Quotle/src/pkg/models"
   search "github.com/confused-Techie/Quotle/src/pkg/search"
   logger "github.com/confused-Techie/Quotle/src/pkg/logger"
+  "github.com/spf13/viper"
 )
 
 func returnAgnosticStrings(langCode string) map[string]string {
-  file, err := os.OpenFile("./assets/lang/strings."+langCode+".json", os.O_RDWR|os.O_APPEND, 0666)
+  file, err := os.OpenFile(viper.GetString("app.dir.assets")+"/lang/strings."+langCode+".json", os.O_RDWR|os.O_APPEND, 0666)
   if err != nil {
     logger.WarningLogger.Println(err)
   }
@@ -47,7 +48,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
   }
 
   // While tradditionally I would include a Template Array here, since this will be a SPA thats not a concern.
-  tmpl["homePage.html"] = template.Must(template.ParseFiles("./assets/template/home.gohtml"))
+  tmpl["homePage.html"] = template.Must(template.ParseFiles(viper.GetString("app.dir.assets")+"/template/home.gohtml"))
 
   templateError := tmpl["homePage.html"].Execute(w, data)
 
@@ -62,7 +63,7 @@ func errorPage(err error, w http.ResponseWriter, r *http.Request) {
       Data: err,
     }
 
-    tmpl["errorPage.html"] = template.Must(template.ParseFiles("./assets/template/error.gohtml"))
+    tmpl["errorPage.html"] = template.Must(template.ParseFiles(viper.GetString("app.dir.assets")+"/template/error.gohtml"))
     templateError := tmpl["errorPage.html"].Execute(w, data)
     if templateError != nil {
       logger.WarningLogger.Println(templateError)

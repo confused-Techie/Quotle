@@ -69,13 +69,14 @@ The header will contain the following:
 
 
 * Server Settings:
-  - Port
+  - Port !!! This will be contained in the app.yaml file used by Google Cloud!!!
   - Game (Updated properly, so it can stop and start all it wants.) [Will need to update first call to cycledata]
   - folder locations
     ^ Logs
     ^ Assets
-    ^ games 
+    ^ games
 * JS Settings, dark mode.
+* Error Page
 
 * Start writing games.
 

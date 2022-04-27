@@ -11,6 +11,7 @@ import (
   search "github.com/confused-Techie/Quotle/src/pkg/search"
   cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
  "github.com/robfig/cron/v3"
+ "github.com/spf13/viper"
  logger "github.com/confused-Techie/Quotle/src/pkg/logger"
  "os"
  "os/signal"
@@ -23,27 +24,46 @@ func main() {
 
   // listen to SIGINT calls
   captureExit := make(chan os.Signal)
-  signal.Notify(captureExit, os.Interrupt, syscall.SIGTERM)
+  signal.Notify(captureExit, os.Interrupt, syscall.SIGTERM, syscall.SIGTERM)
   go func() {
     <-captureExit
-    logger.InfoLogger.Println("SIGINT Signal Captured. Exiting...")
+    logger.InfoLogger.Println("SIGINT/SIGTERM Signal Captured. Exiting...")
     logger.InfoLogger.Println("====================================")
     logger.InfoLogger.Println("====================================")
     os.Exit(1)
   }()
 
+  logger.InfoLogger.Println("Listening for SIGINT...")
+
+  // setup viper
+  viper.SetConfigName("config")
+  viper.SetConfigType("yaml")
+  viper.AddConfigPath(".")
+  viper.ReadInConfig()
+
+  logger.InfoLogger.Println("Setup config.yaml arguments...")
 
   search.BuildIndex()
 
   //setup the cron job
-  cronHandler := cron.New()
+  cronHandler := cron.New(
+    cron.WithLogger(
+      cron.VerbosePrintfLogger(logger.CronLogger)))
 
   cronHandler.AddFunc("CRON_TZ=America/Los_Angeles 00 00 * * *", cycledata.UpdateData)
 
   cronHandler.Start()
 
   // then run the first every instance of the cycledata package, to setup the data.
+  if viper.GetBool("app.production") {
+    cycledata.ManageData(true)
+  }
   //cycledata.ManageData(true)  // TODO: Uncomment before production use.
+
+  logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("app.version"))
+  logger.InfoLogger.Printf("Running in Production Environment: %v", viper.GetString("app.production"))
+  logger.InfoLogger.Printf("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+")
+  logger.InfoLogger.Printf("Logs: %v; Assets: %v; Games: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"), viper.GetString("app.dir.games"))
 
   mux := http.NewServeMux()
 
@@ -51,18 +71,18 @@ func main() {
   mux.Handle("/", http.HandlerFunc(webrequests.HomeHandler))
 
   // ========== Asset Endpoints ==================
-  mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir("./assets/css")))))
-  mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir("./assets/js")))))
-  mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("./assets/images"))))
-  mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir("./assets/static")))))
+  mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/css")))))
+  mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
+  mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
+  mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
 
   // ========== API Endpoints ====================
   mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
   mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
-  logger.InfoLogger.Println("Listening on 8080...")
+  logger.InfoLogger.Printf("Listening on %v...", viper.GetString("app.port"))
   // Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
-  logger.ErrorLogger.Fatal(http.ListenAndServe(":8080", mux))
+  logger.ErrorLogger.Fatal(http.ListenAndServe(":"+viper.GetString("app.port"), mux))
 }
 
 type gzipResponseWriter struct {

@@ -5,6 +5,7 @@ import (
   "io/ioutil"
   "os"
   logger "github.com/confused-Techie/Quotle/src/pkg/logger"
+  "github.com/spf13/viper"
 )
 
 type PageTemplate struct {
@@ -28,7 +29,7 @@ type MediaDBCollection struct {
 }
 
 func GetMediaDB() (au *MediaDBCollection) {
-  file, err := os.OpenFile("./assets/static/media.json", os.O_RDWR|os.O_APPEND, 0666)
+  file, err := os.OpenFile(viper.GetString("app.dir.assets")+"/static/media.json", os.O_RDWR|os.O_APPEND, 0666)
   if err != nil {
     logger.WarningLogger.Println("Unable to build search Index")
     logger.ErrorLogger.Fatal(err)
