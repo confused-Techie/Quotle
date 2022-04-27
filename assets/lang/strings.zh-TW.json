@@ -1,12 +1,12 @@
 {
   "audio-support": "Your browser doesn't support HTML5 audio.",
-  "submit": "Submit",
+  "submit": "確認",
   "how-to": "Generic game instructions.",
-  "close": "Close",
+  "close": "關閉",
   "issue-text": "Issues? Submit an Issue on Github, or email 'admin@lhbasics.com'.",
   "winning-text": "You guessed Correctly!",
   "losing-text": "Better luck next time.",
   "footer-made-with": "Open Source, Made with Golang & ❤",
-  "footer-source": "Source Code",
+  "footer-source": "原始碼",
   "footer-feather": "Feather Icons"
 }
