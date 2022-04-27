@@ -1,6 +1,5 @@
-
 :root {
-  --size-bezel: .5rem;
+  --size-bezel: 0.5rem;
   --size-radius: 4px;
 
   --major-background-colour: #262626; /* Setting dark theme background to avoid white flash as content changes during load. */
@@ -88,7 +87,7 @@ a:visited {
   padding-right: 0.5rem;
   background-color: var(--title-background-colour);
   border-radius: var(--size-radius);
-  font-family: 'Oswald', sans-serif;
+  font-family: "Oswald", sans-serif;
 }
 
 .gameBoard .audio-player button {
@@ -150,7 +149,7 @@ a:visited {
 
 .heading .settings {
   grid-column: 5;
-  grid-row: 1
+  grid-row: 1;
 }
 
 .heading .stats img,
@@ -170,7 +169,7 @@ a:visited {
   box-sizing: border-box;
   width: 100%;
   display: block;
-  border: .18rem solid var(--border-colour);
+  border: 0.18rem solid var(--border-colour);
   padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
   margin-bottom: 2vh;
   color: var(--guesses-text-colour);
@@ -212,7 +211,7 @@ a:visited {
   box-sizing: border-box;
   display: inline-block;
   width: 80%;
-  border: .18rem solid var(--border-colour);
+  border: 0.18rem solid var(--border-colour);
   padding: calc(var(--size-bezel) * 1.5) var(--size-bezel);
   margin-bottom: 5vh;
   margin-top: 3vh;
@@ -221,7 +220,6 @@ a:visited {
   border-radius: var(--size-radius);
   position: relative;
 }
-
 
 .modal {
   display: none;
@@ -243,7 +241,7 @@ a:visited {
   background-color: var(--modal-background-colour);
   margin: 15% auto;
   padding: 3rem;
-  border: .08rem solid var(--border-colour);
+  border: 0.08rem solid var(--border-colour);
   width: 40%;
   border-radius: var(--size-radius);
   text-align: center;
@@ -279,7 +277,6 @@ a:visited {
 }
 
 .chart-wrap {
-
   /* The height and width will match the sizes provided for additional elements. */
   width: 100%;
   height: 24rem;
@@ -295,7 +292,12 @@ a:visited {
   justify-content: center;
   flex-direction: column;
   border-left: 2px solid var(--graph-colour);
-  background: repeating-linear-gradient(90deg, transparent, transparent 19.5%, fadeout(var(--bar-colour), 30%) 20%);
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 19.5%,
+    fadeout(var(--bar-colour), 30%) 20%
+  );
 }
 
 .chart-wrap .grid .bar {
@@ -358,5 +360,4 @@ footer p {
 /* ========= Small Height Breakpoint ============ */
 
 @media screen and (max-height: 1024px) {
-
 }
