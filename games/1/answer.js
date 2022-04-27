@@ -1,4 +1,4 @@
-/*eslint-disable-next-line no-unused-vars no-redeclare*/
+/*eslint-disable-next-line no-unused-vars, no-redeclare*/
 var answer = {
   "name": "King Kong (2005)",
   "director": "Peter Jackson",

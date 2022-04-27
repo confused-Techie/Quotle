@@ -20,7 +20,7 @@ func BuildIndex() {
 	logger.InfoLogger.Println("Done Building Search Index in:", duration, "-", duration.Nanoseconds(), "ns")
 }
 
-// SearchIndex takes a string search argument to return a collection of matching results
+// SearchIndex returns a collection of results matching the search string.
 func SearchIndex(search string) models.SearchResultCollection {
 	tokenSearch := lowercaseFilter(tokenize(search))
 
