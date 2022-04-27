@@ -22,8 +22,6 @@ func BuildIndex() {
 
 // SearchIndex takes a string search argument to return a collection of matching results
 func SearchIndex(search string) models.SearchResultCollection {
-	//start := time.Now()
-
 	tokenSearch := lowercaseFilter(tokenize(search))
 
 	var res models.SearchResultCollection
@@ -32,7 +30,6 @@ func SearchIndex(search string) models.SearchResultCollection {
 		for _, char := range tokenSearch {
 			for _, token := range itm.Value {
 				if strings.Contains(token, char) {
-					//fmt.Println("Match Found", itm.Original, "-", char)
 					var tmpRes models.SearchResultItem
 					tmpRes.Name = itm.Original
 					tmpRes.Director = itm.Director
@@ -43,8 +40,6 @@ func SearchIndex(search string) models.SearchResultCollection {
 		}
 	}
 
-	//duration := time.Since(start)
-	//fmt.Println("Search Executed in:", duration, "-", duration.Nanoseconds(), "ns")
 	return res
 }
 

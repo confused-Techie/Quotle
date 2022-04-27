@@ -13,5 +13,8 @@
   },
   "rules": {
     "no-unexpected-multiline": "off"
+  },
+  "globals": {
+    "answer": "readonly"
   }
 }
