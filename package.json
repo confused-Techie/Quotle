@@ -1,0 +1,13 @@
+{
+  "name": "Quotle",
+  "version": "0.0.1",
+  "description": "Guess the movie based off only 6 Quotes!",
+  "scripts": {
+    "lint": "powershell scripts/linting.ps1"
+  },
+  "author": "confused-Techie",
+  "license": "AGPL-3.0",
+  "devDependencies": {
+    "prettier": "^2.6.2"
+  }
+}

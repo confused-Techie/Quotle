@@ -1,0 +1,4 @@
+# Ignore my docs
+DEV_docs/
+# Ignore node_modules for build tools.
+node_modules

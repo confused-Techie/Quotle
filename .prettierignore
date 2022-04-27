@@ -1,0 +1,21 @@
+# prettier does not like HTML templates
+templates/
+.git
+.github
+.gitattributes
+.gitignore
+# Ignore my personal documentation
+DEV_docs/
+# Ignore the powershell scripts
+scripts/
+# Ignore build tools
+go.mod
+go.sum
+config.yaml
+node_modules/
+# Ignore log files
+logs.txt
+logs-tlmy.txt
+# Ignore data files
+games/
+assets/static/media.json
