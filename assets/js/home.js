@@ -276,11 +276,11 @@ function enableDarkTheme() {
     "/images/feather-white.svg";
 }
 
-function aboutBtnEvent(event) {
+function aboutBtnEvent() {
   document.getElementById("about_modal").classList.add("show");
 }
 
-function statsBtnEvent(event) {
+function statsBtnEvent() {
   if (gameMaster.localStorageAvailable) {
     if (localStorage.getItem("stats")) {
       var stats = JSON.parse(localStorage.getItem("stats"));
@@ -350,7 +350,7 @@ function statsBtnEvent(event) {
   document.getElementById("stats_modal").classList.add("show");
 }
 
-function settingsBtnEvent(event) {
+function settingsBtnEvent() {
   document.getElementById("settings_modal").classList.add("show");
 }
 
@@ -385,7 +385,10 @@ function searchResults(results) {
   }
 }
 
+/*eslint-disable-next-line no-unused-vars*/
 function enterText(text) {
+  // enterText is valled via an onclick handler attached to DOM when creating search results
+  // and is never directly called via JavaScript
   document.getElementById("user_guess_input").value = text;
 }
 

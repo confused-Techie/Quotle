@@ -15,6 +15,7 @@
     "no-unexpected-multiline": "off"
   },
   "globals": {
-    "answer": "readonly"
+    "answer": "readonly",
+    "confetti": "readonly"
   }
 }
