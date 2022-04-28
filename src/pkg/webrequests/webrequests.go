@@ -33,7 +33,7 @@ func returnAgnosticStrings(langCode string) map[string]string {
 
 func returnPrefferedStrings(langCode string) map[string]string {
 	// check for file existance
-	if _, err := os.Stat(viper.GetString("app.dir.assets") + "/lang/string." + langCode + ".json"); err == nil {
+	if _, err := os.Stat(viper.GetString("app.dir.assets") + "/lang/strings." + langCode + ".json"); err == nil {
 		// file exists
 		return returnAgnosticStrings(langCode)
 	} else if errors.Is(err, os.ErrNotExist) {

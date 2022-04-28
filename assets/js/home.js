@@ -427,6 +427,14 @@ function audioController() {
     }
   });
 
+  audioElement.addEventListener("ended", function() {
+    if (theme == "light") {
+      playIconImg.src = "/images/play-white.svg";
+    } else {
+      playIconImg.src = "/images/play-black.svg";
+    }
+  });
+
   playIconContainer.addEventListener("click", () => {
     if (state === "play") {
       if (theme == "light") {
@@ -475,9 +483,6 @@ function checkAnswer(guess) {
     displayAnswer(guess, "guess-five");
   } else if (gameMaster.guessNumber === 6) {
     displayAnswer(guess, "guess-six");
-    document.getElementById("guess-six").classList.add("lost");
-    document.getElementById("loser_modal").classList.add("show");
-    gameMaster.setLosingCookie();
   } else {
     console.log("Had trouble displaying the guess results.");
     // or alternatively the game is over and they didn't win. at all.
@@ -501,7 +506,7 @@ function displayAnswer(guess, eleID) {
           gameMaster.setWinnerCookie();
 
           gameMaster.addGuess();
-          setAudioSrc();
+          //setAudioSrc();
 
           // finally we also want to launch some confetti
           var myCanvas = document.createElement("canvas");
@@ -554,7 +559,14 @@ function displayAnswer(guess, eleID) {
 
           gameMaster.addGuess();
           gameMaster.setProgressCookie();
-          setAudioSrc();
+
+          if (eleID == "guess-six") {
+            document.getElementById("guess-six").classList.add("lost");
+            document.getElementById("loser_modal").classList.add("show");
+            gameMaster.setLosingCookie();
+          } else {
+            setAudioSrc();
+          }
         }
       } catch (err) {
         console.log(
@@ -568,7 +580,14 @@ function displayAnswer(guess, eleID) {
 
         gameMaster.addGuess();
         gameMaster.setProgressCookie();
-        setAudioSrc();
+
+        if (eleID == "guess-six") {
+          document.getElementById("guess-six").classList.add("lost");
+          document.getElementById("loser_modal").classList.add("show");
+          gameMaster.setLosingCookie();
+        } else {
+          setAudioSrc();
+        }
       }
     });
 }

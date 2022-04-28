@@ -8,7 +8,7 @@ var answer = {
     "Action"
   ],
   "gameID": 1,
-  "audioSrc": [ "test1", "test2", "test3", "", "", "" ]
+  "audioSrc": [ "/audio/audio1.mp3", "/audio/audio2.mp3", "/audio/audio3.mp3", "/audio/audio4.mp3", "/audio/audio5.mp3", "/audio/audio6.mp3" ]
 }
 
 // The eslint here is needed since answer is defined as a global variable for the JavaScript Browser runtime,

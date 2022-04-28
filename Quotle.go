@@ -75,6 +75,7 @@ func main() {
 	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
 	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
 	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
+	mux.Handle("/audio/", http.StripPrefix("/audio/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/audio"))))
 
 	// ========== API Endpoints ====================
 	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
