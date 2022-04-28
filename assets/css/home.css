@@ -220,6 +220,48 @@ a:visited {
   position: relative;
 }
 
+.how-to-director {
+  background-color: var(--guesses-bg-colour-director);
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--size-radius);
+  margin-right: 1rem;
+}
+
+.how-to-director + p {
+  display: inline-block;
+  vertical-align: super;
+}
+
+.how-to-genre {
+  background-color: var(--guesses-bg-colour-genre);
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--size-radius);
+  margin-right: 1rem;
+}
+
+.how-to-genre + p {
+  display: inline-block;
+  vertical-align: super;
+}
+
+.how-to-both {
+  background-color: var(--guesses-bg-colour-both);
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--size-radius);
+  margin-right: 1rem;
+}
+
+.how-to-both + p {
+  display: inline-block;
+  vertical-align: super;
+}
+
 .modal {
   display: none;
   position: fixed;
@@ -362,5 +404,5 @@ footer p {
 @media screen and (max-height: 1024px) {
 
   /* While not currently in use, keeping around in case it needs to be implemeneted. */
-  
+
 }

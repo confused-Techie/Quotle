@@ -92,6 +92,30 @@
             (index .DefaultStrings "how-to")
           }}
         </p>
+        <span class="how-to-director"></span><p>
+          {{ or
+            (index .TargetStrings "how-to-director")
+            (index .DefaultStrings "how-to-director")
+          }}
+        </p><br/>
+        <span class="how-to-genre"></span><p>
+          {{ or
+            (index .TargetStrings "how-to-genre")
+            (index .DefaultStrings "how-to-genre")
+          }}
+        </p><br/>
+        <span class="how-to-both"></span><p>
+          {{ or
+            (index .TargetStrings "how-to-both")
+            (index .DefaultStrings "how-to-both")
+          }}
+        </p><br/>
+        <p>
+          {{ or
+            (index .TargetStrings "how-to-thanks")
+            (index .DefaultStrings "how-to-thanks")
+          }}
+        </p>
       </div>
       <button class="close" onclick="document.getElementById('about_modal').classList.remove('show');">
         <span>
