@@ -1,11 +1,7 @@
 {
   "audio-support": "Your browser doesn't support HTML5 audio.",
   "submit": "Submit",
-  "how-to": "Listen to each audio clip, and guess the one movie they all come from.",
-  "how-to-director": "Means the director is correct.",
-  "how-to-genre": "Means the genre is correct.",
-  "how-to-both": "Means that both the director and genre are correct.",
-  "how-to-thanks": "Special thanks to Ken and Zack for original concept, and to Angie for implementation inspiration.",
+  "how-to": "Generic game instructions.",
   "close": "Close",
   "issue-text": "Issues? Submit an Issue on Github, or email 'admin@lhbasics.com'.",
   "winning-text": "You guessed Correctly!",
