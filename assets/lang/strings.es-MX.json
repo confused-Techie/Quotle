@@ -1,0 +1,12 @@
+{
+  "audio-support": "Your browser doesn't support HTML5 audio.",
+  "submit": "Entregar",
+  "how-to": "Generic game instructions.",
+  "close": "Cerrar",
+  "issue-text": "Issues? Submit an Issue on Github, or email 'admin@lhbasics.com'.",
+  "winning-text": "You guessed Correctly!",
+  "losing-text": "Better luck next time.",
+  "footer-made-with": "Open Source, Made with Golang & ❤",
+  "footer-source": "Código fuente",
+  "footer-feather": "Iconos de pluma"
+}
