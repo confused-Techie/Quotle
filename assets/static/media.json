@@ -1,23 +1,5 @@
 [
   {
-    "name": "King Kong (2005)",
-    "director": "Peter Jackson",
-    "genre": [
-      "Adventure",
-      "Drama",
-      "Action"
-    ]
-  },
-  {
-    "name": "The Lord of the Rings: The Fellowship of the Ring (2001)",
-    "director": "Peter Jackson",
-    "genre": [
-      "Adventure",
-      "Fantasy",
-      "Action"
-    ]
-  },
-  {
     "name": "Encanto (2021)",
     "director": "Jared Bush",
     "genre": [
@@ -28,11 +10,38 @@
     ]
   },
   {
+    "name": "King Kong (2005)",
+    "director": "Peter Jackson",
+    "genre": [
+      "Adventure",
+      "Drama",
+      "Action"
+    ]
+  },
+  {
+    "name": "The Batman (2022)",
+    "director": "Matt Reeves",
+    "genre": [
+      "Crime",
+      "Mystery",
+      "Thriller"
+    ]
+  },
+  {
     "name": "The Beatles: Get Back - The Rooftop Convert (2022)",
     "director": "Peter Jackson",
     "genre": [
       "Music",
       "Documentary"
+    ]
+  },
+  {
+    "name": "The Lord of the Rings: The Fellowship of the Ring (2001)",
+    "director": "Peter Jackson",
+    "genre": [
+      "Adventure",
+      "Fantasy",
+      "Action"
     ]
   }
 ]
