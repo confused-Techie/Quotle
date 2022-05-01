@@ -19,6 +19,15 @@
     ]
   },
   {
+    "name": "Spider-Man: No Way Home (2021)",
+    "director": "Jon Watts",
+    "genre": [
+      "Action",
+      "Adventure",
+      "Science Fiction"
+    ]
+  },
+  {
     "name": "The Batman (2022)",
     "director": "Matt Reeves",
     "genre": [
@@ -36,12 +45,45 @@
     ]
   },
   {
+    "name": "The Greatest Showman (2017)",
+    "director": "Michael Gracey",
+    "genre": [
+      "Drama"
+    ]
+  },
+  {
     "name": "The Lord of the Rings: The Fellowship of the Ring (2001)",
     "director": "Peter Jackson",
     "genre": [
       "Adventure",
       "Fantasy",
       "Action"
+    ]
+  },
+  {
+    "name": "The Outfit (2022)",
+    "director": "Graham Moore",
+    "genre": [
+      "Drama",
+      "Thriller",
+      "Crime"
+    ]
+  },
+  {
+    "name": "Through My Window",
+    "director": "Marcal Fores",
+    "genre": [
+      "Romance",
+      "Drama"
+    ]
+  },
+  {
+    "name": "Uncharted (2022)",
+    "director": "Ruben Fleischer",
+    "genre": [
+      "Action",
+      "Adventure",
+      "Family"
     ]
   }
 ]

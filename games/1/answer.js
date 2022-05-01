@@ -1,11 +1,9 @@
 /*eslint-disable-next-line no-unused-vars, no-redeclare*/
 var answer = {
-  "name": "King Kong (2005)",
-  "director": "Peter Jackson",
+  "name": "The Greatest Showman (2017)",
+  "director": "Michael Gracey",
   "genre": [
-    "Adventure",
-    "Drama",
-    "Action"
+    "Drama"
   ],
   "gameID": 1,
   "audioSrc": [
