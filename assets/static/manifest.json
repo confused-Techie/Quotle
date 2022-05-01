@@ -1,0 +1,10 @@
+{
+  "short_name": "Quotle",
+  "name": "Quotle",
+  "description": "Guess the film based off Quotes!",
+  "start_url": "/",
+  "background_color": "#262626",
+  "display": "minimal-ui",
+  "scope": "/",
+  "theme_color": "#6c0082"
+}

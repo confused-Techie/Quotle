@@ -12,6 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&display=swap" rel="stylesheet">
+  <link rel="manifest" href="/manifest.json">
   {{range .CSS }}
     <link rel="stylesheet" type="text/css" href="{{ . }}">
   {{end}}
@@ -236,6 +237,15 @@
           (index .DefaultStrings "footer-feather")
         }}
       </p>
+    </a>
+
+    <a href="https://www.themoviedb.org/">
+      <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg" alt="The Movie Database Attribution Logo" widht="24" height="24">
+      <p>
+        {{ or
+          (index .TargetStrings "footer-tmdb")
+          (index .DefaultStrings "footer-tmdb")
+        }}
     </a>
 
   </footer>

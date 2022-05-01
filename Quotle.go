@@ -4,7 +4,7 @@ import (
 	"compress/gzip"
 	cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
-	search "github.com/confused-Techie/Quotle/src/pkg/search"
+	tmdbsearch "github.com/confused-Techie/Quotle/src/pkg/tmdbsearch"
 	webrequests "github.com/confused-Techie/Quotle/src/pkg/webrequests"
 	"github.com/robfig/cron/v3"
 	"github.com/spf13/viper"
@@ -43,7 +43,7 @@ func main() {
 
 	logger.InfoLogger.Println("Setup config.yaml arguments...")
 
-	search.BuildIndex()
+	tmdbsearch.FindAPIKey()
 
 	//setup the cron job
 	cronHandler := cron.New(
@@ -75,16 +75,19 @@ func main() {
 	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
 	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
 	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
+	mux.Handle("/manifest.json", http.HandlerFunc(webrequests.ManifestHandler))
+	mux.Handle("/robots.txt", http.HandlerFunc(webrequests.RobotsHandler))
+	mux.Handle("/sitemap.xml", http.HandlerFunc(webrequests.SitemapHandler))
 
 	// ========== API Endpoints ====================
 	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
 	mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
 
-  port := os.Getenv("PORT")
-  if port == "" {
-    port = viper.GetString("app.port")
-    logger.WarningLogger.Println("Port not available via Environment Variables. Falling back to Config File...")
-  }
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = viper.GetString("app.port")
+		logger.WarningLogger.Println("Port not available via Environment Variables. Falling back to Config File...")
+	}
 
 	logger.InfoLogger.Printf("Listening on %v...", port)
 	// Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.

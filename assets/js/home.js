@@ -360,8 +360,6 @@ function mediaSearch(e) {
   fetch(`/api/search?value=${search}`)
     .then((res) => res.json())
     .then((result) => {
-      console.log(`Search Returned:`);
-      console.log(result);
       searchResults(result);
     });
 }
@@ -376,8 +374,8 @@ function searchResults(results) {
     }
 
     // then craft the result to return
-    for (let i = 0; i < results.Results.length; i++) {
-      var tmpHTML = `<p onclick="enterText('${results.Results[i].Name}');">${results.Results[i].Name}</p>`;
+    for (let i = 0; i < results.length; i++) {
+      var tmpHTML = `<p onclick="enterTextEvent(event);">${results[i]}</p>`;
       searchRes.insertAdjacentHTML("beforeend", tmpHTML);
     }
   } catch (err) {
@@ -386,10 +384,9 @@ function searchResults(results) {
 }
 
 /*eslint-disable-next-line no-unused-vars*/
-function enterText(text) {
-  // enterText is valled via an onclick handler attached to DOM when creating search results
-  // and is never directly called via JavaScript
-  document.getElementById("user_guess_input").value = text;
+function enterTextEvent(e) {
+  document.getElementById("user_guess_input").value =
+    e.path[0].childNodes[0].data;
 }
 
 function setAudioSrc() {
@@ -427,7 +424,7 @@ function audioController() {
     }
   });
 
-  audioElement.addEventListener("ended", function() {
+  audioElement.addEventListener("ended", function () {
     if (theme == "light") {
       playIconImg.src = "/images/play-white.svg";
     } else {

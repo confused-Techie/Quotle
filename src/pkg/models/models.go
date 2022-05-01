@@ -1,13 +1,5 @@
 package models
 
-import (
-	"encoding/json"
-	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
-	"github.com/spf13/viper"
-	"io/ioutil"
-	"os"
-)
-
 // PageTemplate is confused-Techie's modified page template for httpHandlers
 type PageTemplate struct {
 	Title          string
@@ -29,21 +21,6 @@ type MediaDB struct {
 // MediaDBCollection is the collection of MediaDB Entries
 type MediaDBCollection struct {
 	Media []*MediaDB
-}
-
-// GetMediaDB function reads and returns the unmarshaled media database json file.
-func GetMediaDB() (au *MediaDBCollection) {
-
-	data, dataErr := cloudfeatures.GetMediaDB()
-
-	if dataErr != nil {
-		logger.ErrorLogger.Fatal(dataErr)
-	}
-
-
-	var mdia MediaDBCollection
-	json.Unmarshal(data, &mdia.Media)
-	return &mdia
 }
 
 // SearchItem holds the data for the search index entry of the media database.
@@ -69,4 +46,41 @@ type SearchResultItem struct {
 // SearchResultCollection a collection wrapper of SearchResultItem entries.
 type SearchResultCollection struct {
 	Results []*SearchResultItem
+}
+
+// APISearchResultItem is for the API call to tmdb.
+type APISearchResultItem struct {
+	GenreIDs []int  `json:"genre_ids"`
+	ID       int    `json:"id"`
+	Title    string `json:"title"`
+}
+
+// Collection of APISearchResultItem
+type APISearchResultCollection struct {
+	Page    string                 `json:"page"`
+	Results []*APISearchResultItem `json:"results"`
+}
+
+// APIDetailItemCrew contains crew data for movie details.
+type APIDetailItemCrew struct {
+	Name string `json:"name"`
+	Job  string `json:"job"`
+}
+
+// APIDetailItemCredits contains the Crew Details.
+type APIDetailItemCredits struct {
+	Crew []*APIDetailItemCrew `json:"crew"`
+}
+
+// APIDetailItemGenre is for the genre data during detail calls.
+type APIDetailItemGenre struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+// APIDetailItem contains all other Detail structs
+type APIDetailItem struct {
+	Genres  []*APIDetailItemGenre `json:"genres"`
+	Title   string                `json:"title"`
+	Credits APIDetailItemCredits  `json:"credits"`
 }

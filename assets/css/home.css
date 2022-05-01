@@ -402,7 +402,5 @@ footer p {
 /* ========= Small Height Breakpoint ============ */
 
 @media screen and (max-height: 1024px) {
-
   /* While not currently in use, keeping around in case it needs to be implemeneted. */
-
 }
