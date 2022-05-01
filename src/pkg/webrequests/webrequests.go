@@ -6,12 +6,14 @@ import (
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 	models "github.com/confused-Techie/Quotle/src/pkg/models"
 	search "github.com/confused-Techie/Quotle/src/pkg/search"
+	cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
 	"github.com/spf13/viper"
 	"html/template"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
+	"strconv"
 )
 
 func returnAgnosticStrings(langCode string) map[string]string {
@@ -60,7 +62,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	data := models.PageTemplate{
 		Title:          "Quotle",
 		CSS:            []string{"/css/home.css"},
-		JS:             []string{"/js/home.js", "/static/answer.js"},
+		JS:             []string{"/js/home.js", "https://storage.googleapis.com/quotle-games/"+strconv.Itoa(cycledata.GlobalGameID)+"/answer.js"},
 		DefaultStrings: returnDefaultStrings(),
 		TargetStrings:  returnPrefferedStrings(strings.Split(r.Header.Get("Accept-Language"), ",")[0]),
 		TargetLanguage: strings.Split(r.Header.Get("Accept-Language"), ",")[0],

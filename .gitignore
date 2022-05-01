@@ -2,7 +2,9 @@
 DEV_docs/
 # Ignore node_modules for build tools.
 node_modules
-# Ignore audio files, since they will take up to much room.
-games/*/*.mp3
+# Ignore game data due to room constraints 
+games/*/*
 # During testing, the answer file may be in the production location. But we can ignore that.
 assets/static/answer.js
+# Ignore super secret file
+quotle-348800-5a828989750d.json

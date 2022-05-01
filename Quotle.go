@@ -56,14 +56,14 @@ func main() {
 
 	// then run the first every instance of the cycledata package, to setup the data.
 	if viper.GetBool("app.production") {
-		cycledata.ManageData(true)
+		cycledata.InitData()
 	}
 	//cycledata.ManageData(true)  // TODO: Uncomment before production use.
 
 	logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("app.version"))
 	logger.InfoLogger.Printf("Running in Production Environment: %v", viper.GetString("app.production"))
 	logger.InfoLogger.Printf("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+")
-	logger.InfoLogger.Printf("Logs: %v; Assets: %v; Games: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"), viper.GetString("app.dir.games"))
+	logger.InfoLogger.Printf("Logs: %v; Assets: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"))
 
 	mux := http.NewServeMux()
 
@@ -75,7 +75,6 @@ func main() {
 	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
 	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
 	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
-	mux.Handle("/audio/", http.StripPrefix("/audio/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/audio"))))
 
 	// ========== API Endpoints ====================
 	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))

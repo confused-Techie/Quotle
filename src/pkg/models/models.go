@@ -33,20 +33,16 @@ type MediaDBCollection struct {
 
 // GetMediaDB function reads and returns the unmarshaled media database json file.
 func GetMediaDB() (au *MediaDBCollection) {
-	file, err := os.OpenFile(viper.GetString("app.dir.assets")+"/static/media.json", os.O_RDWR|os.O_APPEND, 0666)
-	if err != nil {
-		logger.WarningLogger.Println("Unable to build search Index")
-		logger.ErrorLogger.Fatal(err)
+
+	data, dataErr := cloudfeatures.GetMediaDB()
+
+	if dataErr != nil {
+		logger.ErrorLogger.Fatal(dataErr)
 	}
 
-	b, err := ioutil.ReadAll(file)
-	if err != nil {
-		logger.WarningLogger.Println("Unable to build search Index")
-		logger.ErrorLogger.Fatal(err)
-	}
 
 	var mdia MediaDBCollection
-	json.Unmarshal(b, &mdia.Media)
+	json.Unmarshal(data, &mdia.Media)
 	return &mdia
 }
 

@@ -8,7 +8,13 @@ var answer = {
     "Action"
   ],
   "gameID": 1,
-  "audioSrc": [ "/audio/audio1.mp3", "/audio/audio2.mp3", "/audio/audio3.mp3", "/audio/audio4.mp3", "/audio/audio5.mp3", "/audio/audio6.mp3" ]
+  "audioSrc": [
+    "https://storage.googleapis.com/quotle-games/1/audio1.mp3",
+    "https://storage.googleapis.com/quotle-games/1/audio2.mp3",
+    "https://storage.googleapis.com/quotle-games/1/audio3.mp3",
+    "https://storage.googleapis.com/quotle-games/1/audio4.mp3",
+    "https://storage.googleapis.com/quotle-games/1/audio5.mp3",
+    "https://storage.googleapis.com/quotle-games/1/audio6.mp3" ]
 }
 
 // The eslint here is needed since answer is defined as a global variable for the JavaScript Browser runtime,

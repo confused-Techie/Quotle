@@ -1,9 +1,7 @@
 app:
-  gameid: 1
   port: 8080
-  production: false
+  production: true
   version: 'b:0.0.1'
   dir:
     logs: '.'
     assets: './assets'
-    games: './games'
