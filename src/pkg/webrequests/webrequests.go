@@ -3,9 +3,9 @@ package webrequests
 import (
 	"encoding/json"
 	"errors"
+	cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 	models "github.com/confused-Techie/Quotle/src/pkg/models"
-	cycledata "github.com/confused-Techie/Quotle/src/pkg/cycledata"
 	tmdbsearch "github.com/confused-Techie/Quotle/src/pkg/tmdbsearch"
 	"github.com/spf13/viper"
 	"html/template"
@@ -122,4 +122,9 @@ func RobotsHandler(w http.ResponseWriter, r *http.Request) {
 // SitemapHandler serves the sitemap file.
 func SitemapHandler(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/sitemap.xml")
+}
+
+// FaviconHandler serves the favicon file.
+func FaviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/favicon.png")
 }

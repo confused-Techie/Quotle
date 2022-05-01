@@ -1,6 +1,6 @@
 app:
   port: 8080
-  production: true
+  production: false
   version: 'b:0.0.1'
   dir:
     logs: '.'

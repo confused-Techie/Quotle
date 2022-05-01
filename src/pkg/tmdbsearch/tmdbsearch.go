@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 	models "github.com/confused-Techie/Quotle/src/pkg/models"
+  "github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -19,7 +20,11 @@ func FindAPIKey() {
 	tmpAPI := os.Getenv("TMDB_API_KEY")
 
 	if tmpAPI == "" {
-		logger.ErrorLogger.Fatal("Could not find API Key for TMDB")
+    if viper.GetBool("app.production") {
+      logger.ErrorLogger.Fatal("Could not find API Key for TMDB")
+    }
+		logger.ErrorLogger.Println("COuld not find API Key for TMDB. Setting empty")
+    TMDB_API_KEY = ""
 	}
 
 	TMDB_API_KEY = tmpAPI

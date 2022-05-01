@@ -1,6 +1,6 @@
 /*eslint-disable-next-line no-unused-vars, no-redeclare*/
 var answer = {
-  "name": "The Greatest Showman (2017)",
+  "name": "The Greatest Showman",
   "director": "Michael Gracey",
   "genre": [
     "Drama"
