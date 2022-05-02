@@ -204,5 +204,11 @@
 
     </noscript>
 
+<script>
+
+  var i18n_answer_text = {{ or (index .TargetStrings "answer-text") (index .DefaultStrings "answer-text") }};
+
+</script>
+
 </body>
 </html>

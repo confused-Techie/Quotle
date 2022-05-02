@@ -10,6 +10,7 @@
   "issue-text": "Issues? Submit an Issue on Github, or email 'admin@lhbasics.com'.",
   "winning-text": "You guessed Correctly!",
   "losing-text": "Better luck next time.",
+  "answer-text": "The correct answer is: '{0}'",
   "footer-made-with": "Open Source, Made with Golang & ❤",
   "footer-source": "Source Code",
   "footer-feather": "Feather Icons",

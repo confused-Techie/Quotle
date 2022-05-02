@@ -245,7 +245,7 @@ function enableLightTheme() {
   document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
   document.body.classList.add("light-theme");
 
-  document.body.getElementById("help-cirle-img").src =
+  document.getElementById("help-cirle-img").src =
     "/images/help-circle-black.svg";
   document.getElementById("award-img").src = "/images/award-black.svg";
   document.getElementById("settings-img").src = "/images/settings-black.svg";
