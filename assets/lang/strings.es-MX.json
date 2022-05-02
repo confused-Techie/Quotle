@@ -10,6 +10,8 @@
   "issue-text": "Issues? Submit an Issue on Github, or email 'admin@lhbasics.com'.",
   "winning-text": "You guessed Correctly!",
   "losing-text": "Better luck next time.",
+  "answer-text": "The correct answer is: '{0}'",
+  "refresh-text": "The next game will be playable at midnight Pacific Standard Time.",
   "footer-made-with": "Open Source, Made with Golang & ❤",
   "footer-source": "Código fuente",
   "footer-feather": "Iconos de pluma",
