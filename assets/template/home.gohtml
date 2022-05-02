@@ -152,7 +152,7 @@
   <div class="modal" id="loser_modal">
     <div class="modal-content">
       <div class="msg">
-        <h3>
+        <h3 id="loser_modal_msg">
           {{ or (index .TargetStrings "losing-text") (index .DefaultStrings "losing-text") }}
         </h3>
       </div>

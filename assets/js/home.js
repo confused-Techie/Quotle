@@ -559,6 +559,7 @@ function displayAnswer(guess, eleID) {
 
           if (eleID == "guess-six") {
             document.getElementById("guess-six").classList.add("lost");
+            document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
             document.getElementById("loser_modal").classList.add("show");
             gameMaster.setLosingCookie();
           } else {
@@ -580,6 +581,7 @@ function displayAnswer(guess, eleID) {
 
         if (eleID == "guess-six") {
           document.getElementById("guess-six").classList.add("lost");
+          document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
           document.getElementById("loser_modal").classList.add("show");
           gameMaster.setLosingCookie();
         } else {
@@ -596,4 +598,22 @@ function checkGenre(guess, correct) {
     }
   }
   return false;
+}
+
+function UnicornComposite() {
+  var str = arguments[0];
+  if (arguments.length > 1) {
+    var t = typeof arguments[1];
+    var key;
+    var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];
+
+    if (Array.isArray(args)) {
+      args.shift();
+    }
+
+    for (key in args) {
+      str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+    }
+  }
+  return str;
 }
