@@ -12,5 +12,6 @@
   "losing-text": "Better luck next time.",
   "footer-made-with": "Open Source, Made with Golang & ❤",
   "footer-source": "Código fuente",
-  "footer-feather": "Iconos de pluma"
+  "footer-feather": "Iconos de pluma",
+  "footer-tmdb": "Movie Results from The Movie Database"
 }
