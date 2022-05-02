@@ -140,6 +140,8 @@
         <h3>
           {{ or (index .TargetStrings "winning-text") (index .DefaultStrings "winning-text") }}
         </h3>
+
+        {{ or (index .TargetStrings "refresh-text") (index .DefaultStrings "refresh-text") }}
       </div>
       <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">
         <span>
@@ -152,9 +154,11 @@
   <div class="modal" id="loser_modal">
     <div class="modal-content">
       <div class="msg">
-        <h3>
+        <h3 id="loser_modal_msg">
           {{ or (index .TargetStrings "losing-text") (index .DefaultStrings "losing-text") }}
         </h3>
+
+        {{ or (index .TargetStrings "refresh-text") (index .DefaultStrings "refresh-text") }}
       </div>
       <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">
         <span>
@@ -203,6 +207,12 @@
     <noscript>
 
     </noscript>
+
+<script>
+
+  var i18n_answer_text = {{ or (index .TargetStrings "answer-text") (index .DefaultStrings "answer-text") }};
+
+</script>
 
 </body>
 </html>

@@ -184,6 +184,8 @@ window.onload = function () {
   // first we check the colour
   themeCheck();
 
+  firstTimeVisit();
+
   setAudioSrc();
   // call the function in charge of play/pause
   audioController();
@@ -208,6 +210,12 @@ window.onload = function () {
   document
     .getElementById("submit_btn")
     .addEventListener("click", checkAnswerViaBtn);
+
+  console.log('Hello welcome to the console!');
+  console.log('Its wonderful to think you are here to help contribute to the project.');
+  console.log('But if the Interns have taught me anything, I know people come here to cheat for answers.');
+  console.log('So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.');
+  console.log('Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle');
 };
 
 function themeCheck() {
@@ -245,7 +253,7 @@ function enableLightTheme() {
   document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
   document.body.classList.add("light-theme");
 
-  document.body.getElementById("help-cirle-img").src =
+  document.getElementById("help-cirle-img").src =
     "/images/help-circle-black.svg";
   document.getElementById("award-img").src = "/images/award-black.svg";
   document.getElementById("settings-img").src = "/images/settings-black.svg";
@@ -274,6 +282,23 @@ function enableDarkTheme() {
   document.getElementById("footer-github-img").src = "/images/github-white.svg";
   document.getElementById("footer-feather-icon-img").src =
     "/images/feather-white.svg";
+}
+
+function firstTimeVisit() {
+  if (gameMaster.localStorageAvailable) {
+    if (!localStorage.GetItem("visitor")) {
+      // if it doesn't exist, we have never set it, and this is the first time coming here. Otherwise if it does then they have come before.
+      localStorage.SetItem("visitor", "true");
+      aboutBtnEvent();
+
+    } else {
+      console.log("I've seen you here before. Welcome back.");
+    }
+  } else {
+    console.log('Local Storage is not currently accessible. Making it impossible to determine weather this is a first time visit. Or not.');
+    console.log('We will error on the side of caution and assume it is.');
+    aboutBtnEvent();
+  }
 }
 
 function aboutBtnEvent() {
@@ -559,6 +584,7 @@ function displayAnswer(guess, eleID) {
 
           if (eleID == "guess-six") {
             document.getElementById("guess-six").classList.add("lost");
+            document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
             document.getElementById("loser_modal").classList.add("show");
             gameMaster.setLosingCookie();
           } else {
@@ -580,6 +606,7 @@ function displayAnswer(guess, eleID) {
 
         if (eleID == "guess-six") {
           document.getElementById("guess-six").classList.add("lost");
+          document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
           document.getElementById("loser_modal").classList.add("show");
           gameMaster.setLosingCookie();
         } else {
@@ -596,4 +623,22 @@ function checkGenre(guess, correct) {
     }
   }
   return false;
+}
+
+function UnicornComposite() {
+  var str = arguments[0];
+  if (arguments.length > 1) {
+    var t = typeof arguments[1];
+    var key;
+    var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];
+
+    if (Array.isArray(args)) {
+      args.shift();
+    }
+
+    for (key in args) {
+      str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+    }
+  }
+  return str;
 }
