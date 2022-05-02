@@ -286,7 +286,7 @@ function enableDarkTheme() {
 
 function firstTimeVisit() {
   if (gameMaster.localStorageAvailable) {
-    if (!localStorage.GetItem("visitor")) {
+    if (!localStorage.getItem("visitor")) {
       // if it doesn't exist, we have never set it, and this is the first time coming here. Otherwise if it does then they have come before.
       localStorage.SetItem("visitor", "true");
       aboutBtnEvent();
