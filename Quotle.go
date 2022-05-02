@@ -20,6 +20,14 @@ import (
 
 func main() {
 
+	// setup viper
+	viper.SetConfigName("config")
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	viper.ReadInConfig()
+
+	logger.InfoLogger.Println("Setup config.yaml arguments...")
+	
 	logger.InfoLogger.Println("Quotle Starting...")
 
 	// listen to SIGINT calls
@@ -34,14 +42,6 @@ func main() {
 	}()
 
 	logger.InfoLogger.Println("Listening for SIGINT...")
-
-	// setup viper
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
-	viper.ReadInConfig()
-
-	logger.InfoLogger.Println("Setup config.yaml arguments...")
 
 	tmdbsearch.FindAPIKey()
 

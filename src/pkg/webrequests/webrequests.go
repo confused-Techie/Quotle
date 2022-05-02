@@ -17,7 +17,7 @@ import (
 )
 
 func returnAgnosticStrings(langCode string) map[string]string {
-	file, err := os.OpenFile(viper.GetString("app.dir.assets")+"/lang/strings."+langCode+".json", os.O_RDWR|os.O_APPEND, 0666)
+	file, err := os.Open(viper.GetString("app.dir.assets")+"/lang/strings."+langCode+".json")
 	if err != nil {
 		logger.WarningLogger.Println(err)
 	}

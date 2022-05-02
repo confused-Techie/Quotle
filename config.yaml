@@ -1,7 +1,7 @@
 app:
   port: 8080
-  production: false
-  version: 'b:0.0.1'
+  production: true
+  version: '0.0.1'
   dir:
     logs: '.'
     assets: './assets'

@@ -112,7 +112,7 @@ func SetGlobalGameData(newValue int) (string, error) {
 
 // GetAuthFile returns the bytes of the auth file for accessing the cloud.
 func GetAuthFile() ([]byte, error) {
-	authFile, err := os.OpenFile("./quotle-348800-5a828989750d.json", os.O_RDWR|os.O_APPEND, 0666)
+	authFile, err := os.Open("./quotle-348800-5a828989750d.json")
 	if err != nil {
 		return nil, fmt.Errorf("Open Auth JSON: %v", err)
 	}

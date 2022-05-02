@@ -51,10 +51,7 @@
       </button>
       <audio src="/static/test.ogg" preload="auto" id="audio-element">
         <p>
-          {{ or
-            (index .TargetStrings "audio-support")
-            (index .DefaultStrings "audio-support")
-          }}
+          {{ or (index .TargetStrings "audio-support") (index .DefaultStrings "audio-support") }}
         </p>
       </audio>
 
@@ -64,10 +61,7 @@
       <input class="input_field" type="text" placeholder="Enter a Guess" id="user_guess_input"/>
       <button id="submit_btn">
         <span>
-          {{ or
-            (index .TargetStrings "submit")
-            (index .DefaultStrings "submit")
-          }}
+          {{ or (index .TargetStrings "submit") (index .DefaultStrings "submit") }}
         </span>
       </button>
       <div class="searchResult" id="searchResult"> </div>
@@ -89,42 +83,24 @@
 
       <div class="msg">
         <p>
-          {{ or
-            (index .TargetStrings "how-to")
-            (index .DefaultStrings "how-to")
-          }}
+          {{ or (index .TargetStrings "how-to") (index .DefaultStrings "how-to") }}
         </p>
         <span class="how-to-director"></span><p>
-          {{ or
-            (index .TargetStrings "how-to-director")
-            (index .DefaultStrings "how-to-director")
-          }}
+          {{ or (index .TargetStrings "how-to-director") (index .DefaultStrings "how-to-director") }}
         </p><br/>
         <span class="how-to-genre"></span><p>
-          {{ or
-            (index .TargetStrings "how-to-genre")
-            (index .DefaultStrings "how-to-genre")
-          }}
+          {{ or (index .TargetStrings "how-to-genre") (index .DefaultStrings "how-to-genre") }}
         </p><br/>
         <span class="how-to-both"></span><p>
-          {{ or
-            (index .TargetStrings "how-to-both")
-            (index .DefaultStrings "how-to-both")
-          }}
+          {{ or (index .TargetStrings "how-to-both") (index .DefaultStrings "how-to-both") }}
         </p><br/>
         <p>
-          {{ or
-            (index .TargetStrings "how-to-thanks")
-            (index .DefaultStrings "how-to-thanks")
-          }}
+          {{ or (index .TargetStrings "how-to-thanks") (index .DefaultStrings "how-to-thanks") }}
         </p>
       </div>
       <button class="close" onclick="document.getElementById('about_modal').classList.remove('show');">
         <span>
-          {{ or
-            (index .TargetStrings "close")
-            (index .DefaultStrings "close")
-          }}
+          {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
         </span>
       </button>
     </div>
@@ -137,10 +113,7 @@
       </div>
       <button class="close" onclick="document.getElementById('stats_modal').classList.remove('show');">
         <span>
-          {{ or
-            (index .TargetStrings "close")
-            (index .DefaultStrings "close")
-          }}
+          {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
         </span>
       </button>
     </div>
@@ -150,18 +123,12 @@
     <div class="modal-content">
       <div class="msg">
         <p>
-          {{ or
-            (index .TargetStrings "issue-text")
-            (index .DefaultStrings "issue-text")
-          }}
+          {{ or (index .TargetStrings "issue-text") (index .DefaultStrings "issue-text") }}
         </p>
       </div>
       <button class="close" onclick="document.getElementById('settings_modal').classList.remove('show');">
         <span>
-          {{ or
-            (index .TargetStrings "close")
-            (index .DefaultStrings "close")
-          }}
+          {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
         </span>
       </button>
     </div>
@@ -171,18 +138,12 @@
     <div class="modal-content">
       <div class="msg">
         <h3>
-          {{ or
-            (index .TargetStrings "winning-text")
-            (index .DefaultStrings "winning-text")
-          }}
+          {{ or (index .TargetStrings "winning-text") (index .DefaultStrings "winning-text") }}
         </h3>
       </div>
       <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">
         <span>
-          {{ or
-            (index .TargetStrings "close")
-            (index .DefaultStrings "close")
-          }}
+          {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
         </span>
       </button>
     </div>
@@ -192,18 +153,12 @@
     <div class="modal-content">
       <div class="msg">
         <h3>
-          {{ or
-            (index .TargetStrings "losing-text")
-            (index .DefaultStrings "losing-text")
-          }}
+          {{ or (index .TargetStrings "losing-text") (index .DefaultStrings "losing-text") }}
         </h3>
       </div>
       <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">
         <span>
-          {{ or
-            (index .TargetStrings "close")
-            (index .DefaultStrings "close")
-          }}
+          {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
         </span>
       </button>
     </div>
@@ -213,40 +168,28 @@
     <a href="https://go.dev">
       <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg" alt="Golang Logo" with="32" height="32" id="footer-golang-img">
       <p>
-        {{ or
-          (index .TargetStrings "footer-made-with")
-          (index .DefaultStrings "footer-made-with")
-        }}
+        {{ or (index .TargetStrings "footer-made-with") (index .DefaultStrings "footer-made-with") }}
       </p>
     </a>
 
     <a href="https://github.com/confused-Techie/Quotle">
       <img src="/images/github-black.svg" alt="Github's Octocat Icon" width="24" height="24" id="footer-github-img">
       <p>
-        {{ or
-          (index .TargetStrings "footer-source")
-          (index .DefaultStrings "footer-source")
-        }}
+        {{ or (index .TargetStrings "footer-source") (index .DefaultStrings "footer-source") }}
       </p>
     </a>
 
     <a href="https://feathericons.com">
       <img src="/images/feather-black.svg" alt="Feather Icon Project Logo" width="24" height="24" id="footer-feather-icon-img">
       <p>
-        {{ or
-          (index .TargetStrings "footer-feather")
-          (index .DefaultStrings "footer-feather")
-        }}
+        {{ or (index .TargetStrings "footer-feather") (index .DefaultStrings "footer-feather") }}
       </p>
     </a>
 
     <a href="https://www.themoviedb.org/">
       <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_square_1-5bdc75aaebeb75dc7ae79426ddd9be3b2be1e342510f8202baf6bffa71d7f5c4.svg" alt="The Movie Database Attribution Logo" widht="24" height="24">
       <p>
-        {{ or
-          (index .TargetStrings "footer-tmdb")
-          (index .DefaultStrings "footer-tmdb")
-        }}
+        {{ or (index .TargetStrings "footer-tmdb")  (index .DefaultStrings "footer-tmdb") }}
     </a>
 
   </footer>
