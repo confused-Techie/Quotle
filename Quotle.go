@@ -21,13 +21,13 @@ import (
 func main() {
 
 	// setup viper
-	viper.SetConfigName("config")
+	viper.SetConfigName("app")
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath(".")
 	viper.ReadInConfig()
 
-	logger.InfoLogger.Println("Setup config.yaml arguments...")
-	
+	logger.InfoLogger.Println("Setup app.yaml arguments...")
+
 	logger.InfoLogger.Println("Quotle Starting...")
 
 	// listen to SIGINT calls
@@ -54,16 +54,21 @@ func main() {
 
 	cronHandler.Start()
 
-	// then run the first every instance of the cycledata package, to setup the data.
-	if viper.GetBool("app.production") {
+	// now that we can detect if we are in a productin environment by seeing if env variables are set at all
+	production := os.Getenv("PRODUCTION")
+
+	if production != "" {
 		cycledata.InitData()
 	}
-	//cycledata.ManageData(true)  // TODO: Uncomment before production use.
 
-	logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("app.version"))
-	logger.InfoLogger.Printf("Running in Production Environment: %v", viper.GetString("app.production"))
+	logger.InfoLogger.Printf("Quotle Version: %v", viper.GetString("env_variables.VERSION"))
+	if production != "" {
+		logger.InfoLogger.Printf("Running in Production Environment")
+	} else {
+		logger.InfoLogger.Printf("Running in Development Environment")
+	}
 	logger.InfoLogger.Printf("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+")
-	logger.InfoLogger.Printf("Logs: %v; Assets: %v", viper.GetString("app.dir.logs"), viper.GetString("app.dir.assets"))
+	logger.InfoLogger.Printf("Logs: %v; Assets: %v", viper.GetString("env_variables.DIR_LOGS"), viper.GetString("env_variables.DIR_ASSETS"))
 
 	mux := http.NewServeMux()
 
@@ -71,10 +76,10 @@ func main() {
 	mux.Handle("/", http.HandlerFunc(webrequests.HomeHandler))
 
 	// ========== Asset Endpoints ==================
-	mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/css")))))
-	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/js")))))
-	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/images"))))
-	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("app.dir.assets")+"/static")))))
+	mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/css")))))
+	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/js")))))
+	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/images"))))
+	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/static")))))
 	mux.Handle("/manifest.json", http.HandlerFunc(webrequests.ManifestHandler))
 	mux.Handle("/robots.txt", http.HandlerFunc(webrequests.RobotsHandler))
 	mux.Handle("/sitemap.xml", http.HandlerFunc(webrequests.SitemapHandler))
@@ -86,7 +91,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = viper.GetString("app.port")
+		port = viper.GetString("env_variables.PORT")
 		logger.WarningLogger.Println("Port not available via Environment Variables. Falling back to Config File...")
 	}
 

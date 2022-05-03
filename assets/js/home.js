@@ -253,7 +253,7 @@ function enableLightTheme() {
   document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
   document.body.classList.add("light-theme");
 
-  document.getElementById("help-cirle-img").src =
+  document.getElementById("help-circle-img").src =
     "/images/help-circle-black.svg";
   document.getElementById("award-img").src = "/images/award-black.svg";
   document.getElementById("settings-img").src = "/images/settings-black.svg";
@@ -411,13 +411,16 @@ function searchResults(results) {
 
 /*eslint-disable-next-line no-unused-vars*/
 function enterTextEvent(e) {
-  document.getElementById("user_guess_input").value =
-    e.path[0].childNodes[0].data;
+  document.getElementById("user_guess_input").value = e.target.innerText;
 }
 
 function setAudioSrc() {
-  document.getElementById("audio-element").src =
-    answer.audioSrc[gameMaster.guessNumber - 1];
+  try {
+    document.getElementById("audio-element").src =
+      answer.audioSrc[gameMaster.guessNumber - 1];
+  } catch(err) {
+    console.log(`Failed to set audio src: ${err}`);
+  }
 }
 
 function audioController() {

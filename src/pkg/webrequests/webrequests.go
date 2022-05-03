@@ -17,7 +17,7 @@ import (
 )
 
 func returnAgnosticStrings(langCode string) map[string]string {
-	file, err := os.Open(viper.GetString("app.dir.assets")+"/lang/strings."+langCode+".json")
+	file, err := os.Open(viper.GetString("env_variables.DIR_ASSETS")+"/lang/strings."+langCode+".json")
 	if err != nil {
 		logger.WarningLogger.Println(err)
 	}
@@ -35,7 +35,7 @@ func returnAgnosticStrings(langCode string) map[string]string {
 
 func returnPrefferedStrings(langCode string) map[string]string {
 	// check for file existance
-	if _, err := os.Stat(viper.GetString("app.dir.assets") + "/lang/strings." + langCode + ".json"); err == nil {
+	if _, err := os.Stat(viper.GetString("env_variables.DIR_ASSETS") + "/lang/strings." + langCode + ".json"); err == nil {
 		// file exists
 		return returnAgnosticStrings(langCode)
 	} else if errors.Is(err, os.ErrNotExist) {
@@ -69,7 +69,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// While tradditionally I would include a Template Array here, since this will be a SPA thats not a concern.
-	tmpl["homePage.html"] = template.Must(template.ParseFiles(viper.GetString("app.dir.assets") + "/template/home.gohtml"))
+	tmpl["homePage.html"] = template.Must(template.ParseFiles(viper.GetString("env_variables.DIR_ASSETS") + "/template/home.gohtml"))
 
 	templateError := tmpl["homePage.html"].Execute(w, data)
 
@@ -84,7 +84,7 @@ func errorPage(err error, w http.ResponseWriter, r *http.Request) {
 			Data:  err,
 		}
 
-		tmpl["errorPage.html"] = template.Must(template.ParseFiles(viper.GetString("app.dir.assets") + "/template/error.gohtml"))
+		tmpl["errorPage.html"] = template.Must(template.ParseFiles(viper.GetString("env_variables.DIR_ASSETS") + "/template/error.gohtml"))
 		templateError := tmpl["errorPage.html"].Execute(w, data)
 		if templateError != nil {
 			logger.WarningLogger.Println(templateError)
@@ -111,20 +111,20 @@ func MovieMatchHandler(w http.ResponseWriter, r *http.Request) {
 
 // ManifestHandler serves the manifest file.
 func ManifestHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/manifest.json")
+	http.ServeFile(w, r, viper.GetString("env_variables.DIR_ASSETS")+"/static/manifest.json")
 }
 
 // RobotsHandler serves the robots file.
 func RobotsHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/robots.txt")
+	http.ServeFile(w, r, viper.GetString("env_variables.DIR_ASSETS")+"/static/robots.txt")
 }
 
 // SitemapHandler serves the sitemap file.
 func SitemapHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/sitemap.xml")
+	http.ServeFile(w, r, viper.GetString("env_variables.DIR_ASSETS")+"/static/sitemap.xml")
 }
 
 // FaviconHandler serves the favicon file.
 func FaviconHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, viper.GetString("app.dir.assets")+"/static/favicon.png")
+	http.ServeFile(w, r, viper.GetString("env_variables.DIR_ASSETS")+"/static/favicon.png")
 }

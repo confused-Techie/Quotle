@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/spf13/viper"
 	"io/ioutil"
 	"os"
 	"time"
@@ -62,7 +61,8 @@ func GetGlobalGameData() (string, error) {
 		return "", authErr
 	}
 
-	if viper.GetBool("app.production") {
+	production := os.Getenv("PRODUCTION")
+	if production != "" {
 		bData, err := ReadDataAuth(bucket, object, authFile, timeout)
 		if err != nil {
 			return "", err
@@ -98,7 +98,8 @@ func SetGlobalGameData(newValue int) (string, error) {
 		return "", authErr
 	}
 
-	if viper.GetBool("app.production") {
+	production := os.Getenv("PRODUCTION")
+	if production != "" {
 		// the WriteAuth expects the data to write, as well as all standard variables for get.
 		writeErr := WriteDataAuth(bucket, object, authFile, gameFile)
 		if writeErr != nil {
@@ -112,7 +113,7 @@ func SetGlobalGameData(newValue int) (string, error) {
 
 // GetAuthFile returns the bytes of the auth file for accessing the cloud.
 func GetAuthFile() ([]byte, error) {
-	authFile, err := os.Open("./quotle-348800-5a828989750d.json")
+	authFile, err := os.Open(os.Getenv("GOOGLE_APPLICATION_CREDENTIALS"))
 	if err != nil {
 		return nil, fmt.Errorf("Open Auth JSON: %v", err)
 	}

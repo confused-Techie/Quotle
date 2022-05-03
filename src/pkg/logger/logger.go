@@ -22,7 +22,9 @@ var (
 
 func init() {
 
-	//if viper.GetBool("app.production") {
+	production := os.Getenv("PRODUCTION")
+
+	if production != "" {
 		//ctx := context.Background()
 
 		//projectID := "quotle-348800"
@@ -51,26 +53,26 @@ func init() {
 		LangLogger = log.New(os.Stdout, "LANGUAGE: ", log.Ldate|log.Ltime|log.Lshortfile)
 		// The below has been excluded as a hail mary to deploy on the day I wanted. Keeps trying to open the logs file on the read only filesystem
 		// of cloud run. Quite rude if you ask me as it causes it to crash on startup.
-	//} else {
+	} else {
 
-	//	file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
+		file, err := os.OpenFile("logs.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	//	tlmyFile, err := os.OpenFile("logs-tlmy.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	//	if err != nil {
-	//		log.Fatal(err)
-	//	}
+		tlmyFile, err := os.OpenFile("logs-tlmy.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	//	InfoLogger = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	//	WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-	//	ErrorLogger = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-	//	CronLogger = log.New(file, "CRON: ", log.Ldate|log.Ltime|log.LstdFlags)
+		InfoLogger = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
+		WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
+		ErrorLogger = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+		CronLogger = log.New(file, "CRON: ", log.Ldate|log.Ltime|log.LstdFlags)
 
-	//	LangLogger = log.New(tlmyFile, "LANGUAGE: ", log.Ldate|log.Ltime|log.Lshortfile)
+		LangLogger = log.New(tlmyFile, "LANGUAGE: ", log.Ldate|log.Ltime|log.Lshortfile)
 
-	//}
+	}
 
 }
 

@@ -20,14 +20,11 @@ func FindAPIKey() {
 	tmpAPI := os.Getenv("TMDB_API_KEY")
 
 	if tmpAPI == "" {
-    if viper.GetBool("app.production") {
-      logger.ErrorLogger.Fatal("Could not find API Key for TMDB")
-    }
-		logger.ErrorLogger.Println("COuld not find API Key for TMDB. Setting empty")
-    TMDB_API_KEY = ""
+		logger.ErrorLogger.Printf("Could not find API Key for TMDB via Env Var")
+		TMDB_API_KEY = viper.GetString("env_variables.TMDB_API_KEY")
+	} else {
+		TMDB_API_KEY = tmpAPI
 	}
-
-	TMDB_API_KEY = tmpAPI
 }
 
 // SearchQuery takes a search string, and returns the api results as an array.
