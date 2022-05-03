@@ -288,7 +288,8 @@ function firstTimeVisit() {
   if (gameMaster.localStorageAvailable) {
     if (!localStorage.getItem("visitor")) {
       // if it doesn't exist, we have never set it, and this is the first time coming here. Otherwise if it does then they have come before.
-      localStorage.SetItem("visitor", "true");
+      localStorage.setItem("visitor", "true");
+      console.log('Welcome first time visitor');
       aboutBtnEvent();
 
     } else {
