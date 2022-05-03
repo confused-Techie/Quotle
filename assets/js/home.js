@@ -20,6 +20,10 @@ class GameMaster {
     this.GuessNumber++;
   }
 
+  equalGuess(num) {
+    this.GuessNumber = num;
+  }
+
   addGuessString(guess) {
     this.GuessesString.push(guess);
   }
@@ -63,6 +67,29 @@ class GameMaster {
         // as long as it isn't our current game, but is a game key, remove it.
         localStorage.removeItem(curKey);
       }
+    }
+  }
+
+  findCurrentGameCookie() {
+    if (this.localStorageAvailable) {
+      for (let i = 0; i < allCookieKeys.length; i++) {
+        var curKey = allCookieKeys[i];
+
+        try {
+          if (curKey == `game-${answer.gameID}`) {
+            return curKey;
+          }
+        } catch(err) {
+          console.log(`Failed to check if cookie equaled answer. Answer may not be available.`);
+          return false;
+        }
+
+        if (i == allCookieKeys.length -1) {
+          return false;
+        }
+      }
+    } else {
+      return false;
     }
   }
 
@@ -186,6 +213,8 @@ window.onload = function () {
 
   firstTimeVisit();
 
+  gameStatusCheck();
+
   setAudioSrc();
   // call the function in charge of play/pause
   audioController();
@@ -217,6 +246,50 @@ window.onload = function () {
   console.log('So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.');
   console.log('Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle');
 };
+
+function gameStatusCheck() {
+  if (gameMaster.localStorageAvailable) {
+    var curCookie = gameMaster.findCurrentGameCookie();
+
+    if (curCookie) {
+      if (curCookie.complete) {
+        // the game is already over.
+        if (curCookie.win) {
+          // winner modal needs to appear
+
+          document.getElementById("winner_modal").classList.add("show");
+
+          // we can also launch our confetti.
+          var myCanvas = document.createElement("canvas");
+          myCanvas.width = window.innerWidth;
+          myCanvas.height = window.innerHeight;
+          document.body.appendChild(myCanvas);
+
+          var myConfetti = confetti.create(myCanvas, {
+            useWorker: true,
+            resize: true,
+          });
+
+          myConfetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.5, x: 0.5 },
+          });
+        } else {
+          // loser modal needs to appear.
+
+          document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
+          document.getElementById("loser_modal").classList.add("show");
+        }
+      }
+      // this could contain all references to rebuild the game board.
+
+    }
+    // this will be set as false if for whatever reason the cookie couldn't be found.
+  } else {
+    console.log('Local Storage not enabled. Unable to check game status.');
+  }
+}
 
 function themeCheck() {
   if (gameMaster.themeCookieValue == "light") {
