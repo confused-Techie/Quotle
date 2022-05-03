@@ -23,3 +23,6 @@ crowdin.yml
 package-lock.json
 package.json
 README.md
+logs.txt
+logs-tlmy.txt
+games/

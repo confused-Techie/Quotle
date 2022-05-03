@@ -412,6 +412,13 @@ function searchResults(results) {
 /*eslint-disable-next-line no-unused-vars*/
 function enterTextEvent(e) {
   document.getElementById("user_guess_input").value = e.target.innerText;
+
+  // Since on mobile, the search results cover the submit button, we want to remove them after the tap here.
+  while (document.getElementById("searchResult").firstChild) {
+    document
+      .getElementById("searchResult")
+      .removeChild(document.getElementById("searchResult").lastChild);
+  }
 }
 
 function setAudioSrc() {
