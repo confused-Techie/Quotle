@@ -72,6 +72,8 @@ class GameMaster {
 
   findCurrentGameCookie() {
     if (this.localStorageAvailable) {
+      var allCookieKeys = Object.keys(localStorage);
+      
       for (let i = 0; i < allCookieKeys.length; i++) {
         var curKey = allCookieKeys[i];
 

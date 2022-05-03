@@ -20,3 +20,5 @@ You can contribute in three major ways.
 - Provide Translations
 - Create Guesses
 - Improve the Source Code
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U0CHFPZ)
