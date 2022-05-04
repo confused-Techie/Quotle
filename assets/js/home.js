@@ -209,6 +209,33 @@ class GameMaster {
 
 var gameMaster = new GameMaster();
 
+var DOM_MANAGER = {
+  WinnerModal: function () {
+    document.getElementById("winner_modal").classList.add("show");
+
+    var myCanvas = document.createElement("canvas");
+    myCanvas.width = window.innerWidth;
+    myCanvas.height = window.innerHeight;
+    document.body.appendChild(myCanvas);
+
+    var myConfetti = confetti.create(myCanvas, {
+      userWorker: true,
+      resize: true,
+    });
+
+    myConfetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.5, x: 0.5 },
+    });
+
+  },
+  LoserModal: function() {
+    document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
+    document.getElementById("loser_modal").classList.add("show");
+  },
+};
+
 window.onload = function () {
   // first we check the colour
   themeCheck();
@@ -257,35 +284,17 @@ function gameStatusCheck() {
     var curCookie = gameMaster.findCurrentGameCookie();
 
     if (curCookie) {
-      cookieData = JSON.parse(localStorage.getItem(curCookie));
+      var cookieData = JSON.parse(localStorage.getItem(curCookie));
       if (cookieData.complete) {
         // the game is already over.
         if (cookieData.win) {
           // winner modal needs to appear
 
-          document.getElementById("winner_modal").classList.add("show");
-
-          // we can also launch our confetti.
-          var myCanvas = document.createElement("canvas");
-          myCanvas.width = window.innerWidth;
-          myCanvas.height = window.innerHeight;
-          document.body.appendChild(myCanvas);
-
-          var myConfetti = confetti.create(myCanvas, {
-            useWorker: true,
-            resize: true,
-          });
-
-          myConfetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.5, x: 0.5 },
-          });
+          DOM_MANAGER.WinnerModal();
         } else {
           // loser modal needs to appear.
 
-          document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
-          document.getElementById("loser_modal").classList.add("show");
+          DOM_MANAGER.LoserModal();
         }
       }
       // this could contain all references to rebuild the game board.
@@ -612,30 +621,12 @@ function displayAnswer(guess, eleID) {
           document.getElementById(eleID).classList.add("guessed");
           document.getElementById(eleID).classList.add("correct");
 
-          document.getElementById("winner_modal").classList.add("show");
-
-          board[gameMaster.guessNumber - 1] = 1;
+          board[gameMaster.guessNumber -1] = 1;
           gameMaster.setWinnerCookie();
-
           gameMaster.addGuess();
-          //setAudioSrc();
 
-          // finally we also want to launch some confetti
-          var myCanvas = document.createElement("canvas");
-          myCanvas.width = window.innerWidth;
-          myCanvas.height = window.innerHeight;
-          document.body.appendChild(myCanvas);
+          DOM_MANAGER.WinnerModal();
 
-          var myConfetti = confetti.create(myCanvas, {
-            useWorker: true,
-            resize: true,
-          });
-
-          myConfetti({
-            particleCount: 100,
-            spread: 70,
-            origin: { y: 0.5, x: 0.5 },
-          });
         } else {
           // its incorrect, lets see if they got any parts right.
           document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
@@ -674,8 +665,7 @@ function displayAnswer(guess, eleID) {
 
           if (eleID == "guess-six") {
             document.getElementById("guess-six").classList.add("lost");
-            document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
-            document.getElementById("loser_modal").classList.add("show");
+            DOM_MANAGER.LoserModal();
             gameMaster.setLosingCookie();
           } else {
             setAudioSrc();
@@ -696,8 +686,7 @@ function displayAnswer(guess, eleID) {
 
         if (eleID == "guess-six") {
           document.getElementById("guess-six").classList.add("lost");
-          document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
-          document.getElementById("loser_modal").classList.add("show");
+          DOM_MANAGER.LoserModal();
           gameMaster.setLosingCookie();
         } else {
           setAudioSrc();

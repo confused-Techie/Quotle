@@ -1,0 +1,13 @@
+runtime: go115
+
+env_variables:
+  PORT: 8080
+  TMDB_API_KEY: ""
+  PROJECT_ID: ""
+  GOOGLE_APPLICATION_CREDENTIALS: ""
+  VERSION: "0.0.1"
+  DIR_LOGS: ""
+  DIR_ASSETS: ""
+  PRODUCTION: false
+  JS_VERSION: ""
+  CSS_VERSION: ""

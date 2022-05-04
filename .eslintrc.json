@@ -14,6 +14,7 @@
   },
   "globals": {
     "answer": "readonly",
-    "confetti": "readonly"
+    "confetti": "readonly",
+    "i18n_answer_text": "readonly"
   }
 }
