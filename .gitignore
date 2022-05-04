@@ -4,6 +4,7 @@ DEV_docs/
 node_modules
 # Ignore game data due to room constraints
 games/*/*
+quotle_games/
 # During testing, the answer file may be in the production location. But we can ignore that.
 assets/static/answer.js
 # Ignore super secret file

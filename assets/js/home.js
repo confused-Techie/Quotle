@@ -73,7 +73,7 @@ class GameMaster {
   findCurrentGameCookie() {
     if (this.localStorageAvailable) {
       var allCookieKeys = Object.keys(localStorage);
-      
+
       for (let i = 0; i < allCookieKeys.length; i++) {
         var curKey = allCookieKeys[i];
 
@@ -242,11 +242,14 @@ window.onload = function () {
     .getElementById("submit_btn")
     .addEventListener("click", checkAnswerViaBtn);
 
-  console.log('Hello welcome to the console!');
-  console.log('Its wonderful to think you are here to help contribute to the project.');
-  console.log('But if the Interns have taught me anything, I know people come here to cheat for answers.');
-  console.log('So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.');
-  console.log('Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle');
+  var fancyConsole = "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
+  var semiFancyConsole = "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
+  console.log('%c Quotle!', fancyConsole);
+  console.log('%c Hello welcome to the console!', semiFancyConsole);
+  console.log('%c Its wonderful to think you are here to help contribute to the project.', semiFancyConsole);
+  console.log('%c But if the Interns have taught me anything, I know people come here to cheat for answers.', semiFancyConsole);
+  console.log('%c So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.', semiFancyConsole);
+  console.log('%c Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle', semiFancyConsole);
 };
 
 function gameStatusCheck() {
@@ -254,9 +257,10 @@ function gameStatusCheck() {
     var curCookie = gameMaster.findCurrentGameCookie();
 
     if (curCookie) {
-      if (curCookie.complete) {
+      cookieData = JSON.parse(localStorage.getItem(curCookie));
+      if (cookieData.complete) {
         // the game is already over.
-        if (curCookie.win) {
+        if (cookieData.win) {
           // winner modal needs to appear
 
           document.getElementById("winner_modal").classList.add("show");
