@@ -290,6 +290,67 @@ var UTILS_COLLECTION = {
   },
 };
 
+var AUDIO_MANAGER = {
+  SetAudioSrc: function() {
+    try {
+      document.getElementById("audio-element").src = answer.audioSrc[gameMaster.guessNumber -1];
+    } catch(err) {
+      console.log(`Failed to set audio src: ${err}`);
+    }
+  },
+  AudioController: function() {
+    var playIconContainer = document.getElementById("play-icon");
+    var playIconImg = document.getElementById("play-icon-img");
+    var audioElement = document.getElementById("audio-element");
+    let state = "pause";
+
+    var showPlayIcon = function() {
+      if (theme == "light") {
+        playIconImg.src = "/images/play-white.svg";
+      } else {
+        playIconImg.src = "/images/play-black.svg";
+      }
+    };
+
+    var showPauseIcon = function() {
+      if (theme == "light") {
+        playIconImg.src = "/images/pause-white.svg";
+      } else {
+        playIconImg.src = "/images/pause-black.svg";
+      }
+    };
+
+    // Ensure that if the readystate has exceeded needs before this function has run.
+    if (audioElement.readState >= 3) {
+      showPlayIcon();
+    }
+    // Otherwise listen for the event of that ready state firing.
+    audioElement.addEventListener("loadeddata", function() {
+      console.log(`Audio Element Ready State: ${audioElement.readyState}`);
+      if (audioElement.readyState >= 3) {
+        // 3 = HAVE_FUTURE_DATA
+        showPlayIcon();
+      }
+    });
+    // Listen for the audio clip ending, and allow it to be played again.
+    audioElement.addEventListener("ended", function() {
+      showPlayIcon();
+    });
+    // Listen for clicks on the audio play/pause button.
+    playIconContainer.addEventListener("click", () => {
+      if (state == "play") {
+        showPauseIcon();
+        audioElement.play();
+        state = "pause";
+      } else {
+        showPlayIcon();
+        audioElement.pause();
+        state = "play";
+      }
+    });
+  },
+};
+
 window.onload = function () {
   // first we check the colour
   themeCheck();
