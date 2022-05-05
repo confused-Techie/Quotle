@@ -111,6 +111,12 @@ class GameMaster {
       this.updateStatsCookie(true, this.GuessNumber - 1);
 
       this.cleanLastGameCookie();
+
+      gtag('event', 'won_game', {
+        'game_id': answer.gameID,
+        'guess_number': this.GuessNumber
+      });
+
     } else {
       console.log("Unable to save data into local storage.");
     }
@@ -132,6 +138,12 @@ class GameMaster {
       this.updateStatsCookie(false, this.GuessNumber - 1);
 
       this.cleanLastGameCookie();
+
+      gtag('event', 'lost_game', {
+        'game_id': answer.gameID,
+        'guess_number': this.GuessNumber
+      });
+
     } else {
       console.log("Unable to save data into local storage.");
     }
