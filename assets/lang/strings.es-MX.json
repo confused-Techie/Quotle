@@ -12,6 +12,8 @@
   "losing-text": "Mejor suerte la próxima vez.",
   "answer-text": "La respuesta correcta es: '{0}'",
   "refresh-text": "El siguiente juego será jugable a medianoche Pacific Standard Time.",
+  "guesses_left_one": "{0} Guess and Audio Clip left.",
+  "guesses_left_many": "{0} Guesses and Audio Clips left.",
   "footer-made-with": "Código abierto, hecho con Golang & ❤",
   "footer-source": "Código fuente",
   "footer-feather": "Iconos de pluma",
