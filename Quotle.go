@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 	"os/signal"
 	"strings"
 	"sync"
@@ -78,7 +79,7 @@ func main() {
 	// ========== Asset Endpoints ==================
 	mux.Handle("/css/", http.StripPrefix("/css/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/css")))))
 	mux.Handle("/js/", http.StripPrefix("/js/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/js")))))
-	mux.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/images"))))
+	mux.Handle("/images/", http.StripPrefix("/images/", cacheControl(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/images")))))
 	mux.Handle("/static/", http.StripPrefix("/static/", gzipHandler(http.FileServer(http.Dir(viper.GetString("env_variables.DIR_ASSETS")+"/static")))))
 	mux.Handle("/manifest.json", http.HandlerFunc(webrequests.ManifestHandler))
 	mux.Handle("/robots.txt", http.HandlerFunc(webrequests.RobotsHandler))
@@ -98,6 +99,33 @@ func main() {
 	logger.InfoLogger.Printf("Listening on %v...", port)
 	// Since http.ListenAndServe only returns an error, we can safely wrap in fatal, ensuring a proper crash.
 	logger.ErrorLogger.Fatal(http.ListenAndServe(":"+port, mux))
+}
+
+func cacheControl(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+
+		modtime := lastModifiedTime(r.URL.String())
+
+		w.Header().Set("Cache-Control", "max-age=2592000") // 30 Days
+		w.Header().Set("Last-Modified", modtime)
+
+		h.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func lastModifiedTime(filename string) string {
+	// since the string passed will be relative we can just append .
+	fileLoc := "./assets/images/" + filename
+	file, err := os.Stat(fileLoc)
+
+	if err != nil {
+		logger.ErrorLogger.Println(err)
+		return time.Now().UTC().Format(time.RFC1123)
+	}
+	modifiedtime := file.ModTime()
+	formatedTime := modifiedtime.UTC().Format(time.RFC1123)
+	return formatedTime
 }
 
 type gzipResponseWriter struct {
