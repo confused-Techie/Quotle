@@ -224,6 +224,7 @@ var gameMaster = new GameMaster();
 var DOM_MANAGER = {
   WinnerModal: function () {
     document.getElementById("winner_modal").classList.add("show");
+    document.getElementById("user_guess_input").disabled = true;
 
     var myCanvas = document.createElement("canvas");
     myCanvas.width = window.innerWidth;
@@ -245,6 +246,14 @@ var DOM_MANAGER = {
   LoserModal: function() {
     document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
     document.getElementById("loser_modal").classList.add("show");
+    document.getElementById("user_guess_input").disabled = true;
+  },
+  UpdateGuessesLeft: function() {
+    // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
+    document.getElementById("guesses_left").innerText =
+      ( 7 - gameMaster.guessNumber == 1 ?
+        UnicornComposite(i18n_guesses_left_one, 7-gameMaster.guessNumber ) :
+        UnicornComposite(i18n_guesses_left_many, 7-gameMaster.guessNumber) );
   },
 };
 
@@ -255,6 +264,8 @@ window.onload = function () {
   firstTimeVisit();
 
   gameStatusCheck();
+
+  DOM_MANAGER.UpdateGuessesLeft();
 
   setAudioSrc();
   // call the function in charge of play/pause
@@ -636,6 +647,7 @@ function displayAnswer(guess, eleID) {
           board[gameMaster.guessNumber -1] = 1;
           gameMaster.setWinnerCookie();
           gameMaster.addGuess();
+          DOM_MANAGER.UpdateGuessesLeft();
 
           DOM_MANAGER.WinnerModal();
 
@@ -673,6 +685,7 @@ function displayAnswer(guess, eleID) {
           }
 
           gameMaster.addGuess();
+          DOM_MANAGER.UpdateGuessesLeft();
           gameMaster.setProgressCookie();
 
           if (eleID == "guess-six") {
@@ -694,6 +707,7 @@ function displayAnswer(guess, eleID) {
         board[gameMaster.guessNumber - 1] = 5;
 
         gameMaster.addGuess();
+        DOM_MANAGER.UpdateGuessesLeft();
         gameMaster.setProgressCookie();
 
         if (eleID == "guess-six") {

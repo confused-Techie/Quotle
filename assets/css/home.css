@@ -102,6 +102,10 @@ a:visited {
   position: relative;
 }
 
+.user-info p {
+  color: var(--guesses-text-colour);
+}
+
 .user-guess .searchResult {
   position: absolute;
   background-color: var(--modal-background-colour);

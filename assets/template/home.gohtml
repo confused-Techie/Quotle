@@ -79,6 +79,10 @@
       <div class="searchResult" id="searchResult"> </div>
     </div>
 
+    <div class="user-info">
+      <p id="guesses_left"> </p>
+    </div>
+
     <div class="guesses">
       <div class="guess-one" id="guess-one"> </div>
       <div class="guess-two" id="guess-two"> </div>
@@ -223,6 +227,8 @@
 <script>
 
   var i18n_answer_text = {{ or (index .TargetStrings "answer-text") (index .DefaultStrings "answer-text") }};
+  var i18n_guesses_left_one = {{ or (index .TargetStrings "guesses_left_one") (index .DefaultStrings "guesses_left_one") }};
+  var i18n_guesses_left_many = {{ or (index .TargetStrings "guesses_left_many") (index .DefaultStrings "guesses_left_many") }};
 
 </script>
 

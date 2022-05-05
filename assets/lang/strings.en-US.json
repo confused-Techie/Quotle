@@ -12,6 +12,8 @@
   "losing-text": "Better luck next time.",
   "answer-text": "The correct answer is: '{0}'",
   "refresh-text": "The next game will be playable at midnight Pacific Standard Time.",
+  "guesses_left_one": "{0} Guess and Audio Clip left.",
+  "guesses_left_many": "{0} Guesses and Audio Clips left.",
   "footer-made-with": "Open Source, Made with Golang & ❤",
   "footer-source": "Source Code",
   "footer-feather": "Feather Icons",
