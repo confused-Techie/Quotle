@@ -1,5 +1,5 @@
 {
-  "audio-support": "Your browser doesn't support HTML5 audio.",
+  "audio-support": "您的瀏覽器不支援 HTML5 的「audio」標籤",
   "submit": "確認",
   "how-to": "Listen to each audio clip, and guess the one movie they all come from.",
   "how-to-director": "Means the director is correct.",
