@@ -255,6 +255,121 @@ var DOM_MANAGER = {
         UnicornComposite(i18n_guesses_left_one, 7-gameMaster.guessNumber ) :
         UnicornComposite(i18n_guesses_left_many, 7-gameMaster.guessNumber) );
   },
+  GlobalEventListeners: function() {
+    document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
+    document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
+    document.getElementById("settings_btn").addEventListener("click", settingsBtnEvent);
+    document.getElementById("user_guess_input").addEventListener("click", mediaSearch);
+    document.getElementById("submit_btn").addEventListener("click", checkAnswerViaBtn);
+    document.getElementById("user_guess_input").addEventListener("keyup", function(event) {
+      if (event.key === "Enter" || event.keyCode === 13) {
+        checkAnswer(document.getElementById("user_guess_input").value);
+      }
+    });
+  },
+  EnableTheme: function(requested_theme) {
+    if (requested_theme == "dark") {
+      document.body.classList.remove("light");
+      document.body.classList.add("dark");
+    } else if (requested_theme == "light") {
+      document.body.classList.remove("dark");
+      document.body.classList.add("light");
+    }
+
+    var themeImg = {
+      dark: {
+        src: ["/images/help-circle-white.svg", "/images/award-white.svg", "/images/settings-white.svg", "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg", "/images/github-white.svg", "/images/feather-white.svg"],
+        id: ["help-circle-img", "award-img", "settings-img", "footer-golang-img", "footer-github-img", "footer-feather-icon-img"]
+      },
+      light: {
+        src: ["/images/help-circle-black.svg", "/images/award-black.svg", "/images/settings-black.svg", "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg", "/images/github-black.svg", "/images/feather-black.svg"],
+        id: ["help-circle-img", "award-img", "settings-img", "footer-golang-img", "footer-github-img", "footer-feather-icon-img"]
+      }
+    };
+
+    for (var i = 0; i < themeImg[requested_theme].src.length; i ++) {
+      document.getElementById(themeImg[requested_theme].id[i]).src = themeImg[requested_theme].src[i];
+    }
+  },
+};
+
+var UTILS_COLLECTION = {
+  UnicornComposite: function() {
+    var str = arguments[0];
+    if (arguments.length > 1) {
+      var t = typeof arguments[1];
+      var key;
+      var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];
+      if (Array.isArray(args)) {
+        args.shift();
+      }
+      for (key in args) {
+        str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+      }
+    }
+    return str;
+  },
+};
+
+var AUDIO_MANAGER = {
+  SetAudioSrc: function() {
+    try {
+      document.getElementById("audio-element").src = answer.audioSrc[gameMaster.guessNumber -1];
+    } catch(err) {
+      console.log(`Failed to set audio src: ${err}`);
+    }
+  },
+  AudioController: function() {
+    var playIconContainer = document.getElementById("play-icon");
+    var playIconImg = document.getElementById("play-icon-img");
+    var audioElement = document.getElementById("audio-element");
+    let state = "pause";
+
+    var showPlayIcon = function() {
+      if (theme == "light") {
+        playIconImg.src = "/images/play-white.svg";
+      } else {
+        playIconImg.src = "/images/play-black.svg";
+      }
+    };
+
+    var showPauseIcon = function() {
+      if (theme == "light") {
+        playIconImg.src = "/images/pause-white.svg";
+      } else {
+        playIconImg.src = "/images/pause-black.svg";
+      }
+    };
+
+    // Ensure that if the readystate has exceeded needs before this function has run.
+    if (audioElement.readState >= 3) {
+      showPlayIcon();
+    }
+    // Otherwise listen for the event of that ready state firing.
+    audioElement.addEventListener("loadeddata", function() {
+      console.log(`Audio Element Ready State: ${audioElement.readyState}`);
+      if (audioElement.readyState >= 3) {
+        // 3 = HAVE_FUTURE_DATA
+        showPlayIcon();
+      }
+    });
+    // Listen for the audio clip ending, and allow it to be played again.
+    audioElement.addEventListener("ended", function() {
+      showPlayIcon();
+    });
+    // Listen for clicks on the audio play/pause button.
+    playIconContainer.addEventListener("click", () => {
+      if (state == "play") {
+        showPauseIcon();
+        audioElement.play();
+        state = "pause";
+      } else {
+        showPlayIcon();
+        audioElement.pause();
+        state = "play";
+      }
+    });
+  },
 };
 
 window.onload = function () {
