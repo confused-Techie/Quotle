@@ -1,4 +1,4 @@
-var theme;
+var theme, replay = false;
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -244,7 +244,7 @@ var DOM_MANAGER = {
 
   },
   LoserModal: function() {
-    document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UnicornComposite(i18n_answer_text, answer.name));
+    document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UTILS_COLLECTION.UnicornComposite(i18n_answer_text, answer.name));
     document.getElementById("loser_modal").classList.add("show");
     document.getElementById("user_guess_input").disabled = true;
   },
@@ -252,14 +252,15 @@ var DOM_MANAGER = {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
     document.getElementById("guesses_left").innerText =
       ( 7 - gameMaster.guessNumber == 1 ?
-        UnicornComposite(i18n_guesses_left_one, 7-gameMaster.guessNumber ) :
-        UnicornComposite(i18n_guesses_left_many, 7-gameMaster.guessNumber) );
+        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_one, 7-gameMaster.guessNumber ) :
+        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_many, 7-gameMaster.guessNumber) );
   },
   GlobalEventListeners: function() {
     document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
     document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
     document.getElementById("settings_btn").addEventListener("click", settingsBtnEvent);
     document.getElementById("user_guess_input").addEventListener("click", mediaSearch);
+    document.getElementById("user_guess_input").addEventListener("input", mediaSearch);
     document.getElementById("submit_btn").addEventListener("click", checkAnswerViaBtn);
     document.getElementById("user_guess_input").addEventListener("keyup", function(event) {
       if (event.key === "Enter" || event.keyCode === 13) {
@@ -269,11 +270,11 @@ var DOM_MANAGER = {
   },
   EnableTheme: function(requested_theme) {
     if (requested_theme == "dark") {
-      document.body.classList.remove("light");
-      document.body.classList.add("dark");
+      document.body.classList.remove("light-theme");
+      document.body.classList.add("dark-theme");
     } else if (requested_theme == "light") {
-      document.body.classList.remove("dark");
-      document.body.classList.add("light");
+      document.body.classList.remove("dark-theme");
+      document.body.classList.add("light-theme");
     }
 
     var themeImg = {
@@ -286,7 +287,6 @@ var DOM_MANAGER = {
         id: ["help-circle-img", "award-img", "settings-img", "footer-golang-img", "footer-github-img", "footer-feather-icon-img"]
       }
     };
-
     for (var i = 0; i < themeImg[requested_theme].src.length; i ++) {
       document.getElementById(themeImg[requested_theme].id[i]).src = themeImg[requested_theme].src[i];
     }
@@ -309,6 +309,18 @@ var UTILS_COLLECTION = {
     }
     return str;
   },
+  GameLoad: function() {
+    GAME_CONTROLLER.AnswerCheck();
+    gameStatusCheck();
+    AUDIO_MANAGER.SetAudioSrc();
+    AUDIO_MANAGER.AudioController();
+  },
+  PageLoad: function() {
+    themeCheck();
+    firstTimeVisit();
+    DOM_MANAGER.UpdateGuessesLeft();
+    DOM_MANAGER.GlobalEventListeners();
+  },
 };
 
 var AUDIO_MANAGER = {
@@ -323,7 +335,7 @@ var AUDIO_MANAGER = {
     var playIconContainer = document.getElementById("play-icon");
     var playIconImg = document.getElementById("play-icon-img");
     var audioElement = document.getElementById("audio-element");
-    let state = "pause";
+    var state = "load";
 
     var showPlayIcon = function() {
       if (theme == "light") {
@@ -343,6 +355,7 @@ var AUDIO_MANAGER = {
 
     // Ensure that if the readystate has exceeded needs before this function has run.
     if (audioElement.readState >= 3) {
+      state = "pause";
       showPlayIcon();
     }
     // Otherwise listen for the event of that ready state firing.
@@ -350,6 +363,7 @@ var AUDIO_MANAGER = {
       console.log(`Audio Element Ready State: ${audioElement.readyState}`);
       if (audioElement.readyState >= 3) {
         // 3 = HAVE_FUTURE_DATA
+        state = "pause";
         showPlayIcon();
       }
     });
@@ -363,49 +377,141 @@ var AUDIO_MANAGER = {
         showPauseIcon();
         audioElement.play();
         state = "pause";
-      } else {
+      } else if (state == "pause") {
         showPlayIcon();
         audioElement.pause();
         state = "play";
+      } else {
+        // the data is still loading.
+      }
+    });
+  },
+};
+
+var GAME_CONTROLLER = {
+  AnswerCheck: function() {
+    if (typeof answer == 'undefined') {
+      console.log('there is no answer available.');
+      console.log('adding a random previous answer to play.');
+      // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
+      // But since this should only show up in development, or in case I don't have a new game created, its not as important.
+      const randomGameID = Math.floor(Math.random() * 4) + 1;
+      const newAnswer = document.createElement('script');
+
+      const scriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        document.body.appendChild(script);
+        script.onload = resolve;
+        script.onerror = reject;
+        script.async = true;
+        script.src = `https://storage.googleapis.com/quotle-games/${randomGameID}/answer.js`;
+      });
+
+      scriptPromise
+        .then(() => {
+          console.log(`Successfully added new random answer with Game ID: ${randomGameID}`);
+          // now this will recall the function to init all game dependent features.
+          replay = true;
+          UTILS_COLLECTION.GameLoad();
+        })
+        .catch(() => {
+          console.log('had an error adding new answer script.');
+        });
+
+    } // else the original answer was successfully loaded.
+  },
+  GenreCheck: function(guess, correct) {
+    for (let i = 0; i < guess.length; i++) {
+      if (correct.includes(guess[i])) {
+        return true;
+      }
+    }
+    return false;
+  },
+};
+
+var STORAGE_HANDLER = {
+  StorageAvailable: function() {
+    try {
+      var x = "__storage_test__";
+      localStorage.setItem(x, x);
+      localStorage.removeItem(x);
+      return true;
+    } catch(e) {
+      return (
+        e instanceof DOMException &&
+        // evething except firefox
+        (e.code === 22 ||
+        //firefox
+        e.code === 1012 ||
+        //test name field too, because code might not be present.
+        //evething but firefox
+        e.name === "QuotaExceededError" ||
+        //firefox
+        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+        // acknowledge quotaexceedederror only if theres something already stored
+        localStorage &&
+        localStorage.length !== 0
+      );
+    }
+  },
+  GetItem: function(key) {
+    return new Promise((resolve, reject) => {
+      if (this.StorageAvailable) {
+        if (!localStorage.getItem(key)) {
+          // key doesn't exist.
+          reject('no_key');
+        } else {
+          resolve(localStorage.getItem(key));
+        }
+      } else {
+        reject('no_store');
       }
     });
   },
 };
 
 window.onload = function () {
+  UTILS_COLLECTION.PageLoad();
+  UTILS_COLLECTION.GameLoad();
   // first we check the colour
-  themeCheck();
+  //themeCheck();
 
-  firstTimeVisit();
+  //firstTimeVisit();
 
-  gameStatusCheck();
+  //GAME_CONTROLLER.AnswerCheck();
 
-  DOM_MANAGER.UpdateGuessesLeft();
+  //gameStatusCheck();
 
-  setAudioSrc();
+  //DOM_MANAGER.UpdateGuessesLeft();
+
+  //AUDIO_MANAGER.SetAudioSrc();
+  //AUDIO_MANAGER.AudioController();
+  //setAudioSrc();
   // call the function in charge of play/pause
-  audioController();
+  //audioController();
 
   // Here we can setup the initial Button handlers
-  document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
-  document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
-  document
-    .getElementById("settings_btn")
-    .addEventListener("click", settingsBtnEvent);
-  document
-    .getElementById("user_guess_input")
-    .addEventListener("input", mediaSearch);
+  //DOM_MANAGER.GlobalEventListeners();
+  //document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
+  //document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
+  //document
+  //  .getElementById("settings_btn")
+  //  .addEventListener("click", settingsBtnEvent);
+  //document
+  //  .getElementById("user_guess_input")
+  //  .addEventListener("input", mediaSearch);
 
-  document
-    .getElementById("user_guess_input")
-    .addEventListener("keyup", function (event) {
-      if (event.key === "Enter" || event.keyCode === 13) {
-        checkAnswer(document.getElementById("user_guess_input").value);
-      }
-    });
-  document
-    .getElementById("submit_btn")
-    .addEventListener("click", checkAnswerViaBtn);
+  //document
+  //  .getElementById("user_guess_input")
+  //  .addEventListener("keyup", function (event) {
+  //    if (event.key === "Enter" || event.keyCode === 13) {
+  //      checkAnswer(document.getElementById("user_guess_input").value);
+  //    }
+  //  });
+  //document
+  //  .getElementById("submit_btn")
+  //  .addEventListener("click", checkAnswerViaBtn);
 
   var fancyConsole = "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
   var semiFancyConsole = "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
@@ -418,6 +524,20 @@ window.onload = function () {
 };
 
 function gameStatusCheck() {
+
+  STORAGE_HANDLER.GetItem("game-1")
+    .then((response) => JSON.parse(response))
+    .then((res) => {
+      console.log(res);
+    })
+    .catch((err) => {
+      if (err == "no_store") {
+        console.log('localStorage not available.');
+      } else if (err == "no_key") {
+        console.log('localStorage avaialble BUT game-1 doesnt exist');
+      }
+    });
+
   if (gameMaster.localStorageAvailable) {
     var curCookie = gameMaster.findCurrentGameCookie();
 
@@ -475,39 +595,41 @@ function themeCheck() {
 function enableLightTheme() {
   theme = "light";
   gameMaster.themeCookie("light");
+  DOM_MANAGER.EnableTheme("light");
 
-  document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
-  document.body.classList.add("light-theme");
+  //document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
+  //document.body.classList.add("light-theme");
 
-  document.getElementById("help-circle-img").src =
-    "/images/help-circle-black.svg";
-  document.getElementById("award-img").src = "/images/award-black.svg";
-  document.getElementById("settings-img").src = "/images/settings-black.svg";
+  //document.getElementById("help-circle-img").src =
+  //  "/images/help-circle-black.svg";
+  //document.getElementById("award-img").src = "/images/award-black.svg";
+  //document.getElementById("settings-img").src = "/images/settings-black.svg";
 
-  document.getElementById("footer-golang-img").src =
-    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg";
-  document.getElementById("footer-github-img").src = "/images/github-black.svg";
-  document.getElementById("footer-feather-icon-img").src =
-    "/images/feather-black.svg";
+  //document.getElementById("footer-golang-img").src =
+  //  "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg";
+  //document.getElementById("footer-github-img").src = "/images/github-black.svg";
+  //document.getElementById("footer-feather-icon-img").src =
+  //  "/images/feather-black.svg";
 }
 
 function enableDarkTheme() {
   theme = "dark";
   gameMaster.themeCookie("dark");
+  DOM_MANAGER.EnableTheme("dark");
 
-  document.body.classList.remove("light-theme"); // Remove Light Theme if present. If not will throw no error.
-  document.body.classList.add("dark-theme");
+  //document.body.classList.remove("light-theme"); // Remove Light Theme if present. If not will throw no error.
+  //document.body.classList.add("dark-theme");
 
-  document.getElementById("help-circle-img").src =
-    "/images/help-circle-white.svg";
-  document.getElementById("award-img").src = "/images/award-white.svg";
-  document.getElementById("settings-img").src = "/images/settings-white.svg";
+  //document.getElementById("help-circle-img").src =
+  //  "/images/help-circle-white.svg";
+  //document.getElementById("award-img").src = "/images/award-white.svg";
+  //document.getElementById("settings-img").src = "/images/settings-white.svg";
 
-  document.getElementById("footer-golang-img").src =
-    "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg";
-  document.getElementById("footer-github-img").src = "/images/github-white.svg";
-  document.getElementById("footer-feather-icon-img").src =
-    "/images/feather-white.svg";
+  //document.getElementById("footer-golang-img").src =
+  //  "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg";
+  //document.getElementById("footer-github-img").src = "/images/github-white.svg";
+  //document.getElementById("footer-feather-icon-img").src =
+  //  "/images/feather-white.svg";
 }
 
 function firstTimeVisit() {
@@ -647,73 +769,73 @@ function enterTextEvent(e) {
   }
 }
 
-function setAudioSrc() {
-  try {
-    document.getElementById("audio-element").src =
-      answer.audioSrc[gameMaster.guessNumber - 1];
-  } catch(err) {
-    console.log(`Failed to set audio src: ${err}`);
-  }
-}
+//function setAudioSrc() {
+//  try {
+//    document.getElementById("audio-element").src =
+//      answer.audioSrc[gameMaster.guessNumber - 1];
+//  } catch(err) {
+//    console.log(`Failed to set audio src: ${err}`);
+//  }
+//}
 
-function audioController() {
-  var playIconContainer = document.getElementById("play-icon");
-  var playIconImg = document.getElementById("play-icon-img");
-  var audioElement = document.getElementById("audio-element");
+//function audioController() {
+//  var playIconContainer = document.getElementById("play-icon");
+//  var playIconImg = document.getElementById("play-icon-img");
+//  var audioElement = document.getElementById("audio-element");
 
-  let state = "pause";
+//  let state = "pause";
 
   // Even when enabling network throttling within Chrome, it seems prioritizing the download of audio view preload="auto" it is fully loaded by the time this script runs.
   // Which means that when the function waits for an event that has already fired the event handler is never hit. So we will add a static check during function run time checking readyState.
 
-  if (audioElement.readyState >= 3) {
-    if (theme == "light") {
-      playIconImg.src = "/images/play-white.svg";
-    } else {
-      playIconImg.src = "/images/play-black.svg";
-    }
-  }
+//  if (audioElement.readyState >= 3) {
+//    if (theme == "light") {
+//      playIconImg.src = "/images/play-white.svg";
+//    } else {
+//      playIconImg.src = "/images/play-black.svg";
+//    }
+//  }
 
-  audioElement.addEventListener("loadeddata", function () {
-    console.log(`Audio Element: ${audioElement.readyState}`);
-    if (audioElement.readyState >= 3) {
-      // 3 = HAVE_FUTURE_DATA; Current data as well as at least two frames.
-      if (theme == "light") {
-        playIconImg.src = "/images/play-white.svg";
-      } else {
-        playIconImg.src = "/images/play-black.svg";
-      }
-    }
-  });
+//  audioElement.addEventListener("loadeddata", function () {
+//    console.log(`Audio Element: ${audioElement.readyState}`);
+//    if (audioElement.readyState >= 3) {
+//      // 3 = HAVE_FUTURE_DATA; Current data as well as at least two frames.
+//      if (theme == "light") {
+//        playIconImg.src = "/images/play-white.svg";
+//      } else {
+//        playIconImg.src = "/images/play-black.svg";
+//      }
+//    }
+//  });
 
-  audioElement.addEventListener("ended", function () {
-    if (theme == "light") {
-      playIconImg.src = "/images/play-white.svg";
-    } else {
-      playIconImg.src = "/images/play-black.svg";
-    }
-  });
+//  audioElement.addEventListener("ended", function () {
+//    if (theme == "light") {
+//      playIconImg.src = "/images/play-white.svg";
+//    } else {
+//      playIconImg.src = "/images/play-black.svg";
+//    }
+//  });
 
-  playIconContainer.addEventListener("click", () => {
-    if (state === "play") {
-      if (theme == "light") {
-        playIconImg.src = "/images/pause-white.svg";
-      } else {
-        playIconImg.src = "/images/pause-black.svg";
-      }
-      audioElement.play();
-      state = "pause";
-    } else {
-      if (theme == "light") {
-        playIconImg.src = "/images/play-white.svg";
-      } else {
-        playIconImg.src = "/images/play-black.svg";
-      }
-      audioElement.pause();
-      state = "play";
-    }
-  });
-}
+//  playIconContainer.addEventListener("click", () => {
+//    if (state === "play") {
+//      if (theme == "light") {
+//        playIconImg.src = "/images/pause-white.svg";
+//      } else {
+//        playIconImg.src = "/images/pause-black.svg";
+//      }
+//      audioElement.play();
+//      state = "pause";
+//    } else {
+//      if (theme == "light") {
+//        playIconImg.src = "/images/play-white.svg";
+//      } else {
+//        playIconImg.src = "/images/play-black.svg";
+//      }
+//      audioElement.pause();
+//      state = "play";
+//    }
+//  });
+//}
 
 function checkAnswerViaBtn() {
   checkAnswer(document.getElementById("user_guess_input").value);
@@ -771,7 +893,7 @@ function displayAnswer(guess, eleID) {
           document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
           document.getElementById(eleID).classList.add("guessed");
 
-          var correctGenre = checkGenre(result.Genre, answer.genre);
+          var correctGenre = GAME_CONTROLLER.GenreCheck(result.Genre, answer.genre);
           var amountCorrect = "none";
 
           if (result.Director == answer.director && !correctGenre) {
@@ -808,7 +930,7 @@ function displayAnswer(guess, eleID) {
             DOM_MANAGER.LoserModal();
             gameMaster.setLosingCookie();
           } else {
-            setAudioSrc();
+            AUDIO_MANAGER.SetAudioSrc();
           }
         }
       } catch (err) {
@@ -830,35 +952,35 @@ function displayAnswer(guess, eleID) {
           DOM_MANAGER.LoserModal();
           gameMaster.setLosingCookie();
         } else {
-          setAudioSrc();
+          AUDIO_MANAGER.SetAudioSrc();
         }
       }
     });
 }
 
-function checkGenre(guess, correct) {
-  for (let i = 0; i < guess.length; i++) {
-    if (correct.includes(guess[i])) {
-      return true;
-    }
-  }
-  return false;
-}
+//function checkGenre(guess, correct) {
+//  for (let i = 0; i < guess.length; i++) {
+//    if (correct.includes(guess[i])) {
+//      return true;
+//    }
+//  }
+//  return false;
+//}
 
-function UnicornComposite() {
-  var str = arguments[0];
-  if (arguments.length > 1) {
-    var t = typeof arguments[1];
-    var key;
-    var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];
+//function UnicornComposite() {
+//  var str = arguments[0];
+//  if (arguments.length > 1) {
+//    var t = typeof arguments[1];
+//    var key;
+//    var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];/
 
-    if (Array.isArray(args)) {
-      args.shift();
-    }
+//    if (Array.isArray(args)) {
+//      args.shift();
+//    }
 
-    for (key in args) {
-      str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-    }
-  }
-  return str;
-}
+//    for (key in args) {
+//      str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+//    }
+//  }
+//  return str;
+//}
