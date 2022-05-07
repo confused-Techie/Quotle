@@ -55,7 +55,7 @@ type APISearchResultItem struct {
 	Title    string `json:"title"`
 }
 
-// Collection of APISearchResultItem
+// APISearchResultCollection Collection of APISearchResultItem
 type APISearchResultCollection struct {
 	Page    string                 `json:"page"`
 	Results []*APISearchResultItem `json:"results"`

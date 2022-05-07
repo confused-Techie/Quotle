@@ -16,10 +16,10 @@ body.dark-theme {
   --major-background-colour: #262626;
   --border-colour: black;
   --guesses-text-colour: white;
-  --guesses-bg-colour-lost: #ff0022;
-  --guesses-bg-colour-correct: #00ff00;
+  --guesses-bg-colour-lost: #f02;
+  --guesses-bg-colour-correct: #0f0;
   --guesses-bg-colour-director: #0008ff;
-  --guesses-bg-colour-genre: #ff9900;
+  --guesses-bg-colour-genre: #f90;
   --guesses-bg-colour-both: #fff700;
   --guesses-text-colour-lost: white;
   --guesses-text-colour-correct: black;
@@ -37,10 +37,10 @@ body.light-theme {
   --major-background-colour: white;
   --border-colour: black;
   --guesses-text-colour: black;
-  --guesses-bg-colour-lost: #ff0022;
-  --guesses-bg-colour-correct: #00ff00;
+  --guesses-bg-colour-lost: #f02;
+  --guesses-bg-colour-correct: #0f0;
   --guesses-bg-colour-director: #0008ff;
-  --guesses-bg-colour-genre: #ff9900;
+  --guesses-bg-colour-genre: #f90;
   --guesses-bg-colour-both: #fff700;
   --guesses-text-colour-lost: white;
   --guesses-text-colour-correct: black;
@@ -365,6 +365,98 @@ a:visited {
   position: absolute;
   transform: rotate(0deg);
   line-height: var(--bar-height);
+}
+
+.snackbar {
+  visibility: hidden;
+  min-width: 20%;
+  max-width: 50%;
+  background-color: var(--modal-background-colour);
+  color: var(--modal-text-colour);
+  text-align: center;
+  padding: 1rem;
+  position: fixed;
+  z-index: 1;
+  bottom: 5em;
+  border-radius: var(--size-radius);
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.snackbar.show {
+  visibility: visible;
+  -webkit-animation: snack-fadein 0.5s, snack-fadeout 0.5s 4.5s;
+  animation: snack-fadein 0.5s, snack-fadeout 0.5s 4.5s;
+}
+
+.snackbar.show:hover {
+  animation-play-state: paused;
+}
+
+@-webkit-keyframes snackbar-fadein {
+  from {
+    bottom: 0;
+    opacity: 0;
+  }
+
+  to {
+    bottom: 5em;
+    opacity: 1;
+  }
+}
+
+@keyframes snack-fadein {
+  from {
+    bottom: 0;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 5em;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes snack-fadeout {
+  from {
+    bottom: 5em;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 5em;
+    opacity: 0;
+  }
+}
+
+@keyframes snack-fadeout {
+  from {
+    bottom: 5em;
+    opacity: 1;
+  }
+
+  to {
+    bottom: 5em;
+    opacity: 0;
+  }
+}
+
+.grow-shadow-hover {
+  -webkit-transform: perspective(1px) translate(0);
+  transform: perspective(1px) translateZ(0);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+  -webkit-transition-duration: 0.3s;
+  transition-duration: 0.3s;
+  -webkit-transition-property: box-shadow, transform;
+  transition-property: box-shadow, transform;
+}
+
+.grow-shadow-hover:hover,
+.grow-shadow-hover:focus,
+.grow-shadow-hover:active {
+  box-shadow: 0 10px 10px -10px rgba(0, 0, 0, 0.7);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 footer {

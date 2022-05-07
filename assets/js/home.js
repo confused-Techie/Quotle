@@ -40,7 +40,7 @@ var DOM_MANAGER = {
   UpdateGuessesLeft: function() {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
     document.getElementById("guesses_left").innerText =
-      ( 7 - currentGuessNumber == 1 ?
+      ( 7 - currentGuessNumber === 1 ?
         UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_one, 7-currentGuessNumber ) :
         UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_many, 7-currentGuessNumber) );
   },
@@ -93,8 +93,7 @@ var DOM_MANAGER = {
       this.EnableTheme("dark");
     };
 
-    availableTheme = STORAGE_HANDLER.GetTheme();
-    console.log(`ThemeCheck: 302 - ${availableTheme}`);
+    var availableTheme = STORAGE_HANDLER.GetTheme();
     if (availableTheme == "light") {
       console.log("Light Mode Enabled via Cookies");
       turnOnLight();
@@ -110,7 +109,7 @@ var DOM_MANAGER = {
           console.log("White Theme Preffered...");
           turnOnLight();
         } else {
-          console.log("prefers-color-schmee not supported via Media Query. Are you still using IE?");
+          console.log("prefers-color-scheme not supported via Media Query. Are you still using IE?");
           turnOffLight();
         }
       } else {
@@ -131,6 +130,22 @@ var DOM_MANAGER = {
         document.getElementById(eleID).classList.add(classArray[i]);
       }
     }
+  },
+  Snackbar: function(msg) {
+    var snackbarEle = document.getElementById("snackbar");
+
+    var snackbarMsg = snackbarEle.getElementsByClassName("msg")[0];
+
+    snackbarMsg.innerText = msg;
+    snackbarEle.classList.add("show");
+
+    snackbarEle.addEventListener("animationend", function(event) {
+      // since the snackbar uses snack-fadein and snack-fadeout
+      // we know we only want to exit when fadein finishes
+      if (event.animationName == "snack-fadeout") {
+        snackbarEle.classList.remove("show");
+      }
+    });
   },
 };
 
@@ -153,13 +168,11 @@ var UTILS_COLLECTION = {
   GameLoad: function() {
     GAME_CONTROLLER.AnswerCheck();
     GAME_CONTROLLER.GameStatusCheck();
-    //gameStatusCheck();
     AUDIO_MANAGER.SetAudioSrc();
     AUDIO_MANAGER.AudioController();
   },
   PageLoad: function() {
     DOM_MANAGER.ThemeCheck();
-    //themeCheck();
     this.FirstTimeVisitor();
     DOM_MANAGER.UpdateGuessesLeft();
     DOM_MANAGER.GlobalEventListeners();
@@ -428,10 +441,13 @@ var GAME_CONTROLLER = {
               board[currentGuessNumber -1] = 5;
             } else if (amountCorrect == "director") {
               board[currentGuessNumber -1] = 2;
+              DOM_MANAGER.Snackbar("Awesome you got the Director right!");
             } else if (amountCorrect == "genre") {
               board[currentGuessNumber -1] = 3;
+              DOM_MANAGER.Snackbar("Rad you got the Genre right!");
             } else if (amountCorrect == "both") {
               board[currentGuessNumber -1] = 4;
+              DOM_MANAGER.Snackbar("Fantastic you got both the Director and Genre right!");
             }
 
             if (eleID == "guess-six") {
@@ -504,8 +520,7 @@ var GAME_CONTROLLER = {
       console.log('adding a random previous answer to play.');
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
-      const randomGameID = Math.floor(Math.random() * 5) + 1;
-      const newAnswer = document.createElement('script');
+      const randomGameID = Math.floor(Math.random() * 6) + 1;
 
       const scriptPromise = new Promise((resolve, reject) => {
         const script = document.createElement('script');
@@ -522,6 +537,7 @@ var GAME_CONTROLLER = {
           // now this will recall the function to init all game dependent features.
           replay = true;
           UTILS_COLLECTION.GameLoad();
+          DOM_MANAGER.Snackbar("Unable to find the newest game. Grabbing a random one for you.");
         })
         .catch(() => {
           console.log('had an error adding new answer script.');

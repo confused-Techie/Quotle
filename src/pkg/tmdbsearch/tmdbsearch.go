@@ -73,8 +73,6 @@ func DetailQuery(search string) models.SearchResultItem {
 	var matchRes models.APISearchResultCollection
 	json.Unmarshal(body, &matchRes)
 	resp.Body.Close()
-	logger.InfoLogger.Printf("DetailQuery Marshaled Response")
-	logger.InfoLogger.Println(&matchRes)
 
 	// we will assume that once a match is put in we can use the first result of this search, as it should be exact, returning 1 value
 
