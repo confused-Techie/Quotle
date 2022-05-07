@@ -59,6 +59,7 @@ func SearchQuery(search string) []string {
 // DetailQuery takes a search qury, assuming it is exact and will be the front page of a search, and retrieves all needed details.
 func DetailQuery(search string) models.SearchResultItem {
 	matchURL := "https://api.themoviedb.org/3/search/movie?api_key=" + TMDB_API_KEY + "&query=" + url.QueryEscape(search) + "&page=1"
+	logger.InfoLogger.Printf("DetailQuery w URL: %v", matchURL)
 	resp, err := http.Get(matchURL)
 	if err != nil {
 		logger.ErrorLogger.Println(err)
@@ -72,6 +73,8 @@ func DetailQuery(search string) models.SearchResultItem {
 	var matchRes models.APISearchResultCollection
 	json.Unmarshal(body, &matchRes)
 	resp.Body.Close()
+	logger.InfoLogger.Printf("DetailQuery Marshaled Response")
+	logger.InfoLogger.Println(&matchRes)
 
 	// we will assume that once a match is put in we can use the first result of this search, as it should be exact, returning 1 value
 

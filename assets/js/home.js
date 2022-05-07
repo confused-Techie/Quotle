@@ -1,4 +1,4 @@
-var theme, replay = false;
+var theme, replay = false, currentGuessNumber = 1, guessesStrings = [];
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -9,217 +9,6 @@ var theme, replay = false;
 // 5 = nothing correct.
 // 0 is guess 1, 5 is guess 6.
 var board = [0, 0, 0, 0, 0, 0];
-
-class GameMaster {
-  constructor() {
-    this.GuessNumber = 1;
-    this.GuessesString = [];
-  }
-
-  addGuess() {
-    this.GuessNumber++;
-  }
-
-  equalGuess(num) {
-    this.GuessNumber = num;
-  }
-
-  addGuessString(guess) {
-    this.GuessesString.push(guess);
-  }
-
-  get guessNumber() {
-    return this.GuessNumber;
-  }
-
-  localStorageAvailable() {
-    try {
-      var x = "__storage_test__";
-      localStorage.setItem(x, x);
-      localStorage.removeItem(x);
-      return true;
-    } catch (e) {
-      return (
-        e instanceof DOMException &&
-        // everything except firefox
-        (e.code === 22 ||
-          // firefox
-          e.code === 1012 ||
-          // test name field too, because code might not be present
-          // everything except firefox
-          e.name === "QuotaExceededError" ||
-          // firefox
-          e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
-        // acknowledge quotaexceedederror only if theres something already stored
-        localStorage &&
-        localStorage.length !== 0
-      );
-    }
-  }
-
-  cleanLastGameCookie() {
-    var allCookieKeys = Object.keys(localStorage);
-
-    for (let i = 0; i < allCookieKeys.length; i++) {
-      var curKey = allCookieKeys[i];
-
-      if (curKey != `game-${answer.gameID}` && curKey.startsWith("game-")) {
-        // as long as it isn't our current game, but is a game key, remove it.
-        localStorage.removeItem(curKey);
-      }
-    }
-  }
-
-  findCurrentGameCookie() {
-    if (this.localStorageAvailable) {
-      var allCookieKeys = Object.keys(localStorage);
-
-      for (let i = 0; i < allCookieKeys.length; i++) {
-        var curKey = allCookieKeys[i];
-
-        try {
-          if (curKey == `game-${answer.gameID}`) {
-            return curKey;
-          }
-        } catch(err) {
-          console.log(`Failed to check if cookie equaled answer. Answer may not be available.`);
-          return false;
-        }
-
-        if (i == allCookieKeys.length -1) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-  }
-
-  setWinnerCookie() {
-    var tmpObj = {
-      gameid: answer.gameID,
-      guessesAmount: this.GuessNumber,
-      guesses: this.GuessesString,
-      complete: true,
-      win: true,
-      board: board,
-    };
-
-    if (this.localStorageAvailable) {
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
-
-      this.updateStatsCookie(true, this.GuessNumber - 1);
-
-      this.cleanLastGameCookie();
-
-      gtag('event', 'won_game', {
-        'game_id': answer.gameID,
-        'guess_number': this.GuessNumber
-      });
-
-    } else {
-      console.log("Unable to save data into local storage.");
-    }
-  }
-
-  setLosingCookie() {
-    var tmpObj = {
-      gameid: answer.gameID,
-      guessesAmount: this.GuessNumber,
-      guesses: this.GuessesString,
-      complete: true,
-      win: false,
-      board: board,
-    };
-
-    if (this.localStorageAvailable) {
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
-
-      this.updateStatsCookie(false, this.GuessNumber - 1);
-
-      this.cleanLastGameCookie();
-
-      gtag('event', 'lost_game', {
-        'game_id': answer.gameID,
-        'guess_number': this.GuessNumber
-      });
-
-    } else {
-      console.log("Unable to save data into local storage.");
-    }
-  }
-
-  setProgressCookie() {
-    var tmpObj = {
-      gameid: answer.gameID,
-      guessesAmount: this.GuessNumber,
-      complete: false,
-      win: false,
-      board: board,
-    };
-
-    if (this.localStorageAvailable) {
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
-    } else {
-      console.log("Unable to save data into local storage.");
-    }
-  }
-
-  updateStatsCookie(gameWon, guessIdx) {
-    if (this.localStorageAvailable) {
-      if (!localStorage.getItem("stats")) {
-        var tmpObj = {
-          gamesWon: 0,
-          gamesPlayed: 0,
-          guessDistro: [0, 0, 0, 0, 0, 0],
-        };
-
-        tmpObj.gamesPlayed++;
-
-        if (gameWon) {
-          tmpObj.gamesWon++;
-        }
-
-        tmpObj.guessDistro[guessIdx]++;
-
-        localStorage.setItem("stats", JSON.stringify(tmpObj));
-      } else {
-        var prev = localStorage.getItem("stats");
-        prev = JSON.parse(prev);
-
-        prev.gamesPlayed++;
-
-        if (gameWon) {
-          prev.gamesWon++;
-        }
-
-        prev.guessDistro[guessIdx]++;
-
-        localStorage.setItem("stats", JSON.stringify(prev));
-      }
-    } else {
-      console.log("Unable to access local storage.");
-    }
-  }
-
-  themeCookie(value) {
-    if (this.localStorageAvailable) {
-      localStorage.setItem("theme", value);
-    } else {
-      console.log("Unable to save data into local storage");
-    }
-  }
-
-  get themeCookieValue() {
-    if (!localStorage.getItem("theme")) {
-      return "";
-    } else {
-      return localStorage.getItem("theme");
-    }
-  }
-}
-
-var gameMaster = new GameMaster();
 
 var DOM_MANAGER = {
   WinnerModal: function () {
@@ -251,20 +40,20 @@ var DOM_MANAGER = {
   UpdateGuessesLeft: function() {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
     document.getElementById("guesses_left").innerText =
-      ( 7 - gameMaster.guessNumber == 1 ?
-        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_one, 7-gameMaster.guessNumber ) :
-        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_many, 7-gameMaster.guessNumber) );
+      ( 7 - currentGuessNumber == 1 ?
+        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_one, 7-currentGuessNumber ) :
+        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_many, 7-currentGuessNumber) );
   },
   GlobalEventListeners: function() {
-    document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
-    document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
-    document.getElementById("settings_btn").addEventListener("click", settingsBtnEvent);
-    document.getElementById("user_guess_input").addEventListener("click", mediaSearch);
-    document.getElementById("user_guess_input").addEventListener("input", mediaSearch);
-    document.getElementById("submit_btn").addEventListener("click", checkAnswerViaBtn);
+    document.getElementById("about_btn").addEventListener("click", BTN_COLLECTION.AboutBtn);
+    document.getElementById("stats_btn").addEventListener("click", BTN_COLLECTION.StatsBtn);
+    document.getElementById("settings_btn").addEventListener("click", BTN_COLLECTION.SettingsBtn);
+    document.getElementById("user_guess_input").addEventListener("click", BTN_COLLECTION.MediaSearchBtn);
+    document.getElementById("user_guess_input").addEventListener("input", BTN_COLLECTION.MediaSearchBtn);
+    document.getElementById("submit_btn").addEventListener("click", BTN_COLLECTION.CheckAnswerViaBtn);
     document.getElementById("user_guess_input").addEventListener("keyup", function(event) {
       if (event.key === "Enter" || event.keyCode === 13) {
-        checkAnswer(document.getElementById("user_guess_input").value);
+        GAME_CONTROLLER.PassAnswer(document.getElementById("user_guess_input").value);
       }
     });
   },
@@ -291,6 +80,58 @@ var DOM_MANAGER = {
       document.getElementById(themeImg[requested_theme].id[i]).src = themeImg[requested_theme].src[i];
     }
   },
+  ThemeCheck: function() {
+    var turnOnLight = () => {
+      theme = "light";
+      STORAGE_HANDLER.SetItem("theme", "light");
+      this.EnableTheme("light");
+    };
+
+    var turnOffLight = () => {
+      theme = "dark";
+      STORAGE_HANDLER.SetItem("theme", "dark");
+      this.EnableTheme("dark");
+    };
+
+    availableTheme = STORAGE_HANDLER.GetTheme();
+    console.log(`ThemeCheck: 302 - ${availableTheme}`);
+    if (availableTheme == "light") {
+      console.log("Light Mode Enabled via Cookies");
+      turnOnLight();
+    } else if (availableTheme == "dark") {
+      console.log("Dark Mode Enabled via Cookies");
+      turnOffLight();
+    } else if (availableTheme == "") {
+      if (window.matchMedia) {
+        if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+          console.log("Dark Theme Preffered...");
+          turnOffLight();
+        } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+          console.log("White Theme Preffered...");
+          turnOnLight();
+        } else {
+          console.log("prefers-color-schmee not supported via Media Query. Are you still using IE?");
+          turnOffLight();
+        }
+      } else {
+        console.log("Match Media not supported. Defaulting to Dark Theme");
+        turnOffLight();
+      }
+    }
+  },
+  ClearSearchResults: function() {
+    while (document.getElementById("searchResult").firstChild) {
+      document.getElementById("searchResult").removeChild(document.getElementById("searchResult").lastChild);
+    }
+  },
+  DisplayGuessAnswer: function(eleID, guessText, classArray) {
+    document.getElementById(eleID).innerHTML = `<span>${guessText}</span>`;
+    if (Array.isArray(classArray)) {
+      for (let i = 0; i < classArray.length; i++) {
+        document.getElementById(eleID).classList.add(classArray[i]);
+      }
+    }
+  },
 };
 
 var UTILS_COLLECTION = {
@@ -311,22 +152,156 @@ var UTILS_COLLECTION = {
   },
   GameLoad: function() {
     GAME_CONTROLLER.AnswerCheck();
-    gameStatusCheck();
+    GAME_CONTROLLER.GameStatusCheck();
+    //gameStatusCheck();
     AUDIO_MANAGER.SetAudioSrc();
     AUDIO_MANAGER.AudioController();
   },
   PageLoad: function() {
-    themeCheck();
-    firstTimeVisit();
+    DOM_MANAGER.ThemeCheck();
+    //themeCheck();
+    this.FirstTimeVisitor();
     DOM_MANAGER.UpdateGuessesLeft();
     DOM_MANAGER.GlobalEventListeners();
+  },
+  SearchResults: function(results) {
+    try {
+      var searchRes = document.getElementById("searchResult");
+
+      // remove the previous search results.
+      DOM_MANAGER.ClearSearchResults();
+
+      // then craft results
+      for (let i = 0; i < results.length; i++) {
+        var tmpHTML = `<p onclick="BTN_COLLECTION.EnterTextEvent(event);">${results[i]}</p>`;
+        searchRes.insertAdjacentHTML("beforeend", tmpHTML);
+      }
+    } catch(err) {
+      console.log(`Error Occured crafting search results: ${err}`);
+    }
+  },
+  FirstTimeVisitor: function() {
+    if (STORAGE_HANDLER.StorageAvailable) {
+      if (!localStorage.getItem("visitor")) {
+        // they have never visited before, and dont have this set.
+        localStorage.setItem("visitor", "true");
+        console.log('Welcome first time visitor');
+        BTN_COLLECTION.AboutBtn();
+      } else {
+        console.log("I've seen you here before. Welcome back.");
+      }
+    } else {
+      console.log("Local Storage is not available, making it impossible to tell if this is a first time visit.");
+      console.log("To error on the side of caution, the first visitor prompt will be provided");
+      BTN_COLLECTION.AboutBtn();
+    }
+  },
+};
+
+var BTN_COLLECTION = {
+  AboutBtn: function() {
+    document.getElementById("about_modal").classList.add("show");
+  },
+  SettingsBtn: function() {
+    document.getElementById("settings_modal").classList.add("show");
+  },
+  CheckAnswerViaBtn: function() {
+    GAME_CONTROLLER.PassAnswer(document.getElementById("user_guess_input").value);
+  },
+  MediaSearchBtn: function(e) {
+    console.log(e);
+    var search = e.target.value;
+    console.log(search);
+
+    fetch(`/api/search?value=${search}`)
+      .then((res) => res.json())
+      .then((result) => {
+        UTILS_COLLECTION.SearchResults(result);
+      });
+  },
+  EnterTextEvent: function(e) {
+    document.getElementById("user_guess_input").value = e.target.innerText;
+
+    // on mobile the search results cover the submit btn so we want to remove those.
+    DOM_MANAGER.ClearSearchResults();
+  },
+  StatsBtn: function() {
+    if (STORAGE_HANDLER.StorageAvailable) {
+      if (localStorage.getItem("stats")) {
+        var stats = JSON.parse(localStorage.getItem("stats"));
+        var findPercent = (x, y) => {
+          return (x / y) * 100;
+        };
+
+        var tmpBar = `
+          <div class="chart-wrap">
+            <div class="grid">
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[0],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 1" title="Guess 1 ${findPercent(
+          stats.guessDistro[0],
+          stats.gamesPlayed
+        )}%"> </div>
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[1],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 2" title="Guess 2 ${findPercent(
+          stats.guessDistro[1],
+          stats.gamesPlayed
+        )}%"> </div>
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[2],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 3" title="Guess 3 ${findPercent(
+          stats.guessDistro[2],
+          stats.gamesPlayed
+        )}%"> </div>
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[3],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 4" title="Guess 4 ${findPercent(
+          stats.guessDistro[3],
+          stats.gamesPlayed
+        )}%"> </div>
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[4],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 5" title="Guess 5 ${findPercent(
+          stats.guessDistro[4],
+          stats.gamesPlayed
+        )}%"> </div>
+              <div class="bar" style="--bar-value: ${findPercent(
+                stats.guessDistro[5],
+                stats.gamesPlayed
+              )}%;" data-name="Guess 6" title="Guess 6 ${findPercent(
+          stats.guessDistro[5],
+          stats.gamesPlayed
+        )}%"> </div>
+            </div>
+          </div>
+          `;
+
+        var tmpString = `<p>You've played ${stats.gamesPlayed} times.</p><p>You've won ${stats.gamesWon} times.</p>${tmpBar}`;
+        document.getElementById("stats_modal_msg").innerHTML = tmpString;
+      } else {
+        // no stats saved.
+        var tmpStringEmpty = `<p>You've played 0 times.</p><p>You've won 0 times.</p>`;
+        document.getElementById("stats_modal_msg").innerHTML = tmpStringEmpty;
+      }
+    } else {
+        var tmpStringErr = `<p>Without Cookies enabled this can't be shown 🙁</p>`;
+        document.getElementById("stats_modal_msg").innerHTML = tmpStringErr;
+    }
+
+    document.getElementById("stats_modal").classList.add("show");
   },
 };
 
 var AUDIO_MANAGER = {
   SetAudioSrc: function() {
     try {
-      document.getElementById("audio-element").src = answer.audioSrc[gameMaster.guessNumber -1];
+      document.getElementById("audio-element").src = answer.audioSrc[currentGuessNumber -1];
     } catch(err) {
       console.log(`Failed to set audio src: ${err}`);
     }
@@ -369,17 +344,19 @@ var AUDIO_MANAGER = {
     });
     // Listen for the audio clip ending, and allow it to be played again.
     audioElement.addEventListener("ended", function() {
+      state = "pause";
       showPlayIcon();
     });
     // Listen for clicks on the audio play/pause button.
     playIconContainer.addEventListener("click", () => {
+      console.log(`Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`);
       if (state == "play") {
-        showPauseIcon();
-        audioElement.play();
-        state = "pause";
-      } else if (state == "pause") {
         showPlayIcon();
         audioElement.pause();
+        state = "pause";
+      } else if (state == "pause") {
+        showPauseIcon();
+        audioElement.play();
         state = "play";
       } else {
         // the data is still loading.
@@ -389,13 +366,145 @@ var AUDIO_MANAGER = {
 };
 
 var GAME_CONTROLLER = {
+  PassAnswer: function(guess) {
+    // The new rewrite of the checkAnswer function.
+
+    this.AddGuessToString(guess);
+
+    // Clear the guess field.
+    document.getElementById("user_guess_input").value = "";
+    // clear the search results.
+    DOM_MANAGER.ClearSearchResults();
+
+    if (currentGuessNumber === 1) {
+      this.ValidateAnswer(guess, "guess-one");
+    } else if (currentGuessNumber === 2) {
+      this.ValidateAnswer(guess, "guess-two");
+    } else if (currentGuessNumber === 3) {
+      this.ValidateAnswer(guess, "guess-three");
+    } else if (currentGuessNumber === 4) {
+      this.ValidateAnswer(guess, "guess-four");
+    } else if (currentGuessNumber === 5) {
+      this.ValidateAnswer(guess, "guess-five");
+    } else if (currentGuessNumber === 6) {
+      this.ValidateAnswer(guess, "guess-six");
+    } else {
+      console.log("Had trouble displaying the guess results.");
+    }
+  },
+  ValidateAnswer: function(guess, eleID) {
+    fetch(`api/movie_match?value=${guess}`)
+      .then((res) => res.json())
+      .then((result) => {
+
+        try {
+          if (guess == answer.name && result.Director == answer.director) {
+            // ITS CORRECT!
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "correct" ] );
+
+            board[currentGuessNumber -1] = 1;
+            // set winner saved data here
+            STORAGE_HANDLER.SetProgressData();
+            STORAGE_HANDLER.SetWinnerData();
+            this.NextGuess();
+            DOM_MANAGER.WinnerModal();
+          } else {
+            // ITS INCORRECT
+            // But lets see what they got right.
+            var correctGenre = this.GenreCheck(result.Genre, answer.genre);
+            var amountCorrect = "none";
+
+            if (result.Director == answer.director && !correctGenre) {
+              amountCorrect = "director";
+            }
+            if (correctGenre && result.Director != answer.director) {
+              amountCorrect = "genre";
+            }
+            if (correctGenre && result.Director == answer.director) {
+              amountCorrect = "both";
+            }
+
+            if (amountCorrect == "none") {
+              board[currentGuessNumber -1] = 5;
+            } else if (amountCorrect == "director") {
+              board[currentGuessNumber -1] = 2;
+            } else if (amountCorrect == "genre") {
+              board[currentGuessNumber -1] = 3;
+            } else if (amountCorrect == "both") {
+              board[currentGuessNumber -1] = 4;
+            }
+
+            if (eleID == "guess-six") {
+              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", amountCorrect, "lost" ] );
+              // save progress, then losing data here.
+              STORAGE_HANDLER.SetProgressData();
+              STORAGE_HANDLER.SetLoserData();
+              DOM_MANAGER.LoserModal();
+
+            } else {
+              // While providing amountCorrect will cause it to append none in most cases,
+              // since no styling is applying to that class it'll be harmless, and simplify logic here.
+              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", amountCorrect ] );
+              // save progress here
+              STORAGE_HANDLER.SetProgressData();
+              this.NextGuess();
+            }
+          }
+        } catch(err) {
+          console.log(`Made a bad guess buddy. It threw an error: ${err}`);
+
+          if (eleID == "guess-six") {
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "lost" ]);
+            board[currentGuessNumber -1] = 5;
+            // save progress here, then losing data here
+            STORAGE_HANDLER.SetProgressData();
+            STORAGE_HANDLER.SetLoserData();
+            DOM_MANAGER.LoserModal();
+            this.NextGuess();
+          } else {
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed" ]);
+            board[currentGuessNumber -1] = 5;
+            // Save progress here
+            STORAGE_HANDLER.SetProgressData();
+            this.NextGuess();
+          }
+        }
+
+      })
+      .catch((err) => {
+        console.log(`Made a bad guess buddy. It threw an error: ${err}`);
+
+        if (eleID == "guess-six") {
+          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "lost" ]);
+          board[currentGuessNumber -1] = 5;
+          // save progress here, then losing data here
+          STORAGE_HANDLER.SetProgressData();
+          STORAGE_HANDLER.SetLoserData();
+          DOM_MANAGER.LoserModal();
+        } else {
+          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed" ] );
+          board[currentGuessNumber -1] = 5;
+          // save progress here
+          STORAGE_HANDLER.SetProgressData();
+          this.NextGuess();
+        }
+      });
+  },
+  NextGuess: function() {
+    currentGuessNumber++;
+    DOM_MANAGER.UpdateGuessesLeft();
+    AUDIO_MANAGER.SetAudioSrc();
+  },
+  AddGuessToString: function(guess) {
+    guessesStrings.push(guess);
+  },
   AnswerCheck: function() {
     if (typeof answer == 'undefined') {
       console.log('there is no answer available.');
       console.log('adding a random previous answer to play.');
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
-      const randomGameID = Math.floor(Math.random() * 4) + 1;
+      const randomGameID = Math.floor(Math.random() * 5) + 1;
       const newAnswer = document.createElement('script');
 
       const scriptPromise = new Promise((resolve, reject) => {
@@ -427,6 +536,29 @@ var GAME_CONTROLLER = {
       }
     }
     return false;
+  },
+  GameStatusCheck: function() {
+    if (!replay) {
+      var curData = STORAGE_HANDLER.FindCurrentGame();
+
+      if (curData) {
+        var gameData = JSON.parse(curData);
+        if (gameData.complete) {
+          // the game is already over.
+          if (gameData.win) {
+            // game has been won already
+            DOM_MANAGER.WinnerModal();
+          } else {
+            // game has been lost already
+            DOM_MANAGER.LoserModal();
+          }
+
+          // this could contain data to rebuild the board, even if the game is done.
+        }
+        // this oculd be used to rebuild the board since the game is not complete.
+
+      } // else the currentgame cookie couldnt be found.
+    } // else this game may or may not have been played. But we are replaying a previous game so we wont check.
   },
 };
 
@@ -469,49 +601,175 @@ var STORAGE_HANDLER = {
       }
     });
   },
+  SetItem: function(key, value) {
+    if (this.StorageAvailable) {
+      localStorage.setItem(key, value);
+    } else {
+      console.log(`Local Storage isn't available. Unable to set ${key} to ${value}`);
+    }
+  },
+  GetTheme: function() {
+    if (this.StorageAvailable) {
+      if (!localStorage.getItem("theme")) {
+        return "";
+      } else {
+        return localStorage.getItem("theme");
+      }
+    } else {
+      return "";
+    }
+  },
+  FindCurrentGame: function() {
+    if (this.StorageAvailable) {
+      var allKeys = Object.keys(localStorage);
+      for (let i = 0; i < allKeys.length; i++) {
+        var curKey = allKeys[i];
+
+        try {
+          if (curKey == `game-${answer.gameID}`) {
+            return localStorage.getItem(curKey);
+          }
+        } catch(err) {
+          if (typeof answer == 'undefined') {
+            // likely errored with no answer availabe. Seems answer check failed to do its job.
+            console.log(`Failed to find the current game in Local Storage beccause there is no answer available to check against.`);
+            return false;
+          } else {
+            // generic error
+            console.log(`Failed to find current game in local storage: ${err}`);
+            return false;
+          }
+        }
+
+        if (i == allKeys.length -1) {
+          return false;
+        }
+
+      }
+    } else {
+      return false;
+    }
+  },
+  SetWinnerData: function() {
+    if (this.StorageAvailable) {
+      var tmpObj = {
+        gameid: answer.gameID,
+        guessesAmount: currentGuessNumber,
+        guesses: guessesStrings,
+        complete: true,
+        win: true,
+        board: board
+      };
+
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+
+      this.UpdateStatsData(true, currentGuessNumber -1);
+
+      this.CleanLastGameData();
+
+      gtag('event', 'won_game');
+
+    } else {
+      console.log('Local Storage unavailable, unable to set winner data');
+    }
+  },
+  SetLoserData: function() {
+    if (this.StorageAvailable) {
+      var tmpObj = {
+        gameid: answer.gameID,
+        guessesAmount: currentGuessNumber,
+        guesses: guessesStrings,
+        complete: true,
+        win: false,
+        board: board
+      };
+
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+
+      this.UpdateStatsData(false, currentGuessNumber -1);
+
+      this.CleanLastGameData();
+
+      gtag('event', 'lost_game');
+
+    } else {
+      console.log('Local Storage unavailable, unable to set loser data.');
+    }
+  },
+  SetProgressData: function() {
+    if (this.StorageAvailable) {
+      var tmpObj = {
+        gameid: answer.gameID,
+        guessesAmount: currentGuessNumber,
+        complete: false,
+        win: false,
+        board: board
+      };
+
+      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+    } else {
+      console.log('Local Storage unavailable, unable to set progress data.');
+    }
+  },
+  UpdateStatsData: function(gameWon, guessIdx) {
+    if (this.StorageAvailable) {
+
+      if (!localStorage.getItem("stats")) {
+        // stats don't exist yet
+        var tmpObj = {
+          gamesWon: 0,
+          gamesPlayed: 0,
+          guessDistro: [ 0, 0, 0, 0, 0, 0 ]
+        };
+
+        tmpObj.gamesPlayed++;
+
+        if (gameWon) {
+          tmpObj.gamesWon++;
+        }
+
+        tmpObj.guessDistro[guessIdx]++;
+
+        localStorage.setItem("stats", JSON.stringify(tmpObj));
+      } else {
+        // stats already exist and we should append
+        var prev = localStorage.getItem("stats");
+        prev = JSON.parse(prev);
+
+        prev.gamesPlayed++;
+
+        if (gameWon) {
+          prev.gamesWon++;
+        }
+        prev.guessDistro[guessIdx]++;
+
+        localStorage.setItem("stats", JSON.stringify(prev));
+      }
+    } else {
+      console.log('Local Storage unavailable, unable to set stats data.');
+    }
+  },
+  CleanLastGameData: function() {
+    if (this.StorageAvailable) {
+      var allKeys = Object.keys(localStorage);
+
+      for (let i = 0; i < allKeys.length; i++) {
+        var curKey = allKeys[i];
+
+        if (curKey != `game-${answer.gameID}` && curKey.startsWith("game-")) {
+          // as long as it isn't our current game, but is a game key, remove it
+          localStorage.removeItem(curKey);
+        }
+      }
+    } else {
+      console.log('Local Storage unavailable, unable to remove last game data');
+    }
+  },
 };
 
 window.onload = function () {
   UTILS_COLLECTION.PageLoad();
   UTILS_COLLECTION.GameLoad();
-  // first we check the colour
-  //themeCheck();
-
-  //firstTimeVisit();
-
-  //GAME_CONTROLLER.AnswerCheck();
-
-  //gameStatusCheck();
-
-  //DOM_MANAGER.UpdateGuessesLeft();
-
-  //AUDIO_MANAGER.SetAudioSrc();
-  //AUDIO_MANAGER.AudioController();
-  //setAudioSrc();
-  // call the function in charge of play/pause
-  //audioController();
-
-  // Here we can setup the initial Button handlers
-  //DOM_MANAGER.GlobalEventListeners();
-  //document.getElementById("about_btn").addEventListener("click", aboutBtnEvent);
-  //document.getElementById("stats_btn").addEventListener("click", statsBtnEvent);
-  //document
-  //  .getElementById("settings_btn")
-  //  .addEventListener("click", settingsBtnEvent);
-  //document
-  //  .getElementById("user_guess_input")
-  //  .addEventListener("input", mediaSearch);
-
-  //document
-  //  .getElementById("user_guess_input")
-  //  .addEventListener("keyup", function (event) {
-  //    if (event.key === "Enter" || event.keyCode === 13) {
-  //      checkAnswer(document.getElementById("user_guess_input").value);
-  //    }
-  //  });
-  //document
-  //  .getElementById("submit_btn")
-  //  .addEventListener("click", checkAnswerViaBtn);
 
   var fancyConsole = "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
   var semiFancyConsole = "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
@@ -522,465 +780,3 @@ window.onload = function () {
   console.log('%c So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.', semiFancyConsole);
   console.log('%c Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle', semiFancyConsole);
 };
-
-function gameStatusCheck() {
-
-  STORAGE_HANDLER.GetItem("game-1")
-    .then((response) => JSON.parse(response))
-    .then((res) => {
-      console.log(res);
-    })
-    .catch((err) => {
-      if (err == "no_store") {
-        console.log('localStorage not available.');
-      } else if (err == "no_key") {
-        console.log('localStorage avaialble BUT game-1 doesnt exist');
-      }
-    });
-
-  if (gameMaster.localStorageAvailable) {
-    var curCookie = gameMaster.findCurrentGameCookie();
-
-    if (curCookie) {
-      var cookieData = JSON.parse(localStorage.getItem(curCookie));
-      if (cookieData.complete) {
-        // the game is already over.
-        if (cookieData.win) {
-          // winner modal needs to appear
-
-          DOM_MANAGER.WinnerModal();
-        } else {
-          // loser modal needs to appear.
-
-          DOM_MANAGER.LoserModal();
-        }
-      }
-      // this could contain all references to rebuild the game board.
-
-    }
-    // this will be set as false if for whatever reason the cookie couldn't be found.
-  } else {
-    console.log('Local Storage not enabled. Unable to check game status.');
-  }
-}
-
-function themeCheck() {
-  if (gameMaster.themeCookieValue == "light") {
-    console.log("Light Mode Enabled via Cookies.");
-    enableLightTheme();
-  } else if (gameMaster.themeCookieValue == "dark") {
-    console.log("Dark Mode Enabled via Cookies.");
-    enableDarkTheme();
-  } else if (gameMaster.themeCookieValue == "") {
-    if (window.matchMedia) {
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        console.log("Dark Mode preffered.");
-        enableDarkTheme();
-      } else if (window.matchMedia("(prefers-color-scheme: light)")) {
-        console.log("White Mode preffered.");
-        enableLightTheme();
-      } else {
-        console.log(
-          "prefers-color-scheme not supported via Media Query. Are you using IE still?"
-        );
-        enableDarkTheme();
-      }
-    } else {
-      console.log("Match Media not supported.");
-      enableDarkTheme();
-    }
-  }
-}
-
-function enableLightTheme() {
-  theme = "light";
-  gameMaster.themeCookie("light");
-  DOM_MANAGER.EnableTheme("light");
-
-  //document.body.classList.remove("dark-theme"); // Remove Dark Theme if present. If not will throw no error.
-  //document.body.classList.add("light-theme");
-
-  //document.getElementById("help-circle-img").src =
-  //  "/images/help-circle-black.svg";
-  //document.getElementById("award-img").src = "/images/award-black.svg";
-  //document.getElementById("settings-img").src = "/images/settings-black.svg";
-
-  //document.getElementById("footer-golang-img").src =
-  //  "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg";
-  //document.getElementById("footer-github-img").src = "/images/github-black.svg";
-  //document.getElementById("footer-feather-icon-img").src =
-  //  "/images/feather-black.svg";
-}
-
-function enableDarkTheme() {
-  theme = "dark";
-  gameMaster.themeCookie("dark");
-  DOM_MANAGER.EnableTheme("dark");
-
-  //document.body.classList.remove("light-theme"); // Remove Light Theme if present. If not will throw no error.
-  //document.body.classList.add("dark-theme");
-
-  //document.getElementById("help-circle-img").src =
-  //  "/images/help-circle-white.svg";
-  //document.getElementById("award-img").src = "/images/award-white.svg";
-  //document.getElementById("settings-img").src = "/images/settings-white.svg";
-
-  //document.getElementById("footer-golang-img").src =
-  //  "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg";
-  //document.getElementById("footer-github-img").src = "/images/github-white.svg";
-  //document.getElementById("footer-feather-icon-img").src =
-  //  "/images/feather-white.svg";
-}
-
-function firstTimeVisit() {
-  if (gameMaster.localStorageAvailable) {
-    if (!localStorage.getItem("visitor")) {
-      // if it doesn't exist, we have never set it, and this is the first time coming here. Otherwise if it does then they have come before.
-      localStorage.setItem("visitor", "true");
-      console.log('Welcome first time visitor');
-      aboutBtnEvent();
-
-    } else {
-      console.log("I've seen you here before. Welcome back.");
-    }
-  } else {
-    console.log('Local Storage is not currently accessible. Making it impossible to determine weather this is a first time visit. Or not.');
-    console.log('We will error on the side of caution and assume it is.');
-    aboutBtnEvent();
-  }
-}
-
-function aboutBtnEvent() {
-  document.getElementById("about_modal").classList.add("show");
-}
-
-function statsBtnEvent() {
-  if (gameMaster.localStorageAvailable) {
-    if (localStorage.getItem("stats")) {
-      var stats = JSON.parse(localStorage.getItem("stats"));
-      var findPercent = (x, y) => {
-        return (x / y) * 100;
-      };
-
-      var tmpBar = `
-        <div class="chart-wrap">
-          <div class="grid">
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[0],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 1" title="Guess 1 ${findPercent(
-        stats.guessDistro[0],
-        stats.gamesPlayed
-      )}%"> </div>
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[1],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 2" title="Guess 2 ${findPercent(
-        stats.guessDistro[1],
-        stats.gamesPlayed
-      )}%"> </div>
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[2],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 3" title="Guess 3 ${findPercent(
-        stats.guessDistro[2],
-        stats.gamesPlayed
-      )}%"> </div>
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[3],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 4" title="Guess 4 ${findPercent(
-        stats.guessDistro[3],
-        stats.gamesPlayed
-      )}%"> </div>
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[4],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 5" title="Guess 5 ${findPercent(
-        stats.guessDistro[4],
-        stats.gamesPlayed
-      )}%"> </div>
-            <div class="bar" style="--bar-value: ${findPercent(
-              stats.guessDistro[5],
-              stats.gamesPlayed
-            )}%;" data-name="Guess 6" title="Guess 6 ${findPercent(
-        stats.guessDistro[5],
-        stats.gamesPlayed
-      )}%"> </div>
-          </div>
-        </div>
-        `;
-      var tmpString = `<p>You've played ${stats.gamesPlayed} times.</p><p>You've won ${stats.gamesWon} times.</p>${tmpBar}`;
-      document.getElementById("stats_modal_msg").innerHTML = tmpString;
-    } else {
-      // no stats saved
-      var tmpString = `<p>You've played 0 times.</p><p>You've won 0 times.</p>`;
-      document.getElementById("stats_modal_msg").innerHTML = tmpString;
-    }
-  } else {
-    var tmpString = `<p>Without Cookies enabled this can't be shown 🙁</p>`;
-    document.getElementById("stats_modal_msg").innerHTML = tmpString;
-  }
-  document.getElementById("stats_modal").classList.add("show");
-}
-
-function settingsBtnEvent() {
-  document.getElementById("settings_modal").classList.add("show");
-}
-
-function mediaSearch(e) {
-  var search = e.target.value;
-
-  fetch(`/api/search?value=${search}`)
-    .then((res) => res.json())
-    .then((result) => {
-      searchResults(result);
-    });
-}
-
-function searchResults(results) {
-  try {
-    var searchRes = document.getElementById("searchResult");
-
-    // first we want to remove all previous search results.
-    while (searchRes.firstChild) {
-      searchRes.removeChild(searchRes.lastChild);
-    }
-
-    // then craft the result to return
-    for (let i = 0; i < results.length; i++) {
-      var tmpHTML = `<p onclick="enterTextEvent(event);">${results[i]}</p>`;
-      searchRes.insertAdjacentHTML("beforeend", tmpHTML);
-    }
-  } catch (err) {
-    console.log(`Error Occured crafting Search Results: ${err}`);
-  }
-}
-
-/*eslint-disable-next-line no-unused-vars*/
-function enterTextEvent(e) {
-  document.getElementById("user_guess_input").value = e.target.innerText;
-
-  // Since on mobile, the search results cover the submit button, we want to remove them after the tap here.
-  while (document.getElementById("searchResult").firstChild) {
-    document
-      .getElementById("searchResult")
-      .removeChild(document.getElementById("searchResult").lastChild);
-  }
-}
-
-//function setAudioSrc() {
-//  try {
-//    document.getElementById("audio-element").src =
-//      answer.audioSrc[gameMaster.guessNumber - 1];
-//  } catch(err) {
-//    console.log(`Failed to set audio src: ${err}`);
-//  }
-//}
-
-//function audioController() {
-//  var playIconContainer = document.getElementById("play-icon");
-//  var playIconImg = document.getElementById("play-icon-img");
-//  var audioElement = document.getElementById("audio-element");
-
-//  let state = "pause";
-
-  // Even when enabling network throttling within Chrome, it seems prioritizing the download of audio view preload="auto" it is fully loaded by the time this script runs.
-  // Which means that when the function waits for an event that has already fired the event handler is never hit. So we will add a static check during function run time checking readyState.
-
-//  if (audioElement.readyState >= 3) {
-//    if (theme == "light") {
-//      playIconImg.src = "/images/play-white.svg";
-//    } else {
-//      playIconImg.src = "/images/play-black.svg";
-//    }
-//  }
-
-//  audioElement.addEventListener("loadeddata", function () {
-//    console.log(`Audio Element: ${audioElement.readyState}`);
-//    if (audioElement.readyState >= 3) {
-//      // 3 = HAVE_FUTURE_DATA; Current data as well as at least two frames.
-//      if (theme == "light") {
-//        playIconImg.src = "/images/play-white.svg";
-//      } else {
-//        playIconImg.src = "/images/play-black.svg";
-//      }
-//    }
-//  });
-
-//  audioElement.addEventListener("ended", function () {
-//    if (theme == "light") {
-//      playIconImg.src = "/images/play-white.svg";
-//    } else {
-//      playIconImg.src = "/images/play-black.svg";
-//    }
-//  });
-
-//  playIconContainer.addEventListener("click", () => {
-//    if (state === "play") {
-//      if (theme == "light") {
-//        playIconImg.src = "/images/pause-white.svg";
-//      } else {
-//        playIconImg.src = "/images/pause-black.svg";
-//      }
-//      audioElement.play();
-//      state = "pause";
-//    } else {
-//      if (theme == "light") {
-//        playIconImg.src = "/images/play-white.svg";
-//      } else {
-//        playIconImg.src = "/images/play-black.svg";
-//      }
-//      audioElement.pause();
-//      state = "play";
-//    }
-//  });
-//}
-
-function checkAnswerViaBtn() {
-  checkAnswer(document.getElementById("user_guess_input").value);
-}
-
-function checkAnswer(guess) {
-  gameMaster.addGuessString(guess);
-  // we also want to clear the guess field.
-  document.getElementById("user_guess_input").value = "";
-  // and we want to clear the search results
-  while (document.getElementById("searchResult").firstChild) {
-    document
-      .getElementById("searchResult")
-      .removeChild(document.getElementById("searchResult").lastChild);
-  }
-
-  if (gameMaster.guessNumber === 1) {
-    displayAnswer(guess, "guess-one");
-  } else if (gameMaster.guessNumber === 2) {
-    displayAnswer(guess, "guess-two");
-  } else if (gameMaster.guessNumber === 3) {
-    displayAnswer(guess, "guess-three");
-  } else if (gameMaster.guessNumber === 4) {
-    displayAnswer(guess, "guess-four");
-  } else if (gameMaster.guessNumber === 5) {
-    displayAnswer(guess, "guess-five");
-  } else if (gameMaster.guessNumber === 6) {
-    displayAnswer(guess, "guess-six");
-  } else {
-    console.log("Had trouble displaying the guess results.");
-    // or alternatively the game is over and they didn't win. at all.
-  }
-}
-
-function displayAnswer(guess, eleID) {
-  fetch(`/api/movie_match?value=${guess}`)
-    .then((res) => res.json())
-    .then((result) => {
-      try {
-        if (guess == answer.name) {
-          // its correct!
-          document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
-          document.getElementById(eleID).classList.add("guessed");
-          document.getElementById(eleID).classList.add("correct");
-
-          board[gameMaster.guessNumber -1] = 1;
-          gameMaster.setWinnerCookie();
-          gameMaster.addGuess();
-          DOM_MANAGER.UpdateGuessesLeft();
-
-          DOM_MANAGER.WinnerModal();
-
-        } else {
-          // its incorrect, lets see if they got any parts right.
-          document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
-          document.getElementById(eleID).classList.add("guessed");
-
-          var correctGenre = GAME_CONTROLLER.GenreCheck(result.Genre, answer.genre);
-          var amountCorrect = "none";
-
-          if (result.Director == answer.director && !correctGenre) {
-            document.getElementById(eleID).classList.add("director");
-            amountCorrect = "director";
-          }
-
-          if (correctGenre && result.Director != answer.director) {
-            document.getElementById(eleID).classList.add("genre");
-            amountCorrect = "genre";
-          }
-
-          if (correctGenre && result.Director == answer.director) {
-            document.getElementById(eleID).classList.add("both");
-            amountCorrect = "both";
-          }
-
-          if (amountCorrect == "none") {
-            board[gameMaster.guessNumber - 1] = 5;
-          } else if (amountCorrect == "director") {
-            board[gameMaster.guessNumber - 1] = 2;
-          } else if (amountCorrect == "genre") {
-            board[gameMaster.guessNumber - 1] = 3;
-          } else if (amountCorrect == "both") {
-            board[gameMaster.guessNumber - 1] = 4;
-          }
-
-          gameMaster.addGuess();
-          DOM_MANAGER.UpdateGuessesLeft();
-          gameMaster.setProgressCookie();
-
-          if (eleID == "guess-six") {
-            document.getElementById("guess-six").classList.add("lost");
-            DOM_MANAGER.LoserModal();
-            gameMaster.setLosingCookie();
-          } else {
-            AUDIO_MANAGER.SetAudioSrc();
-          }
-        }
-      } catch (err) {
-        console.log(
-          "Well shit you made a bad guess, buddy. This one caused an error. But heres your guess."
-        );
-
-        document.getElementById(eleID).innerHTML = `<span>${guess}</span>`;
-        document.getElementById(eleID).classList.add("guessed");
-
-        board[gameMaster.guessNumber - 1] = 5;
-
-        gameMaster.addGuess();
-        DOM_MANAGER.UpdateGuessesLeft();
-        gameMaster.setProgressCookie();
-
-        if (eleID == "guess-six") {
-          document.getElementById("guess-six").classList.add("lost");
-          DOM_MANAGER.LoserModal();
-          gameMaster.setLosingCookie();
-        } else {
-          AUDIO_MANAGER.SetAudioSrc();
-        }
-      }
-    });
-}
-
-//function checkGenre(guess, correct) {
-//  for (let i = 0; i < guess.length; i++) {
-//    if (correct.includes(guess[i])) {
-//      return true;
-//    }
-//  }
-//  return false;
-//}
-
-//function UnicornComposite() {
-//  var str = arguments[0];
-//  if (arguments.length > 1) {
-//    var t = typeof arguments[1];
-//    var key;
-//    var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];/
-
-//    if (Array.isArray(args)) {
-//      args.shift();
-//    }
-
-//    for (key in args) {
-//      str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-//    }
-//  }
-//  return str;
-//}
