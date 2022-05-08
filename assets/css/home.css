@@ -98,6 +98,23 @@ a:visited {
   cursor: pointer;
 }
 
+.gameBoard .audio-selection button {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  background-color: var(--title-background-colour);
+  border-radius: var(--size-radius);
+  border: none;
+  cursor: pointer;
+  margin-top: 1rem;
+  margin-right: 0.5rem;
+  font-size: 2rem;
+}
+
+.gameBoard .audio-selection button.disable {
+  background-color: var(--modal-background-colour);
+  cursor: not-allowed;
+}
+
 .user-guess {
   position: relative;
 }

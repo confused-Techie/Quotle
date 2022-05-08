@@ -315,8 +315,25 @@ var AUDIO_MANAGER = {
   SetAudioSrc: function() {
     try {
       document.getElementById("audio-element").src = answer.audioSrc[currentGuessNumber -1];
+      document.getElementById(`audio${currentGuessNumber}-btn`).classList.remove("disable");
     } catch(err) {
       console.log(`Failed to set audio src: ${err}`);
+    }
+  },
+  SetSpecificAudioSrc: function(event, req) {
+    console.log(`SetSpecificAudioSrc: ${req}`);
+    try {
+      // If the text within span is clicked, we check parent element
+      // But if the button itself is clicked we need to check if the current element contains the disable class.
+      if (event.target.parentElement.classList.contains("disable") || event.target.classList.contains("disable")) {
+        console.log('Audio Element is disabled. Unable to change audio.');
+      } else {
+        console.log('Setting audio src');
+        document.getElementById("audio-element").src = answer.audioSrc[req -1];
+      }
+
+    } catch(err) {
+      console.log(`Failed to set specific audio src: ${err}`);
     }
   },
   AudioController: function() {
