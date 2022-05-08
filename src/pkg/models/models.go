@@ -11,6 +11,17 @@ type PageTemplate struct {
 	TargetLanguage string
 }
 
+// PrefferedStringsV2 is the object to contain string data as well as the locale
+type PrefferedStringsV2 struct {
+	Strings map[string]string
+	Lang string
+}
+
+// StringsSupported holds the struct for a strings.supported.json file 
+type StringsSupported struct {
+	Langs []string `json:"langs"`
+}
+
 // MediaDB is an enrty in the media db JSON file.
 type MediaDB struct {
 	Name     string   `json:"name"`

@@ -85,6 +85,7 @@ func main() {
 	mux.Handle("/robots.txt", http.HandlerFunc(webrequests.RobotsHandler))
 	mux.Handle("/sitemap.xml", http.HandlerFunc(webrequests.SitemapHandler))
 	mux.Handle("/favicon.png", http.HandlerFunc(webrequests.FaviconHandler))
+	mux.Handle("/apple-touch.png", http.HandlerFunc(webrequests.AppleTouchHandler))
 
 	// ========== API Endpoints ====================
 	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
