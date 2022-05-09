@@ -552,6 +552,20 @@ var GAME_CONTROLLER = {
     currentGuessNumber++;
     DOM_MANAGER.UpdateGuessesLeft();
     AUDIO_MANAGER.SetAudioSrc();
+
+    // then to check if any alerts should be fired because of the audio clips.
+    // but we also want to support the fact that this may be before the feature is introduced.
+    if (answer.alerts) {
+      // we know the alerts feature is supported.
+      if (answer.alerts[`audio${currentGuessNumber}`].type) {
+        // now we know this specific peice of audio contains an alert.
+        // while in the future once more alerts are defined this can be more fleshed out, for now it will be rather simple.
+        var curAlert = answer.alerts[`audio${currentGuessNumber}`];
+        if (curAlert.type == "volume" && curAlert.reason == "loud") {
+          DOM_MANAGER.Snackbar("Warning! This next quote could be loud.");
+        }
+      }
+    }
   },
   AddGuessToString: function(guess) {
     guessesStrings.push(guess);
@@ -562,7 +576,7 @@ var GAME_CONTROLLER = {
       console.log('adding a random previous answer to play.');
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
-      const randomGameID = Math.floor(Math.random() * 6) + 1;
+      const randomGameID = Math.floor(Math.random() * 10) + 1;
 
       const scriptPromise = new Promise((resolve, reject) => {
         const script = document.createElement('script');
