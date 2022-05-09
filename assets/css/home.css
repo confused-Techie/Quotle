@@ -98,6 +98,10 @@ a:visited {
   cursor: pointer;
 }
 
+.gameBoard .audio-selection {
+  display: inline-flex;
+}
+
 .gameBoard .audio-selection button {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -513,11 +517,21 @@ footer p {
   .modal .modal-content .msg p {
     font-size: 1rem;
   }
+  .gameBoard .audio-selection  {
+    display: block;
+  }
 }
 
 @media screen and (max-width: 260px) {
   .modal .modal-content .msg p {
     font-size: 0.8rem;
+  }
+  .gameBoard .audio-selection {
+    display: none;
+
+    /* While this isn't the best solution, nobody thats ever visited the site has a screen this small.
+      Additionally once this small a way to display the selection blocks without taking up significant real
+      estate is yet to be determined. */
   }
 }
 

@@ -209,6 +209,17 @@ var UTILS_COLLECTION = {
       BTN_COLLECTION.AboutBtn();
     }
   },
+  FindPlatformViaNavigator: function() {
+    // This will be a simple attempt at detecting the platform a user is using via the navigator.platform API.
+    // Since the website only fails on Mobile Safari,
+    console.log(navigator.platform);
+    var iphoneValues = [ "iPhone", "iPod", "iPad", "iPhone Simulator", "iPod Simulator", "iPad Simulator"];
+    if (iphoneValues.includes(navigator.platform)) {
+      return "iOS";
+    } else {
+      return "unknown";
+    }
+  },
 };
 
 var BTN_COLLECTION = {
@@ -358,15 +369,27 @@ var AUDIO_MANAGER = {
       }
     };
 
+    // Waiting for the readyState or loadeddata event fails to work on iPhone seemingly.
+    // https://stackoverflow.com/a/11700424/12707685
+    // Seemingly here iPhone will not preload content until user interaction, meaning I can't rely on the preload of data to then show a play icon.
+    // While the goal of quotle was seemless, unbuffered audio playback that user expereince will have to be lessened, but attempting detection at
+    // the platform a user is on will hopefully only make this less than ideal for a small amount of users.
+    if (UTILS_COLLECTION.FindPlatformViaNavigator() == "iOS") {
+      console.log("Seems this is an iphone. Lets just change the icon agresively.");
+      state = "pause";
+      showPlayIcon();
+    }
+
     // Ensure that if the readystate has exceeded needs before this function has run.
-    if (audioElement.readState >= 3) {
+    if (audioElement.readyState >= 3 ) {
       state = "pause";
       showPlayIcon();
     }
     // Otherwise listen for the event of that ready state firing.
     audioElement.addEventListener("loadeddata", function() {
       console.log(`Audio Element Ready State: ${audioElement.readyState}`);
-      if (audioElement.readyState >= 3) {
+      if (audioElement.readyState >= 3 && UTILS_COLLECTION.FindPlatformViaNavigator() != "iOS") {
+        // Had to add the not equal here, to ensure when iPhones start playing it doesn't immediatly change the play icon again after click.
         // 3 = HAVE_FUTURE_DATA
         state = "pause";
         showPlayIcon();
@@ -386,10 +409,12 @@ var AUDIO_MANAGER = {
         state = "pause";
       } else if (state == "pause") {
         showPauseIcon();
+
         audioElement.play();
         state = "play";
       } else {
         // the data is still loading.
+        console.log(`Play Icon Container has been clicked, even though the state isn't valid.`);
       }
     });
   },
