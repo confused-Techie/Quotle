@@ -14,6 +14,7 @@ var DOM_MANAGER = {
   WinnerModal: function () {
     document.getElementById("winner_modal").classList.add("show");
     document.getElementById("user_guess_input").disabled = true;
+    document.getElementById("submit_btn").disabled = true;
 
     var myCanvas = document.createElement("canvas");
     myCanvas.width = window.innerWidth;
@@ -36,6 +37,7 @@ var DOM_MANAGER = {
     document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UTILS_COLLECTION.UnicornComposite(i18n_answer_text, answer.name));
     document.getElementById("loser_modal").classList.add("show");
     document.getElementById("user_guess_input").disabled = true;
+    document.getElementById("submit_btn").disabled = true;
   },
   UpdateGuessesLeft: function() {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
@@ -347,6 +349,23 @@ var AUDIO_MANAGER = {
       console.log(`Failed to set specific audio src: ${err}`);
     }
   },
+  SetSpecificAudioSrcNoClick: function(req) {
+    try {
+      document.getElementById("audio-element").src = answer.audioSrc[req];
+      document.getElementById(`audio${req}-btn`).classList.remove("disable");
+    } catch(err) {
+      console.log(`Failed to set specific audio src: ${err}`);
+    }
+  },
+  EnableRemainingAudio: function() {
+    try {
+      for (var i = currentGuessNumber; i < 7; i++) {
+        document.getElementById(`audio${i}-btn`).classList.remove("disable");
+      }
+    } catch(err) {
+      console.log(`Unable to enable all audio buttons: ${err}`);
+    }
+  },
   AudioController: function() {
     var playIconContainer = document.getElementById("play-icon");
     var playIconImg = document.getElementById("play-icon-img");
@@ -461,6 +480,7 @@ var GAME_CONTROLLER = {
             // set winner saved data here
             STORAGE_HANDLER.SetProgressData();
             STORAGE_HANDLER.SetWinnerData();
+            AUDIO_MANAGER.EnableRemainingAudio();
             this.NextGuess();
             DOM_MANAGER.WinnerModal();
           } else {
@@ -615,6 +635,39 @@ var GAME_CONTROLLER = {
 
       if (curData) {
         var gameData = JSON.parse(curData);
+
+        var applyBoardUpdates = function(ele, boardValue, guessValue, idx) {
+          // if board is 0, then guesses will be undefined, so we need to ensure not to operate on those values.
+          var tmpClassArray = [ "guessed" ];
+          if (boardValue == 1) {
+            tmpClassArray.push("correct");
+          }
+          if (boardValue == 2) {
+            tmpClassArray.push("director");
+          }
+          if (boardValue == 3) {
+            tmpClassArray.push("genre");
+          }
+          if (boardValue == 4) {
+            tmpClassArray.push("both");
+          }
+          if (ele == "guess-six") {
+            tmpClassArray.push("lost");
+          }
+
+          if (boardValue != 0) {
+            DOM_MANAGER.DisplayGuessAnswer(ele, guessValue, tmpClassArray);
+            AUDIO_MANAGER.SetSpecificAudioSrcNoClick(idx++);
+          }
+
+        };
+
+        var guessEleArray = [ "guess-one", "guess-two", "guess-three", "guess-four", "guess-five", "guess-six" ];
+
+        for (var i = 0; i < guessEleArray.length; i++) {
+          applyBoardUpdates(guessEleArray[i], gameData.board[i], gameData.guesses[0], i);
+        }
+
         if (gameData.complete) {
           // the game is already over.
           if (gameData.win) {
@@ -624,8 +677,7 @@ var GAME_CONTROLLER = {
             // game has been lost already
             DOM_MANAGER.LoserModal();
           }
-
-          // this could contain data to rebuild the board, even if the game is done.
+          AUDIO_MANAGER.EnableRemainingAudio();
         }
         // this oculd be used to rebuild the board since the game is not complete.
 
