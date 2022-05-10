@@ -1,21 +1,21 @@
 {
   "audio-support": "Tu navegador no soporta audio HTML5.",
   "submit": "Entregar",
-  "how-to": "Listen to each audio clip, and guess the one movie they all come from.",
+  "how-to": "Escucha cada clip de audio y adivina de la película de la que todos proceden.",
   "how-to-director": "Significa que el director es correcto.",
   "how-to-genre": "Significa que el género es correcto.",
   "how-to-both": "Significa que tanto el director como el género son correctos.",
-  "how-to-thanks": "Special thanks to Ken and Zack for original concept, and to Angie for implementation inspiration.",
+  "how-to-thanks": "Agradecimiento especial a Ken y Zack por el concepto original, y a Angie por la inspiración en la implementación.",
   "close": "Cerrar",
   "issue-text": "¿Problemas? Envía un problema en Github, o envía un correo electrónico a 'admin@lhbasics.com'.",
   "winning-text": "¡Adivinaste correctamente!",
   "losing-text": "Mejor suerte la próxima vez.",
   "answer-text": "La respuesta correcta es: '{0}'",
   "refresh-text": "El siguiente juego será jugable a medianoche Pacific Standard Time.",
-  "guesses_left_one": "{0} Guess and Audio Clip left.",
-  "guesses_left_many": "{0} Guesses and Audio Clips left.",
+  "guesses_left_one": "{0} Clip de audio y adivinación restante.",
+  "guesses_left_many": "{0} Suposiciones y clips de audio restantes.",
   "footer-made-with": "Código abierto, hecho con Golang & ❤",
   "footer-source": "Código fuente",
   "footer-feather": "Iconos de pluma",
-  "footer-tmdb": "Movie Results from The Movie Database"
+  "footer-tmdb": "Resultados de la película de la base de datos de la película"
 }
