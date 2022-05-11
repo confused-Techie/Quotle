@@ -1,7 +1,8 @@
 var theme,
   replay = false,
   currentGuessNumber = 1,
-  guessesStrings = [];
+  guessesStrings = [],
+  totalGameCount = 10;
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -78,6 +79,7 @@ var DOM_MANAGER = {
     document
       .getElementById("submit_btn")
       .addEventListener("click", BTN_COLLECTION.CheckAnswerViaBtn);
+    document.getElementById("shuffle_btn").addEventListener("click", GAME_CONTROLLER.RandomPlay);
     document
       .getElementById("user_guess_input")
       .addEventListener("keyup", function (event) {
@@ -106,6 +108,7 @@ var DOM_MANAGER = {
           "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
           "/images/github-white.svg",
           "/images/feather-white.svg",
+          "/images/shuffle-white.svg",
         ],
         id: [
           "help-circle-img",
@@ -114,6 +117,7 @@ var DOM_MANAGER = {
           "footer-golang-img",
           "footer-github-img",
           "footer-feather-icon-img",
+          "shuffle-img",
         ],
       },
       light: {
@@ -124,6 +128,7 @@ var DOM_MANAGER = {
           "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg",
           "/images/github-black.svg",
           "/images/feather-black.svg",
+          "/images/shuffle-black.svg",
         ],
         id: [
           "help-circle-img",
@@ -132,6 +137,7 @@ var DOM_MANAGER = {
           "footer-golang-img",
           "footer-github-img",
           "footer-feather-icon-img",
+          "shuffle-img",
         ],
       },
     };
@@ -717,7 +723,7 @@ var GAME_CONTROLLER = {
       console.log("adding a random previous answer to play.");
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
-      const randomGameID = Math.floor(Math.random() * 10) + 1;
+      const randomGameID = Math.floor(Math.random() * totalGameCount) + 1;
 
       const scriptPromise = new Promise((resolve, reject) => {
         const script = document.createElement("script");
@@ -744,6 +750,32 @@ var GAME_CONTROLLER = {
           console.log("had an error adding new answer script.");
         });
     } // else the original answer was successfully loaded.
+  },
+  RandomPlay: function() {
+    // this will replace answer with a new definition, chosen at random.
+    console.log(`Random Game load requested.`);
+
+    const randomGameID = Math.floor(Match.random() * totalGameCount) + 1;
+
+    const scriptPromise = new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      document.body.appendChild(script);
+      script.onload = resolve;
+      script.onerror = reject;
+      script.async = true;
+      script.src = `https://storage.googleapis.com/quotle=games/${randomGameID}/answer.js`;
+    });
+
+    scriptPromise.
+      .then(() => {
+        console.log(`Successfully queried new game data`);
+        replay = true;
+        UTILS_COLLECTION.GameLoad();
+        DOM_MANAGER.Snackbar("New Random Game Loaded");
+      })
+      .catch(() => {
+        console.log("Error our error creating new anwser.")
+      });
   },
   GenreCheck: function (guess, correct) {
     for (let i = 0; i < guess.length; i++) {
