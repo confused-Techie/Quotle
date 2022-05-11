@@ -164,9 +164,9 @@ func ReadDataNoAuth(bucket string, object string) ([]byte, error) {
 }
 
 // ReadDataAuth reads the data from the cloud.
-func ReadDataAuth(bucket string, object string, auth_file []byte, timeout time.Duration) ([]byte, error) {
+func ReadDataAuth(bucket string, object string, authFile []byte, timeout time.Duration) ([]byte, error) {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithCredentialsJSON(auth_file))
+	client, err := storage.NewClient(ctx, option.WithCredentialsJSON(authFile))
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %v", err)
 	}

@@ -41,7 +41,7 @@ func returnPrefferedStrings(langCode string) models.PrefferedStringsV2 {
 			Lang: "en-US",
 		}
 
-	} else {
+	}
 		// the lang code is something. Lets see if we have it
 		if _, err := os.Stat(viper.GetString("env_variables.DIR_ASSETS") + "/lang/strings." + langCode + ".json"); err == nil {
 			// The file exists, lets return it.
@@ -98,7 +98,6 @@ func returnPrefferedStrings(langCode string) models.PrefferedStringsV2 {
 			}
 
 		}
-	}
 }
 
 func returnDefaultStrings() map[string]string {
