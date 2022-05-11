@@ -639,23 +639,23 @@ var GAME_CONTROLLER = {
         var applyBoardUpdates = function(ele, boardValue, guessValue, idx) {
           // if board is 0, then guesses will be undefined, so we need to ensure not to operate on those values.
           var tmpClassArray = [ "guessed" ];
-          if (boardValue == 1) {
+          if (boardValue === 1) {
             tmpClassArray.push("correct");
           }
-          if (boardValue == 2) {
+          if (boardValue === 2) {
             tmpClassArray.push("director");
           }
-          if (boardValue == 3) {
+          if (boardValue === 3) {
             tmpClassArray.push("genre");
           }
-          if (boardValue == 4) {
+          if (boardValue === 4) {
             tmpClassArray.push("both");
           }
           if (ele == "guess-six") {
             tmpClassArray.push("lost");
           }
 
-          if (boardValue != 0) {
+          if (boardValue !== 0) {
             DOM_MANAGER.DisplayGuessAnswer(ele, guessValue, tmpClassArray);
             AUDIO_MANAGER.SetSpecificAudioSrcNoClick(idx++);
           }
@@ -775,64 +775,70 @@ var STORAGE_HANDLER = {
     }
   },
   SetWinnerData: function() {
-    if (this.StorageAvailable) {
-      var tmpObj = {
-        gameid: answer.gameID,
-        guessesAmount: currentGuessNumber,
-        guesses: guessesStrings,
-        complete: true,
-        win: true,
-        board: board
-      };
+    if (!replay) {
+      if (this.StorageAvailable) {
+        var tmpObj = {
+          gameid: answer.gameID,
+          guessesAmount: currentGuessNumber,
+          guesses: guessesStrings,
+          complete: true,
+          win: true,
+          board: board
+        };
 
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+        localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
 
-      this.UpdateStatsData(true, currentGuessNumber -1);
+        this.UpdateStatsData(true, currentGuessNumber -1);
 
-      this.CleanLastGameData();
+        this.CleanLastGameData();
 
-      gtag('event', 'won_game');
+        gtag('event', 'won_game');
 
-    } else {
-      console.log('Local Storage unavailable, unable to set winner data');
-    }
+      } else {
+        console.log('Local Storage unavailable, unable to set winner data');
+      }
+    } //else this game is being replayed, and data should not be saved.
   },
   SetLoserData: function() {
-    if (this.StorageAvailable) {
-      var tmpObj = {
-        gameid: answer.gameID,
-        guessesAmount: currentGuessNumber,
-        guesses: guessesStrings,
-        complete: true,
-        win: false,
-        board: board
-      };
+    if (!replay) {
+      if (this.StorageAvailable) {
+        var tmpObj = {
+          gameid: answer.gameID,
+          guessesAmount: currentGuessNumber,
+          guesses: guessesStrings,
+          complete: true,
+          win: false,
+          board: board
+        };
 
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+        localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
 
-      this.UpdateStatsData(false, currentGuessNumber -1);
+        this.UpdateStatsData(false, currentGuessNumber -1);
 
-      this.CleanLastGameData();
+        this.CleanLastGameData();
 
-      gtag('event', 'lost_game');
+        gtag('event', 'lost_game');
 
-    } else {
-      console.log('Local Storage unavailable, unable to set loser data.');
-    }
+      } else {
+        console.log('Local Storage unavailable, unable to set loser data.');
+      }
+    } // else this is a replay and progress should not be saved.
   },
   SetProgressData: function() {
-    if (this.StorageAvailable) {
-      var tmpObj = {
-        gameid: answer.gameID,
-        guessesAmount: currentGuessNumber,
-        complete: false,
-        win: false,
-        board: board
-      };
+    if (!replay) {
+      if (this.StorageAvailable) {
+        var tmpObj = {
+          gameid: answer.gameID,
+          guessesAmount: currentGuessNumber,
+          complete: false,
+          win: false,
+          board: board
+        };
 
-      localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
-    } else {
-      console.log('Local Storage unavailable, unable to set progress data.');
+        localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
+      } else {
+        console.log('Local Storage unavailable, unable to set progress data.');
+      }
     }
   },
   UpdateStatsData: function(gameWon, guessIdx) {
