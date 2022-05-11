@@ -211,6 +211,18 @@ var DOM_MANAGER = {
       }
     });
   },
+  InsertRating: function() {
+    try {
+      if (answer.rating) {
+        document.getElementById("movie_rating_text").innerText = answer.rating;
+        document.getElementById("movie_rating").classList.add("show");
+      } else {
+        console.log('Seems this movie does not support the rating feature');
+      }
+    } catch(err) {
+      console.log(`Unable to Insert Movie Rating: ${err}`);
+    }
+  },
 };
 
 var UTILS_COLLECTION = {
@@ -235,6 +247,7 @@ var UTILS_COLLECTION = {
   GameLoad: function () {
     GAME_CONTROLLER.AnswerCheck();
     GAME_CONTROLLER.GameStatusCheck();
+    DOM_MANAGER.InsertRating();
     AUDIO_MANAGER.SetAudioSrc();
     AUDIO_MANAGER.AudioController();
   },

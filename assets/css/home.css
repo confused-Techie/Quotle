@@ -61,6 +61,38 @@ a:visited {
   text-decoration: none;
 }
 
+.rating-badge {
+  visibility: hidden;
+  background-color: var(--modal-background-colour);
+  height: fit-content;
+  width: fit-content;
+  border-radius: var(--size-radius);
+  transform-origin: right;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.rating-badge.show {
+  visibility: visible;
+}
+
+.rating-badge .rating {
+  border: 1px solid var(--guesses-text-colour);
+  color: var(--guesses-text-colour);
+  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-size: 1.5em;
+  white-space: nowrap;
+  align-items: center;
+  align-content: center;
+  padding: 0.08em;
+  position: relative;
+  border-radius: var(--size-radius);
+}
+
+/* TODO:: Have this animate out on hover, with details about the meaning of a rating
+  Being honest this had its quirks to figure out to get it functional.
+  But its 1:30AM on a workday and I just wanna deploy the feature. */
+
 .heading {
   text-align: center;
   display: grid;
