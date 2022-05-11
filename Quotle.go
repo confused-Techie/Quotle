@@ -12,11 +12,11 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 	"os/signal"
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 )
 
 func main() {

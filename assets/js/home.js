@@ -1,4 +1,7 @@
-var theme, replay = false, currentGuessNumber = 1, guessesStrings = [];
+var theme,
+  replay = false,
+  currentGuessNumber = 1,
+  guessesStrings = [];
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -31,35 +34,61 @@ var DOM_MANAGER = {
       spread: 70,
       origin: { y: 0.5, x: 0.5 },
     });
-
   },
-  LoserModal: function() {
-    document.getElementById("loser_modal_msg").insertAdjacentText("beforeend", UTILS_COLLECTION.UnicornComposite(i18n_answer_text, answer.name));
+  LoserModal: function () {
+    document
+      .getElementById("loser_modal_msg")
+      .insertAdjacentText(
+        "beforeend",
+        UTILS_COLLECTION.UnicornComposite(i18n_answer_text, answer.name)
+      );
     document.getElementById("loser_modal").classList.add("show");
     document.getElementById("user_guess_input").disabled = true;
     document.getElementById("submit_btn").disabled = true;
   },
-  UpdateGuessesLeft: function() {
+  UpdateGuessesLeft: function () {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
     document.getElementById("guesses_left").innerText =
-      ( 7 - currentGuessNumber === 1 ?
-        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_one, 7-currentGuessNumber ) :
-        UTILS_COLLECTION.UnicornComposite(i18n_guesses_left_many, 7-currentGuessNumber) );
+      7 - currentGuessNumber === 1
+        ? UTILS_COLLECTION.UnicornComposite(
+            i18n_guesses_left_one,
+            7 - currentGuessNumber
+          )
+        : UTILS_COLLECTION.UnicornComposite(
+            i18n_guesses_left_many,
+            7 - currentGuessNumber
+          );
   },
-  GlobalEventListeners: function() {
-    document.getElementById("about_btn").addEventListener("click", BTN_COLLECTION.AboutBtn);
-    document.getElementById("stats_btn").addEventListener("click", BTN_COLLECTION.StatsBtn);
-    document.getElementById("settings_btn").addEventListener("click", BTN_COLLECTION.SettingsBtn);
-    document.getElementById("user_guess_input").addEventListener("click", BTN_COLLECTION.MediaSearchBtn);
-    document.getElementById("user_guess_input").addEventListener("input", BTN_COLLECTION.MediaSearchBtn);
-    document.getElementById("submit_btn").addEventListener("click", BTN_COLLECTION.CheckAnswerViaBtn);
-    document.getElementById("user_guess_input").addEventListener("keyup", function(event) {
-      if (event.key === "Enter" || event.keyCode === 13) {
-        GAME_CONTROLLER.PassAnswer(document.getElementById("user_guess_input").value);
-      }
-    });
+  GlobalEventListeners: function () {
+    document
+      .getElementById("about_btn")
+      .addEventListener("click", BTN_COLLECTION.AboutBtn);
+    document
+      .getElementById("stats_btn")
+      .addEventListener("click", BTN_COLLECTION.StatsBtn);
+    document
+      .getElementById("settings_btn")
+      .addEventListener("click", BTN_COLLECTION.SettingsBtn);
+    document
+      .getElementById("user_guess_input")
+      .addEventListener("click", BTN_COLLECTION.MediaSearchBtn);
+    document
+      .getElementById("user_guess_input")
+      .addEventListener("input", BTN_COLLECTION.MediaSearchBtn);
+    document
+      .getElementById("submit_btn")
+      .addEventListener("click", BTN_COLLECTION.CheckAnswerViaBtn);
+    document
+      .getElementById("user_guess_input")
+      .addEventListener("keyup", function (event) {
+        if (event.key === "Enter" || event.keyCode === 13) {
+          GAME_CONTROLLER.PassAnswer(
+            document.getElementById("user_guess_input").value
+          );
+        }
+      });
   },
-  EnableTheme: function(requested_theme) {
+  EnableTheme: function (requested_theme) {
     if (requested_theme == "dark") {
       document.body.classList.remove("light-theme");
       document.body.classList.add("dark-theme");
@@ -70,19 +99,48 @@ var DOM_MANAGER = {
 
     var themeImg = {
       dark: {
-        src: ["/images/help-circle-white.svg", "/images/award-white.svg", "/images/settings-white.svg", "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg", "/images/github-white.svg", "/images/feather-white.svg"],
-        id: ["help-circle-img", "award-img", "settings-img", "footer-golang-img", "footer-github-img", "footer-feather-icon-img"]
+        src: [
+          "/images/help-circle-white.svg",
+          "/images/award-white.svg",
+          "/images/settings-white.svg",
+          "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg",
+          "/images/github-white.svg",
+          "/images/feather-white.svg",
+        ],
+        id: [
+          "help-circle-img",
+          "award-img",
+          "settings-img",
+          "footer-golang-img",
+          "footer-github-img",
+          "footer-feather-icon-img",
+        ],
       },
       light: {
-        src: ["/images/help-circle-black.svg", "/images/award-black.svg", "/images/settings-black.svg", "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg", "/images/github-black.svg", "/images/feather-black.svg"],
-        id: ["help-circle-img", "award-img", "settings-img", "footer-golang-img", "footer-github-img", "footer-feather-icon-img"]
-      }
+        src: [
+          "/images/help-circle-black.svg",
+          "/images/award-black.svg",
+          "/images/settings-black.svg",
+          "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-plain.svg",
+          "/images/github-black.svg",
+          "/images/feather-black.svg",
+        ],
+        id: [
+          "help-circle-img",
+          "award-img",
+          "settings-img",
+          "footer-golang-img",
+          "footer-github-img",
+          "footer-feather-icon-img",
+        ],
+      },
     };
-    for (var i = 0; i < themeImg[requested_theme].src.length; i ++) {
-      document.getElementById(themeImg[requested_theme].id[i]).src = themeImg[requested_theme].src[i];
+    for (var i = 0; i < themeImg[requested_theme].src.length; i++) {
+      document.getElementById(themeImg[requested_theme].id[i]).src =
+        themeImg[requested_theme].src[i];
     }
   },
-  ThemeCheck: function() {
+  ThemeCheck: function () {
     var turnOnLight = () => {
       theme = "light";
       STORAGE_HANDLER.SetItem("theme", "light");
@@ -111,7 +169,9 @@ var DOM_MANAGER = {
           console.log("White Theme Preffered...");
           turnOnLight();
         } else {
-          console.log("prefers-color-scheme not supported via Media Query. Are you still using IE?");
+          console.log(
+            "prefers-color-scheme not supported via Media Query. Are you still using IE?"
+          );
           turnOffLight();
         }
       } else {
@@ -120,12 +180,14 @@ var DOM_MANAGER = {
       }
     }
   },
-  ClearSearchResults: function() {
+  ClearSearchResults: function () {
     while (document.getElementById("searchResult").firstChild) {
-      document.getElementById("searchResult").removeChild(document.getElementById("searchResult").lastChild);
+      document
+        .getElementById("searchResult")
+        .removeChild(document.getElementById("searchResult").lastChild);
     }
   },
-  DisplayGuessAnswer: function(eleID, guessText, classArray) {
+  DisplayGuessAnswer: function (eleID, guessText, classArray) {
     document.getElementById(eleID).innerHTML = `<span>${guessText}</span>`;
     if (Array.isArray(classArray)) {
       for (let i = 0; i < classArray.length; i++) {
@@ -133,7 +195,7 @@ var DOM_MANAGER = {
       }
     }
   },
-  Snackbar: function(msg) {
+  Snackbar: function (msg) {
     var snackbarEle = document.getElementById("snackbar");
 
     var snackbarMsg = snackbarEle.getElementsByClassName("msg")[0];
@@ -141,7 +203,7 @@ var DOM_MANAGER = {
     snackbarMsg.innerText = msg;
     snackbarEle.classList.add("show");
 
-    snackbarEle.addEventListener("animationend", function(event) {
+    snackbarEle.addEventListener("animationend", function (event) {
       // since the snackbar uses snack-fadein and snack-fadeout
       // we know we only want to exit when fadein finishes
       if (event.animationName == "snack-fadeout") {
@@ -152,12 +214,15 @@ var DOM_MANAGER = {
 };
 
 var UTILS_COLLECTION = {
-  UnicornComposite: function() {
+  UnicornComposite: function () {
     var str = arguments[0];
     if (arguments.length > 1) {
       var t = typeof arguments[1];
       var key;
-      var args = "string" === t || "number" === t ? Array.prototype.slice.call(arguments) : arguments[1];
+      var args =
+        "string" === t || "number" === t
+          ? Array.prototype.slice.call(arguments)
+          : arguments[1];
       if (Array.isArray(args)) {
         args.shift();
       }
@@ -167,19 +232,19 @@ var UTILS_COLLECTION = {
     }
     return str;
   },
-  GameLoad: function() {
+  GameLoad: function () {
     GAME_CONTROLLER.AnswerCheck();
     GAME_CONTROLLER.GameStatusCheck();
     AUDIO_MANAGER.SetAudioSrc();
     AUDIO_MANAGER.AudioController();
   },
-  PageLoad: function() {
+  PageLoad: function () {
     DOM_MANAGER.ThemeCheck();
     this.FirstTimeVisitor();
     DOM_MANAGER.UpdateGuessesLeft();
     DOM_MANAGER.GlobalEventListeners();
   },
-  SearchResults: function(results) {
+  SearchResults: function (results) {
     try {
       var searchRes = document.getElementById("searchResult");
 
@@ -191,54 +256,69 @@ var UTILS_COLLECTION = {
         var tmpHTML = `<p onclick="BTN_COLLECTION.EnterTextEvent(event);">${results[i]}</p>`;
         searchRes.insertAdjacentHTML("beforeend", tmpHTML);
       }
-    } catch(err) {
+    } catch (err) {
       console.log(`Error Occured crafting search results: ${err}`);
     }
   },
-  FirstTimeVisitor: function() {
+  FirstTimeVisitor: function () {
     if (STORAGE_HANDLER.StorageAvailable) {
       if (!localStorage.getItem("visitor")) {
         // they have never visited before, and dont have this set.
         localStorage.setItem("visitor", "true");
-        console.log('Welcome first time visitor');
+        console.log("Welcome first time visitor");
         BTN_COLLECTION.AboutBtn();
       } else {
         console.log("I've seen you here before. Welcome back.");
       }
     } else {
-      console.log("Local Storage is not available, making it impossible to tell if this is a first time visit.");
-      console.log("To error on the side of caution, the first visitor prompt will be provided");
+      console.log(
+        "Local Storage is not available, making it impossible to tell if this is a first time visit."
+      );
+      console.log(
+        "To error on the side of caution, the first visitor prompt will be provided"
+      );
       BTN_COLLECTION.AboutBtn();
     }
   },
-  FindPlatformViaNavigator: function() {
+  FindPlatformViaNavigator: function () {
     // This will be a simple attempt at detecting the platform a user is using via the navigator.platform API.
     // Since the website only fails on Mobile Safari,
     console.log(navigator.platform);
-    var iphoneValues = [ "iPhone", "iPod", "iPad", "iPhone Simulator", "iPod Simulator", "iPad Simulator"];
+    var iphoneValues = [
+      "iPhone",
+      "iPod",
+      "iPad",
+      "iPhone Simulator",
+      "iPod Simulator",
+      "iPad Simulator",
+    ];
     if (iphoneValues.includes(navigator.platform)) {
       return "iOS";
     } else {
       return "unknown";
     }
   },
-  CleanGuessInput: function(guess) {
-    var reg = new RegExp(' \\([0-9]{4}\\)$');  // This will make a space and four numbers with parenthesis, at the end of a string.
+  CleanGuessInput: function (guess) {
+    var reg = new RegExp(" \\([0-9]{4}\\)$"); // This will make a space and four numbers with parenthesis, at the end of a string.
     return guess.replace(reg, "");
   },
 };
 
 var BTN_COLLECTION = {
-  AboutBtn: function() {
+  AboutBtn: function () {
     document.getElementById("about_modal").classList.add("show");
   },
-  SettingsBtn: function() {
+  SettingsBtn: function () {
     document.getElementById("settings_modal").classList.add("show");
   },
-  CheckAnswerViaBtn: function() {
-    GAME_CONTROLLER.PassAnswer(UTILS_COLLECTION.CleanGuessInput(document.getElementById("user_guess_input").value));
+  CheckAnswerViaBtn: function () {
+    GAME_CONTROLLER.PassAnswer(
+      UTILS_COLLECTION.CleanGuessInput(
+        document.getElementById("user_guess_input").value
+      )
+    );
   },
-  MediaSearchBtn: function(e) {
+  MediaSearchBtn: function (e) {
     console.log(e);
     var search = e.target.value;
     console.log(search);
@@ -249,13 +329,14 @@ var BTN_COLLECTION = {
         UTILS_COLLECTION.SearchResults(result);
       });
   },
-  EnterTextEvent: function(e) {
-    document.getElementById("user_guess_input").value = UTILS_COLLECTION.CleanGuessInput(e.target.innerText);
+  EnterTextEvent: function (e) {
+    document.getElementById("user_guess_input").value =
+      UTILS_COLLECTION.CleanGuessInput(e.target.innerText);
 
     // on mobile the search results cover the submit btn so we want to remove those.
     DOM_MANAGER.ClearSearchResults();
   },
-  StatsBtn: function() {
+  StatsBtn: function () {
     if (STORAGE_HANDLER.StorageAvailable) {
       if (localStorage.getItem("stats")) {
         var stats = JSON.parse(localStorage.getItem("stats"));
@@ -320,8 +401,8 @@ var BTN_COLLECTION = {
         document.getElementById("stats_modal_msg").innerHTML = tmpStringEmpty;
       }
     } else {
-        var tmpStringErr = `<p>Without Cookies enabled this can't be shown 🙁</p>`;
-        document.getElementById("stats_modal_msg").innerHTML = tmpStringErr;
+      var tmpStringErr = `<p>Without Cookies enabled this can't be shown 🙁</p>`;
+      document.getElementById("stats_modal_msg").innerHTML = tmpStringErr;
     }
 
     document.getElementById("stats_modal").classList.add("show");
@@ -329,54 +410,59 @@ var BTN_COLLECTION = {
 };
 
 var AUDIO_MANAGER = {
-  SetAudioSrc: function() {
+  SetAudioSrc: function () {
     try {
-      document.getElementById("audio-element").src = answer.audioSrc[currentGuessNumber -1];
-      document.getElementById(`audio${currentGuessNumber}-btn`).classList.remove("disable");
-    } catch(err) {
+      document.getElementById("audio-element").src =
+        answer.audioSrc[currentGuessNumber - 1];
+      document
+        .getElementById(`audio${currentGuessNumber}-btn`)
+        .classList.remove("disable");
+    } catch (err) {
       console.log(`Failed to set audio src: ${err}`);
     }
   },
-  SetSpecificAudioSrc: function(event, req) {
+  SetSpecificAudioSrc: function (event, req) {
     console.log(`SetSpecificAudioSrc: ${req}`);
     try {
       // If the text within span is clicked, we check parent element
       // But if the button itself is clicked we need to check if the current element contains the disable class.
-      if (event.target.parentElement.classList.contains("disable") || event.target.classList.contains("disable")) {
-        console.log('Audio Element is disabled. Unable to change audio.');
+      if (
+        event.target.parentElement.classList.contains("disable") ||
+        event.target.classList.contains("disable")
+      ) {
+        console.log("Audio Element is disabled. Unable to change audio.");
       } else {
-        console.log('Setting audio src');
-        document.getElementById("audio-element").src = answer.audioSrc[req -1];
+        console.log("Setting audio src");
+        document.getElementById("audio-element").src = answer.audioSrc[req - 1];
       }
-
-    } catch(err) {
+    } catch (err) {
       console.log(`Failed to set specific audio src: ${err}`);
     }
   },
-  SetSpecificAudioSrcNoClick: function(req) {
+  SetSpecificAudioSrcNoClick: function (req) {
     try {
       document.getElementById("audio-element").src = answer.audioSrc[req];
       document.getElementById(`audio${req}-btn`).classList.remove("disable");
-    } catch(err) {
+    } catch (err) {
       console.log(`Failed to set specific audio src: ${err}`);
     }
   },
-  EnableRemainingAudio: function() {
+  EnableRemainingAudio: function () {
     try {
       for (var i = currentGuessNumber; i < 7; i++) {
         document.getElementById(`audio${i}-btn`).classList.remove("disable");
       }
-    } catch(err) {
+    } catch (err) {
       console.log(`Unable to enable all audio buttons: ${err}`);
     }
   },
-  AudioController: function() {
+  AudioController: function () {
     var playIconContainer = document.getElementById("play-icon");
     var playIconImg = document.getElementById("play-icon-img");
     var audioElement = document.getElementById("audio-element");
     var state = "load";
 
-    var showPlayIcon = function() {
+    var showPlayIcon = function () {
       if (theme == "light") {
         playIconImg.src = "/images/play-white.svg";
       } else {
@@ -384,7 +470,7 @@ var AUDIO_MANAGER = {
       }
     };
 
-    var showPauseIcon = function() {
+    var showPauseIcon = function () {
       if (theme == "light") {
         playIconImg.src = "/images/pause-white.svg";
       } else {
@@ -398,20 +484,25 @@ var AUDIO_MANAGER = {
     // While the goal of quotle was seemless, unbuffered audio playback that user expereince will have to be lessened, but attempting detection at
     // the platform a user is on will hopefully only make this less than ideal for a small amount of users.
     if (UTILS_COLLECTION.FindPlatformViaNavigator() == "iOS") {
-      console.log("Seems this is an iphone. Lets just change the icon agresively.");
+      console.log(
+        "Seems this is an iphone. Lets just change the icon agresively."
+      );
       state = "pause";
       showPlayIcon();
     }
 
     // Ensure that if the readystate has exceeded needs before this function has run.
-    if (audioElement.readyState >= 3 ) {
+    if (audioElement.readyState >= 3) {
       state = "pause";
       showPlayIcon();
     }
     // Otherwise listen for the event of that ready state firing.
-    audioElement.addEventListener("loadeddata", function() {
+    audioElement.addEventListener("loadeddata", function () {
       console.log(`Audio Element Ready State: ${audioElement.readyState}`);
-      if (audioElement.readyState >= 3 && UTILS_COLLECTION.FindPlatformViaNavigator() != "iOS") {
+      if (
+        audioElement.readyState >= 3 &&
+        UTILS_COLLECTION.FindPlatformViaNavigator() != "iOS"
+      ) {
         // Had to add the not equal here, to ensure when iPhones start playing it doesn't immediatly change the play icon again after click.
         // 3 = HAVE_FUTURE_DATA
         state = "pause";
@@ -419,13 +510,15 @@ var AUDIO_MANAGER = {
       }
     });
     // Listen for the audio clip ending, and allow it to be played again.
-    audioElement.addEventListener("ended", function() {
+    audioElement.addEventListener("ended", function () {
       state = "pause";
       showPlayIcon();
     });
     // Listen for clicks on the audio play/pause button.
     playIconContainer.addEventListener("click", () => {
-      console.log(`Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`);
+      console.log(
+        `Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`
+      );
       if (state == "play") {
         showPlayIcon();
         audioElement.pause();
@@ -437,14 +530,16 @@ var AUDIO_MANAGER = {
         state = "play";
       } else {
         // the data is still loading.
-        console.log(`Play Icon Container has been clicked, even though the state isn't valid.`);
+        console.log(
+          `Play Icon Container has been clicked, even though the state isn't valid.`
+        );
       }
     });
   },
 };
 
 var GAME_CONTROLLER = {
-  PassAnswer: function(guess) {
+  PassAnswer: function (guess) {
     // The new rewrite of the checkAnswer function.
 
     this.AddGuessToString(guess);
@@ -470,17 +565,19 @@ var GAME_CONTROLLER = {
       console.log("Had trouble displaying the guess results.");
     }
   },
-  ValidateAnswer: function(guess, eleID) {
+  ValidateAnswer: function (guess, eleID) {
     fetch(`api/movie_match?value=${guess}`)
       .then((res) => res.json())
       .then((result) => {
-
         try {
           if (guess == answer.name && result.Director == answer.director) {
             // ITS CORRECT!
-            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "correct" ] );
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
+              "guessed",
+              "correct",
+            ]);
 
-            board[currentGuessNumber -1] = 1;
+            board[currentGuessNumber - 1] = 1;
             // set winner saved data here
             STORAGE_HANDLER.SetProgressData();
             STORAGE_HANDLER.SetWinnerData();
@@ -504,75 +601,82 @@ var GAME_CONTROLLER = {
             }
 
             if (amountCorrect == "none") {
-              board[currentGuessNumber -1] = 5;
+              board[currentGuessNumber - 1] = 5;
             } else if (amountCorrect == "director") {
-              board[currentGuessNumber -1] = 2;
+              board[currentGuessNumber - 1] = 2;
               DOM_MANAGER.Snackbar("Awesome you got the Director right!");
             } else if (amountCorrect == "genre") {
-              board[currentGuessNumber -1] = 3;
+              board[currentGuessNumber - 1] = 3;
               DOM_MANAGER.Snackbar("Rad you got the Genre right!");
             } else if (amountCorrect == "both") {
-              board[currentGuessNumber -1] = 4;
-              DOM_MANAGER.Snackbar("Fantastic you got both the Director and Genre right!");
+              board[currentGuessNumber - 1] = 4;
+              DOM_MANAGER.Snackbar(
+                "Fantastic you got both the Director and Genre right!"
+              );
             }
 
             if (eleID == "guess-six") {
-              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", amountCorrect, "lost" ] );
+              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
+                "guessed",
+                amountCorrect,
+                "lost",
+              ]);
               // save progress, then losing data here.
               STORAGE_HANDLER.SetProgressData();
               STORAGE_HANDLER.SetLoserData();
               DOM_MANAGER.LoserModal();
-
             } else {
               // While providing amountCorrect will cause it to append none in most cases,
               // since no styling is applying to that class it'll be harmless, and simplify logic here.
-              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", amountCorrect ] );
+              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
+                "guessed",
+                amountCorrect,
+              ]);
               // save progress here
               STORAGE_HANDLER.SetProgressData();
               this.NextGuess();
             }
           }
-        } catch(err) {
+        } catch (err) {
           console.log(`Made a bad guess buddy. It threw an error: ${err}`);
 
           if (eleID == "guess-six") {
-            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "lost" ]);
-            board[currentGuessNumber -1] = 5;
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
+            board[currentGuessNumber - 1] = 5;
             // save progress here, then losing data here
             STORAGE_HANDLER.SetProgressData();
             STORAGE_HANDLER.SetLoserData();
             DOM_MANAGER.LoserModal();
             this.NextGuess();
           } else {
-            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed" ]);
-            board[currentGuessNumber -1] = 5;
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed"]);
+            board[currentGuessNumber - 1] = 5;
             // Save progress here
             STORAGE_HANDLER.SetProgressData();
             this.NextGuess();
           }
         }
-
       })
       .catch((err) => {
         console.log(`Made a bad guess buddy. It threw an error: ${err}`);
 
         if (eleID == "guess-six") {
-          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed", "lost" ]);
-          board[currentGuessNumber -1] = 5;
+          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
+          board[currentGuessNumber - 1] = 5;
           // save progress here, then losing data here
           STORAGE_HANDLER.SetProgressData();
           STORAGE_HANDLER.SetLoserData();
           DOM_MANAGER.LoserModal();
         } else {
-          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [ "guessed" ] );
-          board[currentGuessNumber -1] = 5;
+          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed"]);
+          board[currentGuessNumber - 1] = 5;
           // save progress here
           STORAGE_HANDLER.SetProgressData();
           this.NextGuess();
         }
       });
   },
-  NextGuess: function() {
+  NextGuess: function () {
     currentGuessNumber++;
     DOM_MANAGER.UpdateGuessesLeft();
     AUDIO_MANAGER.SetAudioSrc();
@@ -591,19 +695,19 @@ var GAME_CONTROLLER = {
       }
     }
   },
-  AddGuessToString: function(guess) {
+  AddGuessToString: function (guess) {
     guessesStrings.push(guess);
   },
-  AnswerCheck: function() {
-    if (typeof answer == 'undefined') {
-      console.log('there is no answer available.');
-      console.log('adding a random previous answer to play.');
+  AnswerCheck: function () {
+    if (typeof answer == "undefined") {
+      console.log("there is no answer available.");
+      console.log("adding a random previous answer to play.");
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
       const randomGameID = Math.floor(Math.random() * 10) + 1;
 
       const scriptPromise = new Promise((resolve, reject) => {
-        const script = document.createElement('script');
+        const script = document.createElement("script");
         document.body.appendChild(script);
         script.onload = resolve;
         script.onerror = reject;
@@ -613,19 +717,22 @@ var GAME_CONTROLLER = {
 
       scriptPromise
         .then(() => {
-          console.log(`Successfully added new random answer with Game ID: ${randomGameID}`);
+          console.log(
+            `Successfully added new random answer with Game ID: ${randomGameID}`
+          );
           // now this will recall the function to init all game dependent features.
           replay = true;
           UTILS_COLLECTION.GameLoad();
-          DOM_MANAGER.Snackbar("Unable to find the newest game. Grabbing a random one for you.");
+          DOM_MANAGER.Snackbar(
+            "Unable to find the newest game. Grabbing a random one for you."
+          );
         })
         .catch(() => {
-          console.log('had an error adding new answer script.');
+          console.log("had an error adding new answer script.");
         });
-
     } // else the original answer was successfully loaded.
   },
-  GenreCheck: function(guess, correct) {
+  GenreCheck: function (guess, correct) {
     for (let i = 0; i < guess.length; i++) {
       if (correct.includes(guess[i])) {
         return true;
@@ -633,16 +740,16 @@ var GAME_CONTROLLER = {
     }
     return false;
   },
-  GameStatusCheck: function() {
+  GameStatusCheck: function () {
     if (!replay) {
       var curData = STORAGE_HANDLER.FindCurrentGame();
 
       if (curData) {
         var gameData = JSON.parse(curData);
 
-        var applyBoardUpdates = function(ele, boardValue, guessValue, idx) {
+        var applyBoardUpdates = function (ele, boardValue, guessValue, idx) {
           // if board is 0, then guesses will be undefined, so we need to ensure not to operate on those values.
-          var tmpClassArray = [ "guessed" ];
+          var tmpClassArray = ["guessed"];
           if (boardValue === 1) {
             tmpClassArray.push("correct");
           }
@@ -663,13 +770,24 @@ var GAME_CONTROLLER = {
             DOM_MANAGER.DisplayGuessAnswer(ele, guessValue, tmpClassArray);
             AUDIO_MANAGER.SetSpecificAudioSrcNoClick(idx++);
           }
-
         };
 
-        var guessEleArray = [ "guess-one", "guess-two", "guess-three", "guess-four", "guess-five", "guess-six" ];
+        var guessEleArray = [
+          "guess-one",
+          "guess-two",
+          "guess-three",
+          "guess-four",
+          "guess-five",
+          "guess-six",
+        ];
 
         for (var i = 0; i < guessEleArray.length; i++) {
-          applyBoardUpdates(guessEleArray[i], gameData.board[i], gameData.guesses[0], i);
+          applyBoardUpdates(
+            guessEleArray[i],
+            gameData.board[i],
+            gameData.guesses[0],
+            i
+          );
         }
 
         if (gameData.complete) {
@@ -684,59 +802,60 @@ var GAME_CONTROLLER = {
           AUDIO_MANAGER.EnableRemainingAudio();
         }
         // this oculd be used to rebuild the board since the game is not complete.
-
       } // else the currentgame cookie couldnt be found.
     } // else this game may or may not have been played. But we are replaying a previous game so we wont check.
   },
 };
 
 var STORAGE_HANDLER = {
-  StorageAvailable: function() {
+  StorageAvailable: function () {
     try {
       var x = "__storage_test__";
       localStorage.setItem(x, x);
       localStorage.removeItem(x);
       return true;
-    } catch(e) {
+    } catch (e) {
       return (
         e instanceof DOMException &&
         // evething except firefox
         (e.code === 22 ||
-        //firefox
-        e.code === 1012 ||
-        //test name field too, because code might not be present.
-        //evething but firefox
-        e.name === "QuotaExceededError" ||
-        //firefox
-        e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
+          //firefox
+          e.code === 1012 ||
+          //test name field too, because code might not be present.
+          //evething but firefox
+          e.name === "QuotaExceededError" ||
+          //firefox
+          e.name === "NS_ERROR_DOM_QUOTA_REACHED") &&
         // acknowledge quotaexceedederror only if theres something already stored
         localStorage &&
         localStorage.length !== 0
       );
     }
   },
-  GetItem: function(key) {
+  GetItem: function (key) {
     return new Promise((resolve, reject) => {
       if (this.StorageAvailable) {
         if (!localStorage.getItem(key)) {
           // key doesn't exist.
-          reject('no_key');
+          reject("no_key");
         } else {
           resolve(localStorage.getItem(key));
         }
       } else {
-        reject('no_store');
+        reject("no_store");
       }
     });
   },
-  SetItem: function(key, value) {
+  SetItem: function (key, value) {
     if (this.StorageAvailable) {
       localStorage.setItem(key, value);
     } else {
-      console.log(`Local Storage isn't available. Unable to set ${key} to ${value}`);
+      console.log(
+        `Local Storage isn't available. Unable to set ${key} to ${value}`
+      );
     }
   },
-  GetTheme: function() {
+  GetTheme: function () {
     if (this.StorageAvailable) {
       if (!localStorage.getItem("theme")) {
         return "";
@@ -747,7 +866,7 @@ var STORAGE_HANDLER = {
       return "";
     }
   },
-  FindCurrentGame: function() {
+  FindCurrentGame: function () {
     if (this.StorageAvailable) {
       var allKeys = Object.keys(localStorage);
       for (let i = 0; i < allKeys.length; i++) {
@@ -757,10 +876,12 @@ var STORAGE_HANDLER = {
           if (curKey == `game-${answer.gameID}`) {
             return localStorage.getItem(curKey);
           }
-        } catch(err) {
-          if (typeof answer == 'undefined') {
+        } catch (err) {
+          if (typeof answer == "undefined") {
             // likely errored with no answer availabe. Seems answer check failed to do its job.
-            console.log(`Failed to find the current game in Local Storage beccause there is no answer available to check against.`);
+            console.log(
+              `Failed to find the current game in Local Storage beccause there is no answer available to check against.`
+            );
             return false;
           } else {
             // generic error
@@ -769,16 +890,15 @@ var STORAGE_HANDLER = {
           }
         }
 
-        if (i == allKeys.length -1) {
+        if (i == allKeys.length - 1) {
           return false;
         }
-
       }
     } else {
       return false;
     }
   },
-  SetWinnerData: function() {
+  SetWinnerData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
         var tmpObj = {
@@ -787,23 +907,22 @@ var STORAGE_HANDLER = {
           guesses: guessesStrings,
           complete: true,
           win: true,
-          board: board
+          board: board,
         };
 
         localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
 
-        this.UpdateStatsData(true, currentGuessNumber -1);
+        this.UpdateStatsData(true, currentGuessNumber - 1);
 
         this.CleanLastGameData();
 
-        gtag('event', 'won_game');
-
+        gtag("event", "won_game");
       } else {
-        console.log('Local Storage unavailable, unable to set winner data');
+        console.log("Local Storage unavailable, unable to set winner data");
       }
     } //else this game is being replayed, and data should not be saved.
   },
-  SetLoserData: function() {
+  SetLoserData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
         var tmpObj = {
@@ -812,23 +931,22 @@ var STORAGE_HANDLER = {
           guesses: guessesStrings,
           complete: true,
           win: false,
-          board: board
+          board: board,
         };
 
         localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
 
-        this.UpdateStatsData(false, currentGuessNumber -1);
+        this.UpdateStatsData(false, currentGuessNumber - 1);
 
         this.CleanLastGameData();
 
-        gtag('event', 'lost_game');
-
+        gtag("event", "lost_game");
       } else {
-        console.log('Local Storage unavailable, unable to set loser data.');
+        console.log("Local Storage unavailable, unable to set loser data.");
       }
     } // else this is a replay and progress should not be saved.
   },
-  SetProgressData: function() {
+  SetProgressData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
         var tmpObj = {
@@ -836,24 +954,23 @@ var STORAGE_HANDLER = {
           guessesAmount: currentGuessNumber,
           complete: false,
           win: false,
-          board: board
+          board: board,
         };
 
         localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
       } else {
-        console.log('Local Storage unavailable, unable to set progress data.');
+        console.log("Local Storage unavailable, unable to set progress data.");
       }
     }
   },
-  UpdateStatsData: function(gameWon, guessIdx) {
+  UpdateStatsData: function (gameWon, guessIdx) {
     if (this.StorageAvailable) {
-
       if (!localStorage.getItem("stats")) {
         // stats don't exist yet
         var tmpObj = {
           gamesWon: 0,
           gamesPlayed: 0,
-          guessDistro: [ 0, 0, 0, 0, 0, 0 ]
+          guessDistro: [0, 0, 0, 0, 0, 0],
         };
 
         tmpObj.gamesPlayed++;
@@ -880,10 +997,10 @@ var STORAGE_HANDLER = {
         localStorage.setItem("stats", JSON.stringify(prev));
       }
     } else {
-      console.log('Local Storage unavailable, unable to set stats data.');
+      console.log("Local Storage unavailable, unable to set stats data.");
     }
   },
-  CleanLastGameData: function() {
+  CleanLastGameData: function () {
     if (this.StorageAvailable) {
       var allKeys = Object.keys(localStorage);
 
@@ -896,7 +1013,7 @@ var STORAGE_HANDLER = {
         }
       }
     } else {
-      console.log('Local Storage unavailable, unable to remove last game data');
+      console.log("Local Storage unavailable, unable to remove last game data");
     }
   },
 };
@@ -905,12 +1022,26 @@ window.onload = function () {
   UTILS_COLLECTION.PageLoad();
   UTILS_COLLECTION.GameLoad();
 
-  var fancyConsole = "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
-  var semiFancyConsole = "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
-  console.log('%c Quotle!', fancyConsole);
-  console.log('%c Hello welcome to the console!', semiFancyConsole);
-  console.log('%c Its wonderful to think you are here to help contribute to the project.', semiFancyConsole);
-  console.log('%c But if the Interns have taught me anything, I know people come here to cheat for answers.', semiFancyConsole);
-  console.log('%c So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.', semiFancyConsole);
-  console.log('%c Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle', semiFancyConsole);
+  var fancyConsole =
+    "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
+  var semiFancyConsole =
+    "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
+  console.log("%c Quotle!", fancyConsole);
+  console.log("%c Hello welcome to the console!", semiFancyConsole);
+  console.log(
+    "%c Its wonderful to think you are here to help contribute to the project.",
+    semiFancyConsole
+  );
+  console.log(
+    "%c But if the Interns have taught me anything, I know people come here to cheat for answers.",
+    semiFancyConsole
+  );
+  console.log(
+    "%c So go ahead if thats the goal. See if you can figure out the simple API to query for the answers.",
+    semiFancyConsole
+  );
+  console.log(
+    "%c Otherwise please feel free to look around and contribute to the project! https://github.com/confused-Techie/Quotle",
+    semiFancyConsole
+  );
 };

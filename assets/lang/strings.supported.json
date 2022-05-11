@@ -1,7 +1,3 @@
 {
-  "langs": [
-    "en-US",
-    "es-MX",
-    "zh-TW"
-  ]
+  "langs": ["en-US", "es-MX", "zh-TW"]
 }

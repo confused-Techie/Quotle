@@ -4,13 +4,13 @@ import (
 	"encoding/json"
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 	models "github.com/confused-Techie/Quotle/src/pkg/models"
-  "github.com/spf13/viper"
-	"strings"
+	"github.com/spf13/viper"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // TmdbApiKey is the API call to tmdb, which should be stored in the app.yaml file.
@@ -53,7 +53,7 @@ func SearchQuery(search string) []string {
 
 	for _, itm := range res.Results {
 		s := strings.Split(itm.ReleaseDate, "-")
-		toRes = append(toRes, itm.Title + " (" + s[0] + ")" )
+		toRes = append(toRes, itm.Title+" ("+s[0]+")")
 	}
 	return toRes
 }

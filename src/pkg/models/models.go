@@ -14,7 +14,7 @@ type PageTemplate struct {
 // PrefferedStringsV2 is the object to contain string data as well as the locale
 type PrefferedStringsV2 struct {
 	Strings map[string]string
-	Lang string
+	Lang    string
 }
 
 // StringsSupported holds the struct for a strings.supported.json file
@@ -61,9 +61,9 @@ type SearchResultCollection struct {
 
 // APISearchResultItem is for the API call to tmdb.
 type APISearchResultItem struct {
-	GenreIDs []int  `json:"genre_ids"`
-	ID       int    `json:"id"`
-	Title    string `json:"title"`
+	GenreIDs    []int  `json:"genre_ids"`
+	ID          int    `json:"id"`
+	Title       string `json:"title"`
 	ReleaseDate string `json:"release_date"`
 }
 

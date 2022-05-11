@@ -508,7 +508,6 @@ footer p {
 }
 
 @media screen and (max-width: 769px) {
-
 }
 
 /* ========== EXTRA Small Width Breakpoint ========= */
@@ -517,7 +516,7 @@ footer p {
   .modal .modal-content .msg p {
     font-size: 1rem;
   }
-  .gameBoard .audio-selection  {
+  .gameBoard .audio-selection {
     display: block;
   }
 }
