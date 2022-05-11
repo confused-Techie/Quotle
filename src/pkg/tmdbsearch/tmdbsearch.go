@@ -5,6 +5,7 @@ import (
 	logger "github.com/confused-Techie/Quotle/src/pkg/logger"
 	models "github.com/confused-Techie/Quotle/src/pkg/models"
   "github.com/spf13/viper"
+	"strings"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -51,7 +52,8 @@ func SearchQuery(search string) []string {
 	var toRes []string
 
 	for _, itm := range res.Results {
-		toRes = append(toRes, itm.Title)
+		s := strings.Split(itm.ReleaseDate, "-")
+		toRes = append(toRes, itm.Title + " (" + s[0] + ")" )
 	}
 	return toRes
 }

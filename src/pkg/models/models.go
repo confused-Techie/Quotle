@@ -17,7 +17,7 @@ type PrefferedStringsV2 struct {
 	Lang string
 }
 
-// StringsSupported holds the struct for a strings.supported.json file 
+// StringsSupported holds the struct for a strings.supported.json file
 type StringsSupported struct {
 	Langs []string `json:"langs"`
 }
@@ -64,6 +64,7 @@ type APISearchResultItem struct {
 	GenreIDs []int  `json:"genre_ids"`
 	ID       int    `json:"id"`
 	Title    string `json:"title"`
+	ReleaseDate string `json:"release_date"`
 }
 
 // APISearchResultCollection Collection of APISearchResultItem

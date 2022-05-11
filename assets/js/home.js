@@ -222,6 +222,10 @@ var UTILS_COLLECTION = {
       return "unknown";
     }
   },
+  CleanGuessInput: function(guess) {
+    var reg = new RegExp(' \\([0-9]{4}\\)$');  // This will make a space and four numbers with parenthesis, at the end of a string.
+    return guess.replace(reg, "");
+  },
 };
 
 var BTN_COLLECTION = {
@@ -232,7 +236,7 @@ var BTN_COLLECTION = {
     document.getElementById("settings_modal").classList.add("show");
   },
   CheckAnswerViaBtn: function() {
-    GAME_CONTROLLER.PassAnswer(document.getElementById("user_guess_input").value);
+    GAME_CONTROLLER.PassAnswer(UTILS_COLLECTION.CleanGuessInput(document.getElementById("user_guess_input").value));
   },
   MediaSearchBtn: function(e) {
     console.log(e);
@@ -246,7 +250,7 @@ var BTN_COLLECTION = {
       });
   },
   EnterTextEvent: function(e) {
-    document.getElementById("user_guess_input").value = e.target.innerText;
+    document.getElementById("user_guess_input").value = UTILS_COLLECTION.CleanGuessInput(e.target.innerText);
 
     // on mobile the search results cover the submit btn so we want to remove those.
     DOM_MANAGER.ClearSearchResults();
