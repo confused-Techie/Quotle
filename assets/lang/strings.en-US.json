@@ -17,5 +17,18 @@
   "footer-made-with": "Open Source, Made with Golang & ❤",
   "footer-source": "Source Code",
   "footer-feather": "Feather Icons",
-  "footer-tmdb": "Movie Results from The Movie Database"
+  "footer-tmdb": "Movie Results from The Movie Database",
+  "img-shuffle": "Shuffle to a random previous game.",
+  "img-stats": "View your in game stats.",
+  "img-settings": "Access game settings.",
+  "img-about": "Instructions on how to play the game.",
+  "alt-about": "Question Mark in a Circle, indicating help.",
+  "alt-shuffle": "Shuffle Game Icon",
+  "alt-award": "Award Icon",
+  "alt-settings": "Traditional Settings Gear Icon",
+  "alt-play": "Play Audio Icon",
+  "alt-golang": "Golang Logo",
+  "alt-github": "Github's Octocat Icon",
+  "alt-feather": "Feather Icon Project Logo",
+  "alt-tmdb": "The Movie Database Attribution Logo"
 }
