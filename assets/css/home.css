@@ -79,7 +79,7 @@ a:visited {
 .rating-badge .rating {
   border: 1px solid var(--guesses-text-colour);
   color: var(--guesses-text-colour);
-  font-family: 'Source Sans Pro', Arial, sans-serif;
+  font-family: "Source Sans Pro", Arial, sans-serif;
   font-size: 1.5em;
   white-space: nowrap;
   align-items: center;
@@ -396,8 +396,7 @@ a:visited {
   justify-content: center;
   flex-direction: column;
   border-left: 2px solid var(--graph-colour);
-  background:
-    repeating-linear-gradient(
+  background: repeating-linear-gradient(
     90deg,
     transparent,
     transparent 19.5%,
@@ -555,7 +554,7 @@ footer p {
   .modal .modal-content .msg p {
     font-size: 1rem;
   }
-  
+
   .gameBoard .audio-selection {
     display: block;
   }

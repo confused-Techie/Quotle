@@ -81,7 +81,9 @@ var DOM_MANAGER = {
     document
       .getElementById("submit_btn")
       .addEventListener("click", BTN_COLLECTION.CheckAnswerViaBtn);
-    document.getElementById("shuffle_btn").addEventListener("click", GAME_CONTROLLER.RandomPlay);
+    document
+      .getElementById("shuffle_btn")
+      .addEventListener("click", GAME_CONTROLLER.RandomPlay);
     document
       .getElementById("user_guess_input")
       .addEventListener("keyup", function (event) {
@@ -178,7 +180,8 @@ var DOM_MANAGER = {
           turnOnLight();
         } else {
           LOG.Warn(
-            "prefers-color-scheme not supported via Media Query. Are you still using IE?", "dom"
+            "prefers-color-scheme not supported via Media Query. Are you still using IE?",
+            "dom"
           );
           turnOffLight();
         }
@@ -219,15 +222,15 @@ var DOM_MANAGER = {
       }
     });
   },
-  InsertRating: function() {
+  InsertRating: function () {
     try {
       if (answer.rating) {
         document.getElementById("movie_rating_text").innerText = answer.rating;
         document.getElementById("movie_rating").classList.add("show");
       } else {
-        LOG.Warn('Seems this movie does not support the rating feature', "dom");
+        LOG.Warn("Seems this movie does not support the rating feature", "dom");
       }
-    } catch(err) {
+    } catch (err) {
       LOG.Error(`Unable to Insert Movie Rating: ${err}`, "dom");
     }
   },
@@ -508,7 +511,8 @@ var AUDIO_MANAGER = {
     // the platform a user is on will hopefully only make this less than ideal for a small amount of users.
     if (UTILS_COLLECTION.FindPlatformViaNavigator() == "iOS") {
       LOG.Warn(
-        "Seems this is an iphone. Lets just change the icon agresively.", "audio"
+        "Seems this is an iphone. Lets just change the icon agresively.",
+        "audio"
       );
       state = "pause";
       showPlayIcon();
@@ -521,7 +525,10 @@ var AUDIO_MANAGER = {
     }
     // Otherwise listen for the event of that ready state firing.
     audioElement.addEventListener("loadeddata", function () {
-      LOG.Info(`Audio Element Ready State: ${audioElement.readyState}`, "audio");
+      LOG.Info(
+        `Audio Element Ready State: ${audioElement.readyState}`,
+        "audio"
+      );
       if (
         audioElement.readyState >= 3 &&
         UTILS_COLLECTION.FindPlatformViaNavigator() != "iOS"
@@ -540,7 +547,8 @@ var AUDIO_MANAGER = {
     // Listen for clicks on the audio play/pause button.
     playIconContainer.addEventListener("click", () => {
       LOG.Info(
-        `Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`, "audio"
+        `Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`,
+        "audio"
       );
       if (state == "play") {
         showPlayIcon();
@@ -554,7 +562,8 @@ var AUDIO_MANAGER = {
       } else {
         // the data is still loading.
         LOG.Warn(
-          `Play Icon Container has been clicked, even though the state isn't valid.`, "audio"
+          `Play Icon Container has been clicked, even though the state isn't valid.`,
+          "audio"
         );
       }
     });
@@ -593,9 +602,18 @@ var GAME_CONTROLLER = {
       .then((res) => res.json())
       .then((result) => {
         try {
-          LOG.InfoSpoiler("game", "ValidateAnswer: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}", guess, answer.name, answer.director);
+          LOG.InfoSpoiler(
+            "game",
+            "ValidateAnswer: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}",
+            guess,
+            answer.name,
+            answer.director
+          );
           //LOG.Info(`ValidateAnswer: Guess: ${guess}; Answer.Name: ${answer.name}; Answer.Director: ${answer.director}`, "game");
-          LOG.Info(`ValidateAnswer: Movie_Match: Name: ${result.Name}; Director: ${result.Director}`, "game");
+          LOG.Info(
+            `ValidateAnswer: Movie_Match: Name: ${result.Name}; Director: ${result.Director}`,
+            "game"
+          );
           if (guess == answer.name && result.Director == answer.director) {
             LOG.Info("Correct Answer!", "game");
             // ITS CORRECT!
@@ -671,7 +689,10 @@ var GAME_CONTROLLER = {
             }
           }
         } catch (err) {
-          LOG.Error(`Made a bad guess buddy. It threw an error: ${err}`, "game");
+          LOG.Error(
+            `Made a bad guess buddy. It threw an error: ${err}`,
+            "game"
+          );
 
           if (eleID == "guess-six") {
             LOG.Info("Player made their last guess.", "game");
@@ -755,7 +776,8 @@ var GAME_CONTROLLER = {
       scriptPromise
         .then(() => {
           LOG.Info(
-            `Successfully added new random answer with Game ID: ${randomGameID}`, "game"
+            `Successfully added new random answer with Game ID: ${randomGameID}`,
+            "game"
           );
           // now this will recall the function to init all game dependent features.
           replay = true;
@@ -769,7 +791,7 @@ var GAME_CONTROLLER = {
         });
     } // else the original answer was successfully loaded.
   },
-  RandomPlay: function() {
+  RandomPlay: function () {
     // this will replace answer with a new definition, chosen at random.
     LOG.Info(`Random Game load requested.`, "game");
 
@@ -792,7 +814,7 @@ var GAME_CONTROLLER = {
         DOM_MANAGER.Snackbar("New Random Game Loaded");
       })
       .catch(() => {
-        LOG.Error("Error when creating new anwser.", "game")
+        LOG.Error("Error when creating new anwser.", "game");
       });
   },
   GenreCheck: function (guess, correct) {
@@ -914,7 +936,8 @@ var STORAGE_HANDLER = {
       localStorage.setItem(key, value);
     } else {
       LOG.Error(
-        `Local Storage isn't available. Unable to set ${key} to ${value}`, "store"
+        `Local Storage isn't available. Unable to set ${key} to ${value}`,
+        "store"
       );
     }
   },
@@ -949,7 +972,10 @@ var STORAGE_HANDLER = {
             return false;
           } else {
             // generic error
-            LOG.Warn(`Failed to find current game in local storage: ${err}`, "store");
+            LOG.Warn(
+              `Failed to find current game in local storage: ${err}`,
+              "store"
+            );
             return false;
           }
         }
@@ -982,7 +1008,10 @@ var STORAGE_HANDLER = {
 
         gtag("event", "won_game");
       } else {
-        LOG.Error("Local Storage unavailable, unable to set winner data", "store");
+        LOG.Error(
+          "Local Storage unavailable, unable to set winner data",
+          "store"
+        );
       }
     } //else this game is being replayed, and data should not be saved.
   },
@@ -1006,7 +1035,10 @@ var STORAGE_HANDLER = {
 
         gtag("event", "lost_game");
       } else {
-        LOG.Error("Local Storage unavailable, unable to set loser data.", "store");
+        LOG.Error(
+          "Local Storage unavailable, unable to set loser data.",
+          "store"
+        );
       }
     } // else this is a replay and progress should not be saved.
   },
@@ -1023,7 +1055,10 @@ var STORAGE_HANDLER = {
 
         localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
       } else {
-        LOG.Error("Local Storage unavailable, unable to set progress data.", "store");
+        LOG.Error(
+          "Local Storage unavailable, unable to set progress data.",
+          "store"
+        );
       }
     }
   },
@@ -1061,7 +1096,10 @@ var STORAGE_HANDLER = {
         localStorage.setItem("stats", JSON.stringify(prev));
       }
     } else {
-      LOG.Error("Local Storage unavailable, unable to set stats data.", "store");
+      LOG.Error(
+        "Local Storage unavailable, unable to set stats data.",
+        "store"
+      );
     }
   },
   CleanLastGameData: function () {
@@ -1077,13 +1115,16 @@ var STORAGE_HANDLER = {
         }
       }
     } else {
-      LOG.Error("Local Storage unavailable, unable to remove last game data.", "store");
+      LOG.Error(
+        "Local Storage unavailable, unable to remove last game data.",
+        "store"
+      );
     }
   },
 };
 
 var LOG = {
-  DetermineKind: function(kind) {
+  DetermineKind: function (kind) {
     // There will be a few services that can properly logged.
     if (kind == "audio") return "AUDIO_SERVICE:: ";
     if (kind == "game") return "GAME_LOGIC:: ";
@@ -1091,13 +1132,13 @@ var LOG = {
     if (kind == "store") return "STORAGE_HANDLER:: ";
     if (kind == "") return "GENERAL:: ";
   },
-  Enabled: function() {
+  Enabled: function () {
     if (game_debug) {
       return true;
     }
     return false;
   },
-  Spoil: function() {
+  Spoil: function () {
     if (debug_spoiler) {
       return true;
     }
@@ -1121,16 +1162,26 @@ var LOG = {
   InfoSpoiler: function (kind = "", base, ...reps) {
     if (this.Enabled()) {
       if (this.Spoil()) {
-        console.info(`${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(base, ...reps)}`);
+        console.info(
+          `${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(
+            base,
+            ...reps
+          )}`
+        );
       } else {
         let rep = [];
         for (let k = 0; k < reps.length; k++) {
-          rep.push('[REDACTED]');
+          rep.push("[REDACTED]");
         }
         // Here instead of passing along my variadic rest parameters to UnicornComposite I instead,
         // create an array the same length as the original rest parameters of [REDACTED] and use the spread operator
         // to pass them to Unicorn as if they were native replacements.
-        console.info(`${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(base, ...rep)}`);
+        console.info(
+          `${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(
+            base,
+            ...rep
+          )}`
+        );
       }
     }
   },
