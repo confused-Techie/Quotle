@@ -215,6 +215,7 @@ a:visited {
 
 .heading .stats img,
 .heading .settings img,
+.heading .shuffle img,
 .heading .about img {
   cursor: pointer;
 }

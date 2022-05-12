@@ -2,7 +2,8 @@ var theme,
   replay = false,
   currentGuessNumber = 1,
   guessesStrings = [],
-  totalGameCount = 10;
+  totalGameCount = 10,
+  game_debug = true;
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -161,27 +162,27 @@ var DOM_MANAGER = {
 
     var availableTheme = STORAGE_HANDLER.GetTheme();
     if (availableTheme == "light") {
-      console.log("Light Mode Enabled via Cookies");
+      LOG.Info("Light Mode Enabled via Cookies", "dom");
       turnOnLight();
     } else if (availableTheme == "dark") {
-      console.log("Dark Mode Enabled via Cookies");
+      LOG.Info("Dark Mode Enabled via Cookies", "dom");
       turnOffLight();
     } else if (availableTheme == "") {
       if (window.matchMedia) {
         if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-          console.log("Dark Theme Preffered...");
+          LOG.Info("Dark Theme Preffered...", "dom");
           turnOffLight();
         } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-          console.log("White Theme Preffered...");
+          LOG.Info("White Theme Preffered...", "dom");
           turnOnLight();
         } else {
-          console.log(
-            "prefers-color-scheme not supported via Media Query. Are you still using IE?"
+          Log.Warn(
+            "prefers-color-scheme not supported via Media Query. Are you still using IE?", "dom"
           );
           turnOffLight();
         }
       } else {
-        console.log("Match Media not supported. Defaulting to Dark Theme");
+        Log.Warn("Match Media not supported. Defaulting to Dark Theme", "dom");
         turnOffLight();
       }
     }
@@ -223,10 +224,10 @@ var DOM_MANAGER = {
         document.getElementById("movie_rating_text").innerText = answer.rating;
         document.getElementById("movie_rating").classList.add("show");
       } else {
-        console.log('Seems this movie does not support the rating feature');
+        LOG.Warn('Seems this movie does not support the rating feature', "dom");
       }
     } catch(err) {
-      console.log(`Unable to Insert Movie Rating: ${err}`);
+      LOG.Error(`Unable to Insert Movie Rating: ${err}`, "dom");
     }
   },
 };
@@ -276,7 +277,7 @@ var UTILS_COLLECTION = {
         searchRes.insertAdjacentHTML("beforeend", tmpHTML);
       }
     } catch (err) {
-      console.log(`Error Occured crafting search results: ${err}`);
+      LOG.Error(`Error Occured crafting search results: ${err}`);
     }
   },
   FirstTimeVisitor: function () {
@@ -284,16 +285,16 @@ var UTILS_COLLECTION = {
       if (!localStorage.getItem("visitor")) {
         // they have never visited before, and dont have this set.
         localStorage.setItem("visitor", "true");
-        console.log("Welcome first time visitor");
+        LOG.Info("Welcome first time visitor");
         BTN_COLLECTION.AboutBtn();
       } else {
-        console.log("I've seen you here before. Welcome back.");
+        LOG.Info("I've seen you here before. Welcome back.");
       }
     } else {
-      console.log(
+      LOG.Warn(
         "Local Storage is not available, making it impossible to tell if this is a first time visit."
       );
-      console.log(
+      LOG.Warn(
         "To error on the side of caution, the first visitor prompt will be provided"
       );
       BTN_COLLECTION.AboutBtn();
@@ -302,7 +303,7 @@ var UTILS_COLLECTION = {
   FindPlatformViaNavigator: function () {
     // This will be a simple attempt at detecting the platform a user is using via the navigator.platform API.
     // Since the website only fails on Mobile Safari,
-    console.log(navigator.platform);
+    LOG.Info(navigator.platform);
     var iphoneValues = [
       "iPhone",
       "iPod",
@@ -340,7 +341,7 @@ var BTN_COLLECTION = {
   MediaSearchBtn: function (e) {
     console.log(e);
     var search = e.target.value;
-    console.log(search);
+    LOG.Info(search);
 
     fetch(`/api/search?value=${search}`)
       .then((res) => res.json())
@@ -437,11 +438,11 @@ var AUDIO_MANAGER = {
         .getElementById(`audio${currentGuessNumber}-btn`)
         .classList.remove("disable");
     } catch (err) {
-      console.log(`Failed to set audio src: ${err}`);
+      LOG.Error(`Failed to set audio src: ${err}`, "audio");
     }
   },
   SetSpecificAudioSrc: function (event, req) {
-    console.log(`SetSpecificAudioSrc: ${req}`);
+    LOG.Info(`SetSpecificAudioSrc: ${req}`, "audio");
     try {
       // If the text within span is clicked, we check parent element
       // But if the button itself is clicked we need to check if the current element contains the disable class.
@@ -449,13 +450,13 @@ var AUDIO_MANAGER = {
         event.target.parentElement.classList.contains("disable") ||
         event.target.classList.contains("disable")
       ) {
-        console.log("Audio Element is disabled. Unable to change audio.");
+        LOG.Warn("Audio Element is disabled. Unable to change audio.", "audio");
       } else {
-        console.log("Setting audio src");
+        LOG.Info("Setting audio src", "audio");
         document.getElementById("audio-element").src = answer.audioSrc[req - 1];
       }
     } catch (err) {
-      console.log(`Failed to set specific audio src: ${err}`);
+      LOG.Error(`Failed to set specific audio src: ${err}`, "audio");
     }
   },
   SetSpecificAudioSrcNoClick: function (req) {
@@ -463,7 +464,7 @@ var AUDIO_MANAGER = {
       document.getElementById("audio-element").src = answer.audioSrc[req];
       document.getElementById(`audio${req}-btn`).classList.remove("disable");
     } catch (err) {
-      console.log(`Failed to set specific audio src: ${err}`);
+      LOG.Error(`Failed to set specific audio src: ${err}`, "audio");
     }
   },
   EnableRemainingAudio: function () {
@@ -472,7 +473,7 @@ var AUDIO_MANAGER = {
         document.getElementById(`audio${i}-btn`).classList.remove("disable");
       }
     } catch (err) {
-      console.log(`Unable to enable all audio buttons: ${err}`);
+      LOG.Error(`Unable to enable all audio buttons: ${err}`, "audio");
     }
   },
   AudioController: function () {
@@ -503,8 +504,8 @@ var AUDIO_MANAGER = {
     // While the goal of quotle was seemless, unbuffered audio playback that user expereince will have to be lessened, but attempting detection at
     // the platform a user is on will hopefully only make this less than ideal for a small amount of users.
     if (UTILS_COLLECTION.FindPlatformViaNavigator() == "iOS") {
-      console.log(
-        "Seems this is an iphone. Lets just change the icon agresively."
+      LOG.Warn(
+        "Seems this is an iphone. Lets just change the icon agresively.", "audio"
       );
       state = "pause";
       showPlayIcon();
@@ -517,7 +518,7 @@ var AUDIO_MANAGER = {
     }
     // Otherwise listen for the event of that ready state firing.
     audioElement.addEventListener("loadeddata", function () {
-      console.log(`Audio Element Ready State: ${audioElement.readyState}`);
+      LOG.Info(`Audio Element Ready State: ${audioElement.readyState}`, "audio");
       if (
         audioElement.readyState >= 3 &&
         UTILS_COLLECTION.FindPlatformViaNavigator() != "iOS"
@@ -535,8 +536,8 @@ var AUDIO_MANAGER = {
     });
     // Listen for clicks on the audio play/pause button.
     playIconContainer.addEventListener("click", () => {
-      console.log(
-        `Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`
+      LOG.Info(
+        `Play Icon Container has been clicked. ReadyState: ${audioElement.readyState}; State: ${state}`, "audio"
       );
       if (state == "play") {
         showPlayIcon();
@@ -549,8 +550,8 @@ var AUDIO_MANAGER = {
         state = "play";
       } else {
         // the data is still loading.
-        console.log(
-          `Play Icon Container has been clicked, even though the state isn't valid.`
+        LOG.Warn(
+          `Play Icon Container has been clicked, even though the state isn't valid.`, "audio"
         );
       }
     });
@@ -581,7 +582,7 @@ var GAME_CONTROLLER = {
     } else if (currentGuessNumber === 6) {
       this.ValidateAnswer(guess, "guess-six");
     } else {
-      console.log("Had trouble displaying the guess results.");
+      LOG.Error("Had trouble displaying the guess results.", "game");
     }
   },
   ValidateAnswer: function (guess, eleID) {
@@ -589,7 +590,10 @@ var GAME_CONTROLLER = {
       .then((res) => res.json())
       .then((result) => {
         try {
+          LOG.Info(`ValidateAnswer: Guess: ${guess}; Answer.Name: ${answer.name}; Answer.Director: ${answer.director}`, "game");
+          LOG.Info(`ValidateAnswer: Movie_Match: Name: ${result.Name}; Director: ${result.Director}`, "game");
           if (guess == answer.name && result.Director == answer.director) {
+            LOG.Info("Correct Answer!", "game");
             // ITS CORRECT!
             DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
               "guessed",
@@ -604,6 +608,7 @@ var GAME_CONTROLLER = {
             this.NextGuess();
             DOM_MANAGER.WinnerModal();
           } else {
+            LOG.Info("Incorrect Answer.", "game");
             // ITS INCORRECT
             // But lets see what they got right.
             var correctGenre = this.GenreCheck(result.Genre, answer.genre);
@@ -620,14 +625,18 @@ var GAME_CONTROLLER = {
             }
 
             if (amountCorrect == "none") {
+              LOG.Info("No extras correct.", "game");
               board[currentGuessNumber - 1] = 5;
             } else if (amountCorrect == "director") {
+              LOG.Info("Director correct.", "game");
               board[currentGuessNumber - 1] = 2;
               DOM_MANAGER.Snackbar("Awesome you got the Director right!");
             } else if (amountCorrect == "genre") {
+              LOG.Info("Genre Correct", "game");
               board[currentGuessNumber - 1] = 3;
               DOM_MANAGER.Snackbar("Rad you got the Genre right!");
             } else if (amountCorrect == "both") {
+              LOG.Info("Director & Genre Correct", "game");
               board[currentGuessNumber - 1] = 4;
               DOM_MANAGER.Snackbar(
                 "Fantastic you got both the Director and Genre right!"
@@ -635,6 +644,7 @@ var GAME_CONTROLLER = {
             }
 
             if (eleID == "guess-six") {
+              LOG.Info("Player guessed the last guess.", "game");
               DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
                 "guessed",
                 amountCorrect,
@@ -657,9 +667,10 @@ var GAME_CONTROLLER = {
             }
           }
         } catch (err) {
-          console.log(`Made a bad guess buddy. It threw an error: ${err}`);
+          LOG.Error(`Made a bad guess buddy. It threw an error: ${err}`, "game");
 
           if (eleID == "guess-six") {
+            LOG.Info("Player made their last guess.", "game");
             DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
             board[currentGuessNumber - 1] = 5;
             // save progress here, then losing data here
@@ -677,9 +688,10 @@ var GAME_CONTROLLER = {
         }
       })
       .catch((err) => {
-        console.log(`Made a bad guess buddy. It threw an error: ${err}`);
+        LOG.Error(`Made a bad guess buddy. It threw an error: ${err}`, "game");
 
         if (eleID == "guess-six") {
+          LOG.Info("Player made their last guess.", "game");
           DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
           board[currentGuessNumber - 1] = 5;
           // save progress here, then losing data here
@@ -719,8 +731,8 @@ var GAME_CONTROLLER = {
   },
   AnswerCheck: function () {
     if (typeof answer == "undefined") {
-      console.log("there is no answer available.");
-      console.log("adding a random previous answer to play.");
+      LOG.Warn("there is no answer available.", "game");
+      LOG.Warn("adding a random previous answer to play.", "game");
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
       const randomGameID = Math.floor(Math.random() * totalGameCount) + 1;
@@ -736,8 +748,8 @@ var GAME_CONTROLLER = {
 
       scriptPromise
         .then(() => {
-          console.log(
-            `Successfully added new random answer with Game ID: ${randomGameID}`
+          LOG.Info(
+            `Successfully added new random answer with Game ID: ${randomGameID}`, "game"
           );
           // now this will recall the function to init all game dependent features.
           replay = true;
@@ -747,15 +759,15 @@ var GAME_CONTROLLER = {
           );
         })
         .catch(() => {
-          console.log("had an error adding new answer script.");
+          LOG.Error("had an error adding new answer script.", "game");
         });
     } // else the original answer was successfully loaded.
   },
   RandomPlay: function() {
     // this will replace answer with a new definition, chosen at random.
-    console.log(`Random Game load requested.`);
+    LOG.Info(`Random Game load requested.`, "game");
 
-    const randomGameID = Math.floor(Match.random() * totalGameCount) + 1;
+    const randomGameID = Math.floor(Math.random() * totalGameCount) + 1;
 
     const scriptPromise = new Promise((resolve, reject) => {
       const script = document.createElement("script");
@@ -763,18 +775,18 @@ var GAME_CONTROLLER = {
       script.onload = resolve;
       script.onerror = reject;
       script.async = true;
-      script.src = `https://storage.googleapis.com/quotle=games/${randomGameID}/answer.js`;
+      script.src = `https://storage.googleapis.com/quotle-games/${randomGameID}/answer.js`;
     });
 
-    scriptPromise.
+    scriptPromise
       .then(() => {
-        console.log(`Successfully queried new game data`);
+        LOG.Info(`Successfully queried new game data`, "game");
         replay = true;
         UTILS_COLLECTION.GameLoad();
         DOM_MANAGER.Snackbar("New Random Game Loaded");
       })
       .catch(() => {
-        console.log("Error our error creating new anwser.")
+        LOG.Error("Error when creating new anwser.", "game")
       });
   },
   GenreCheck: function (guess, correct) {
@@ -895,8 +907,8 @@ var STORAGE_HANDLER = {
     if (this.StorageAvailable) {
       localStorage.setItem(key, value);
     } else {
-      console.log(
-        `Local Storage isn't available. Unable to set ${key} to ${value}`
+      LOG.Error(
+        `Local Storage isn't available. Unable to set ${key} to ${value}`, "store"
       );
     }
   },
@@ -924,13 +936,14 @@ var STORAGE_HANDLER = {
         } catch (err) {
           if (typeof answer == "undefined") {
             // likely errored with no answer availabe. Seems answer check failed to do its job.
-            console.log(
-              `Failed to find the current game in Local Storage beccause there is no answer available to check against.`
+            LOG.Error(
+              `Failed to find the current game in Local Storage beccause there is no answer available to check against.`,
+              "store"
             );
             return false;
           } else {
             // generic error
-            console.log(`Failed to find current game in local storage: ${err}`);
+            LOG.Warn(`Failed to find current game in local storage: ${err}`, "store");
             return false;
           }
         }
@@ -963,7 +976,7 @@ var STORAGE_HANDLER = {
 
         gtag("event", "won_game");
       } else {
-        console.log("Local Storage unavailable, unable to set winner data");
+        LOG.Error("Local Storage unavailable, unable to set winner data", "store");
       }
     } //else this game is being replayed, and data should not be saved.
   },
@@ -987,7 +1000,7 @@ var STORAGE_HANDLER = {
 
         gtag("event", "lost_game");
       } else {
-        console.log("Local Storage unavailable, unable to set loser data.");
+        LOG.Error("Local Storage unavailable, unable to set loser data.", "store");
       }
     } // else this is a replay and progress should not be saved.
   },
@@ -1004,7 +1017,7 @@ var STORAGE_HANDLER = {
 
         localStorage.setItem(`game-${answer.gameID}`, JSON.stringify(tmpObj));
       } else {
-        console.log("Local Storage unavailable, unable to set progress data.");
+        LOG.Error("Local Storage unavailable, unable to set progress data.", "store");
       }
     }
   },
@@ -1042,7 +1055,7 @@ var STORAGE_HANDLER = {
         localStorage.setItem("stats", JSON.stringify(prev));
       }
     } else {
-      console.log("Local Storage unavailable, unable to set stats data.");
+      LOG.Error("Local Storage unavailable, unable to set stats data.", "store");
     }
   },
   CleanLastGameData: function () {
@@ -1058,7 +1071,39 @@ var STORAGE_HANDLER = {
         }
       }
     } else {
-      console.log("Local Storage unavailable, unable to remove last game data");
+      LOG.Error("Local Storage unavailable, unable to remove last game data.", "store");
+    }
+  },
+};
+
+var LOG = {
+  DetermineKind: function(kind) {
+    // There will be a few services that can properly logged.
+    if (kind == "audio") return "AUDIO_SERVICE:: ";
+    if (kind == "game") return "GAME_LOGIC:: ";
+    if (kind == "dom") return "DOM_MANAGER:: ";
+    if (kind == "store") return "STORAGE_HANDLER:: ";
+    if (kind == "") return "GENERAL:: ";
+  },
+  Enabled: function() {
+    if (game_debug) {
+      return true;
+    }
+    return false;
+  },
+  Info: function (text, kind = "") {
+    if (this.Enabled()) {
+      console.info(`${this.DetermineKind(kind)}${text}`);
+    }
+  },
+  Warn: function (text, kind = "") {
+    if (this.Enabled()) {
+      console.warn(`${this.DetermineKind(kind)}${text}`);
+    }
+  },
+  Error: function (text, kind = "") {
+    if (this.Enabled()) {
+      console.error(`${this.DetermineKind(kind)}${text}`);
     }
   },
 };
