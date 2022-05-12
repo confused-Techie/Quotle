@@ -176,13 +176,13 @@ var DOM_MANAGER = {
           LOG.Info("White Theme Preffered...", "dom");
           turnOnLight();
         } else {
-          Log.Warn(
+          LOG.Warn(
             "prefers-color-scheme not supported via Media Query. Are you still using IE?", "dom"
           );
           turnOffLight();
         }
       } else {
-        Log.Warn("Match Media not supported. Defaulting to Dark Theme", "dom");
+        LOG.Warn("Match Media not supported. Defaulting to Dark Theme", "dom");
         turnOffLight();
       }
     }

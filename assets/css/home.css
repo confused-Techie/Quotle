@@ -396,7 +396,8 @@ a:visited {
   justify-content: center;
   flex-direction: column;
   border-left: 2px solid var(--graph-colour);
-  background: repeating-linear-gradient(
+  background:
+    repeating-linear-gradient(
     90deg,
     transparent,
     transparent 19.5%,
@@ -554,6 +555,7 @@ footer p {
   .modal .modal-content .msg p {
     font-size: 1rem;
   }
+  
   .gameBoard .audio-selection {
     display: block;
   }
