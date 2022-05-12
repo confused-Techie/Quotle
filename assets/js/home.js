@@ -454,6 +454,8 @@ var AUDIO_MANAGER = {
       } else {
         LOG.Info("Setting audio src", "audio");
         document.getElementById("audio-element").src = answer.audioSrc[req - 1];
+
+        GAME_CONTROLLER.AudioAlerts(req);
       }
     } catch (err) {
       LOG.Error(`Failed to set specific audio src: ${err}`, "audio");
@@ -712,15 +714,17 @@ var GAME_CONTROLLER = {
     DOM_MANAGER.UpdateGuessesLeft();
     AUDIO_MANAGER.SetAudioSrc();
 
-    // then to check if any alerts should be fired because of the audio clips.
-    // but we also want to support the fact that this may be before the feature is introduced.
+    this.AudioAlerts(currentGuessNumber);
+  },
+  AudioAlerts: function (num) {
+    // check if the feature is supported
     if (answer.alerts) {
-      // we know the alerts feature is supported.
-      if (answer.alerts[`audio${currentGuessNumber}`].type) {
-        // now we know this specific peice of audio contains an alert.
+      // if supported, we can now check for a specific alert.
+      if (answer.alerts[`audio${num}`].type) {
+        // we know this specific peice of audio contains an alert
         // while in the future once more alerts are defined this can be more fleshed out, for now it will be rather simple.
-        var curAlert = answer.alerts[`audio${currentGuessNumber}`];
-        if (curAlert.type == "volume" && curAlert.reason == "loud") {
+        var curAlert = answer.alerts[`audio${num}`];
+        if (curAlert.type == "volume" && curAlert.reason == "load") {
           DOM_MANAGER.Snackbar("Warning! This next quote could be loud.");
         }
       }
