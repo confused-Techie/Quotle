@@ -326,6 +326,56 @@ var UTILS_COLLECTION = {
     var reg = new RegExp(" \\([0-9]{4}\\)$"); // This will make a space and four numbers with parenthesis, at the end of a string.
     return guess.replace(reg, "");
   },
+  CraftShareText: function () {
+    const emoji_purple_square = String.fromCodePoint(0x1f7ea);
+    const emoji_black_square = String.fromCodePoint(0x2b1b);
+    const emoji_blue_square = String.fromCodePoint(0x1f7e6);
+    const emoji_green_square = String.fromCodePoint(0x1f7e9);
+    const emoji_orange_square = String.fromCodePoint(0x1f7e7);
+    const emoji_red_square = String.fromCodePoint(0x1f7e5);
+    const emoji_yellow_square = String.fromCodePoint(0x1f7e8);
+    const emoji_white_square = String.fromCodePoint(0x2b1c);
+
+    var finalString = `Quotle Game: ${answer.gameID} - `;
+    for (var i = 0; i < board.length; i++) {
+      if (board[i] === 1) {
+        finalString += emoji_green_square;
+      }
+      if (board[i] === 2) {
+        finalString += emoji_blue_square;
+      }
+      if (board[i] === 3) {
+        finalString += emoji_orange_square;
+      }
+      if (board[i] === 4) {
+        finalString += emoji_yellow_square;
+      }
+      if (board[i] === 5) {
+        finalString += emoji_black_square;
+      }
+      if (board[i] === 0) {
+        finalString += emoji_white_square;
+      }
+
+      if (i === board.length -1 && board[i] !== 1 && board[i] !== 0) {
+        finalString += emoji_red_square;
+      }
+    }
+    finalString += '\n https://quotle.dev';
+    return finalString;
+  },
+  CopyShareText: function () {
+    if (!navigator.clipboard) {
+      LOG.Warning("Clipboard API is not accessible");
+    } else {
+      navigator.clipboard.writeText(this.CraftShareText()).then(function() {
+        LOG.Info("Successfully wrote to clipboard API");
+        DOM_MANAGER.Snackbar("Successfully copied to clipboard.");
+      }, function() {
+        LOG.Error("Failed to write to clipboard API");
+      });
+    }
+  },
 };
 
 var BTN_COLLECTION = {
@@ -1191,10 +1241,19 @@ window.onload = function () {
   UTILS_COLLECTION.PageLoad();
   UTILS_COLLECTION.GameLoad();
 
-  var fancyConsole =
-    "font-weight: bold; font-size: 50px;color: red; text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)";
-  var semiFancyConsole =
-    "color:purple; text-shadow: -1px 0 black, 1px 0 black, 0 -1px black; font-size: 15px;";
+  var fancyConsole = [
+    "font-weight: bold",
+    "font-size: 50px",
+    "color: red",
+    "text-shadow: 3px 3px 0 rgb(217,31,38) , 6px 6px 0 rgb(226,91,14) , 9px 9px 0 rgb(245,221,8) , 12px 12px 0 rgb(5,148,68) , 15px 15px 0 rgb(2,135,206) , 18px 18px 0 rgb(4,77,145) , 21px 21px 0 rgb(42,21,113)"
+  ].join(";");
+
+  var semiFancyConsole = [
+    "color: purple",
+    "text-shadow: -1px 0 black, 1px 0 black, 0 -1px black",
+    "font-size: 15px"
+  ].join(";");
+
   console.log("%c Quotle!", fancyConsole);
   console.log("%c Hello welcome to the console!", semiFancyConsole);
   console.log(

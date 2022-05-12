@@ -197,6 +197,13 @@
 
         {{ or (index .TargetStrings "refresh-text") (index .DefaultStrings "refresh-text") }}
       </div>
+
+      <button class="share" onclick="UTILS_COLLECTION.CopyShareText();">
+        <span>
+          {{ or (index .TargetStrings "share-btn") (index .DefaultStrings "share-btn") }}
+        </span>
+      </button>
+
       <button class="close" onclick="document.getElementById('winner_modal').classList.remove('show');">
         <span>
           {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
@@ -214,6 +221,13 @@
 
         {{ or (index .TargetStrings "refresh-text") (index .DefaultStrings "refresh-text") }}
       </div>
+
+      <button class="share" onclick="UTILS_COLLECTION.CopyShareText();">
+        <span>
+          {{ or (index .TargetStrings "share-btn") (index .DefaultStrings "share-btn") }}
+        </span>
+      </button>
+
       <button class="close" onclick="document.getElementById('loser_modal').classList.remove('show');">
         <span>
           {{ or (index .TargetStrings "close") (index .DefaultStrings "close") }}
