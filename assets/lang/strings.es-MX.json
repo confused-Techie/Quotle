@@ -17,5 +17,18 @@
   "footer-made-with": "Código abierto, hecho con Golang & ❤",
   "footer-source": "Código fuente",
   "footer-feather": "Iconos de pluma",
-  "footer-tmdb": "Resultados de la película de la base de datos de la película"
+  "footer-tmdb": "Resultados de la película de la base de datos de la película",
+  "img-shuffle": "Mezclar a un juego anterior aleatorio.",
+  "img-stats": "Mira tus estadísticas del juego.",
+  "img-settings": "Acceder a la configuración del juego.",
+  "img-about": "Instrucciones sobre cómo jugar el juego.",
+  "alt-about": "Marca de pregunta en un Círculo, indicando ayuda.",
+  "alt-shuffle": "Mezclar icono de juego",
+  "alt-award": "Icono de premio",
+  "alt-settings": "Icono de configuración tradicional",
+  "alt-play": "Reproducir icono de audio",
+  "alt-golang": "Golang Logo",
+  "alt-github": "Github's Octocat Icono",
+  "alt-feather": "Logo de Proyecto Icono Feather",
+  "alt-tmdb": "El Logo de Atribución de The Movie Database"
 }
