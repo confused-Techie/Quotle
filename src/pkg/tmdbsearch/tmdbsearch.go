@@ -78,36 +78,73 @@ func DetailQuery(search string) models.SearchResultItem {
 
 	// we will assume that once a match is put in we can use the first result of this search, as it should be exact, returning 1 value
 
+	//var matchDetail models.SearchResultItem
+	//matchDetail.Name = matchRes.Results[0].Title // TODO: Instead of assuming where the correct result is, we should check all results until we find an exact match.
+
 	var matchDetail models.SearchResultItem
-	matchDetail.Name = matchRes.Results[0].Title
 
-	// then we need to get the director, and genre
-	detailURL := "https://api.themoviedb.org/3/movie/" + strconv.Itoa(matchRes.Results[0].ID) + "?api_key=" + TmdbAPIKey + "&append_to_response=credits"
-	detailResp, err := http.Get(detailURL)
-	if err != nil {
-		logger.ErrorLogger.Println(err)
-	}
+	for _, itm := range matchRes.Results {
+		if itm.Title == search {
+			// we now know for a fact, that we have the right result item.
 
-	detailBody, err := ioutil.ReadAll(detailResp.Body)
-	if err != nil {
-		logger.ErrorLogger.Println(err)
-	}
+			//var matchDetail models.SearchResultItem
+			matchDetail.Name = itm.Title
 
-	var matchDetailRes models.APIDetailItem
-	json.Unmarshal(detailBody, &matchDetailRes)
-	detailResp.Body.Close()
+			detailURL := "https://api.themoviedb.org/3/movie/" + strconv.Itoa(itm.ID) + "?api_key=" + TmdbAPIKey + "&append_to_response=credits"
+			detailResp, err := http.Get(detailURL)
+			if err != nil {
+				logger.ErrorLogger.Println(err)
+			}
+			detailBody, err := ioutil.ReadAll(detailResp.Body)
+			if err != nil {
+				logger.ErrorLogger.Println(err)
+			}
+			var matchDetailRes models.APIDetailItem
+			json.Unmarshal(detailBody, &matchDetailRes)
+			detailResp.Body.Close()
 
-	logger.InfoLogger.Println(matchDetailRes.Title)
+			logger.InfoLogger.Println(matchDetailRes.Title)
+			for _, itmIn := range matchDetailRes.Credits.Crew {
+				if itmIn.Job == "Director" {
+					matchDetail.Director = itmIn.Name
+				}
+			}
+			for _, itmIn := range matchDetailRes.Genres {
+				matchDetail.Genre = append(matchDetail.Genre, itmIn.Name)
+			}
 
-	for _, itm := range matchDetailRes.Credits.Crew {
-		if itm.Job == "Director" {
-			matchDetail.Director = itm.Name
+			return matchDetail
 		}
 	}
 
-	for _, itm := range matchDetailRes.Genres {
-		matchDetail.Genre = append(matchDetail.Genre, itm.Name)
-	}
+	// then we need to get the director, and genre
+	//detailURL := "https://api.themoviedb.org/3/movie/" + strconv.Itoa(matchRes.Results[0].ID) + "?api_key=" + TmdbAPIKey + "&append_to_response=credits"
+	//detailResp, err := http.Get(detailURL)
+	//if err != nil {
+	//	logger.ErrorLogger.Println(err)
+	//}
 
+	//detailBody, err := ioutil.ReadAll(detailResp.Body)
+	//if err != nil {
+	//	logger.ErrorLogger.Println(err)
+	//}
+
+	//var matchDetailRes models.APIDetailItem
+	//json.Unmarshal(detailBody, &matchDetailRes)
+	//detailResp.Body.Close()
+
+	//logger.InfoLogger.Println(matchDetailRes.Title)
+
+	//for _, itm := range matchDetailRes.Credits.Crew {
+	//	if itm.Job == "Director" {
+	//		matchDetail.Director = itm.Name
+	//	}
+	//}
+
+	//for _, itm := range matchDetailRes.Genres {
+	//	matchDetail.Genre = append(matchDetail.Genre, itm.Name)
+	//}
+
+	//return matchDetail
 	return matchDetail
 }

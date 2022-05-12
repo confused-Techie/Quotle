@@ -3,7 +3,8 @@ var theme,
   currentGuessNumber = 1,
   guessesStrings = [],
   totalGameCount = 10,
-  game_debug = true;
+  game_debug = true,
+  debug_spoiler = false;
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -592,7 +593,8 @@ var GAME_CONTROLLER = {
       .then((res) => res.json())
       .then((result) => {
         try {
-          LOG.Info(`ValidateAnswer: Guess: ${guess}; Answer.Name: ${answer.name}; Answer.Director: ${answer.director}`, "game");
+          LOG.InfoSpoiler("game", "ValidateAnswer: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}", guess, answer.name, answer.director);
+          //LOG.Info(`ValidateAnswer: Guess: ${guess}; Answer.Name: ${answer.name}; Answer.Director: ${answer.director}`, "game");
           LOG.Info(`ValidateAnswer: Movie_Match: Name: ${result.Name}; Director: ${result.Director}`, "game");
           if (guess == answer.name && result.Director == answer.director) {
             LOG.Info("Correct Answer!", "game");
@@ -1095,6 +1097,12 @@ var LOG = {
     }
     return false;
   },
+  Spoil: function() {
+    if (debug_spoiler) {
+      return true;
+    }
+    return false;
+  },
   Info: function (text, kind = "") {
     if (this.Enabled()) {
       console.info(`${this.DetermineKind(kind)}${text}`);
@@ -1108,6 +1116,22 @@ var LOG = {
   Error: function (text, kind = "") {
     if (this.Enabled()) {
       console.error(`${this.DetermineKind(kind)}${text}`);
+    }
+  },
+  InfoSpoiler: function (kind = "", base, ...reps) {
+    if (this.Enabled()) {
+      if (this.Spoil()) {
+        console.info(`${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(base, ...reps)}`);
+      } else {
+        let rep = [];
+        for (let k = 0; k < reps.length; k++) {
+          rep.push('[REDACTED]');
+        }
+        // Here instead of passing along my variadic rest parameters to UnicornComposite I instead,
+        // create an array the same length as the original rest parameters of [REDACTED] and use the spread operator
+        // to pass them to Unicorn as if they were native replacements.
+        console.info(`${this.DetermineKind(kind)}${UTILS_COLLECTION.UnicornComposite(base, ...rep)}`);
+      }
     }
   },
 };
