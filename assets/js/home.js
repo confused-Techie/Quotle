@@ -800,6 +800,9 @@ var GAME_CONTROLLER = {
         if (curAlert.type == "volume" && curAlert.reason == "load") {
           DOM_MANAGER.Snackbar("Warning! This next quote could be loud.");
         }
+        if (curAlert.type == "content" && curAlert.reason == "violence") {
+          DOM_MANAGER.Snackbar("Warning! This next quote contains violent content.");
+        }
       }
     }
   },
