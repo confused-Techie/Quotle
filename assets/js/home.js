@@ -3,8 +3,9 @@ var theme,
   currentGuessNumber = 1,
   guessesStrings = [],
   totalGameCount = 10,
-  game_debug = true,
-  debug_spoiler = false;
+  game_debug = false,
+  debug_spoiler = false,
+  log_collection = [];
 
 // An array representation of the game board.
 // 0 = Unplayed Guess.
@@ -16,7 +17,15 @@ var theme,
 // 0 is guess 1, 5 is guess 6.
 var board = [0, 0, 0, 0, 0, 0];
 
+/**
+* Namespace to access features specific to the DOM of the page.
+* @namespace
+*/
 var DOM_MANAGER = {
+  /**
+  * @desc Make the winner modal visible on the page, as well as disables the input methods for guesses. Additionally creating
+  * confetti on the page.
+  */
   WinnerModal: function () {
     document.getElementById("winner_modal").classList.add("show");
     document.getElementById("user_guess_input").disabled = true;
@@ -38,6 +47,10 @@ var DOM_MANAGER = {
       origin: { y: 0.5, x: 0.5 },
     });
   },
+  /**
+  * @desc Allows the loser modal to viewable on the page. Additionally disabling input methods, and injecting the correct answer
+  * into the loser modal text box.
+  */
   LoserModal: function () {
     document
       .getElementById("loser_modal_msg")
@@ -49,6 +62,9 @@ var DOM_MANAGER = {
     document.getElementById("user_guess_input").disabled = true;
     document.getElementById("submit_btn").disabled = true;
   },
+  /**
+  * @desc Updates the text on the page of the amount of guesses left.
+  */
   UpdateGuessesLeft: function () {
     // Because guesses are counted by which guess you are currently using, we have to increase the number to 7, to account for it.
     document.getElementById("guesses_left").innerText =
@@ -62,6 +78,9 @@ var DOM_MANAGER = {
             7 - currentGuessNumber
           );
   },
+  /**
+  * @desc Initializes all global event listeners and defines the functions they call.
+  */
   GlobalEventListeners: function () {
     document
       .getElementById("about_btn")
@@ -94,6 +113,10 @@ var DOM_MANAGER = {
         }
       });
   },
+  /**
+  * @desc Enables the theme requested. By adding the class to the body and changing images.
+  * @param {string} requested_theme The theme wanted. 'dark' or 'light'
+  */
   EnableTheme: function (requested_theme) {
     if (requested_theme == "dark") {
       document.body.classList.remove("light-theme");
@@ -150,6 +173,9 @@ var DOM_MANAGER = {
         themeImg[requested_theme].src[i];
     }
   },
+  /**
+  * @desc Checks if a theme is enabled via cookies or using media queries. Prioritizing media queries.
+  */
   ThemeCheck: function () {
     var turnOnLight = () => {
       theme = "light";
@@ -191,6 +217,9 @@ var DOM_MANAGER = {
       }
     }
   },
+  /**
+  * @desc Clears the search results that are appearing on the page.
+  */
   ClearSearchResults: function () {
     while (document.getElementById("searchResult").firstChild) {
       document
@@ -198,6 +227,12 @@ var DOM_MANAGER = {
         .removeChild(document.getElementById("searchResult").lastChild);
     }
   },
+  /**
+  * @desc Displays a guess on the page, attaching any requested classes to the element.
+  * @param {string} eleID is the Element ID of which guess to modify.
+  * @param {string} guessText is the raw text of the users guess.
+  * @param {string[]} classArray Array of which classes to include made up of strings.
+  */
   DisplayGuessAnswer: function (eleID, guessText, classArray) {
     document.getElementById(eleID).innerHTML = `<span>${guessText}</span>`;
     if (Array.isArray(classArray)) {
@@ -206,6 +241,10 @@ var DOM_MANAGER = {
       }
     }
   },
+  /**
+  * @desc Creates a snackbar alert with text specified.
+  * @param {string} msg Is the text to show.
+  */
   Snackbar: function (msg) {
     var snackbarEle = document.getElementById("snackbar");
 
@@ -222,6 +261,9 @@ var DOM_MANAGER = {
       }
     });
   },
+  /**
+  * @desc Inserts the rating from the answer onto the page.
+  */
   InsertRating: function () {
     try {
       if (answer.rating) {
@@ -236,6 +278,10 @@ var DOM_MANAGER = {
   },
 };
 
+/**
+* Namespace to access features that dont fit anywhere else.
+* @namespace
+*/
 var UTILS_COLLECTION = {
   UnicornComposite: function () {
     var str = arguments[0];
@@ -261,6 +307,7 @@ var UTILS_COLLECTION = {
     DOM_MANAGER.InsertRating();
     AUDIO_MANAGER.SetAudioSrc();
     AUDIO_MANAGER.AudioController();
+    GAME_CONTROLLER.MediaFeatures();
   },
   PageLoad: function () {
     DOM_MANAGER.ThemeCheck();
@@ -375,6 +422,17 @@ var UTILS_COLLECTION = {
         LOG.Error("Failed to write to clipboard API");
       });
     }
+  },
+  Trouble: function() {
+    console.log("Sorry to see you are having trouble.");
+    console.log("Here are a few things you can do to gather helpful information to submit a bug report.");
+    console.log("Feel free to read the docs for more info. https://github.com/confused-Techie/Quotle/docs/troubleshoot.md");
+    console.log("1) Print Media Features: GAME_CONTROLLER.MediaFeatures()");
+    console.log("2) Run Debug to get all available logs.");
+    console.log("When running Debug you need to first enable it.");
+    console.log("Enable Game Debug to get generic Game Logs. Run: game_debug = true;");
+    console.log("Enable Debug Spoilers to get guess check logs. Run: debug_spoiler = true;");
+    console.log("Once enabled run the Debug tool: LOG.Debug();");
   },
 };
 
@@ -943,6 +1001,24 @@ var GAME_CONTROLLER = {
       } // else the currentgame cookie couldnt be found.
     } // else this game may or may not have been played. But we are replaying a previous game so we wont check.
   },
+  MediaFeatures: function() {
+    if (typeof answer === "undefined") {
+      LOG.Warn("Unable to find media features. Since answer is undefined.", "game");
+    } else {
+      var featuresObj = {
+        alerts: false,
+        rating: false
+      }
+      if (answer.alerts) {
+        featuresObj.alerts = true;
+      }
+      if (answer.rating) {
+        featuresObj.rating = true;
+      }
+
+      LOG.Info(`Media Features: Alerts: ${featuresObj.alerts}; Rating: ${featuresObj.rating}`, "games");
+    }
+  },
 };
 
 var STORAGE_HANDLER = {
@@ -1200,16 +1276,22 @@ var LOG = {
   Info: function (text, kind = "") {
     if (this.Enabled()) {
       console.info(`${this.DetermineKind(kind)}${text}`);
+    } else {
+      log_collection.push(function(){LOG.Info(text, kind);});
     }
   },
   Warn: function (text, kind = "") {
     if (this.Enabled()) {
       console.warn(`${this.DetermineKind(kind)}${text}`);
+    } else {
+      log_collection.push(function(){LOG.Warn(text, kind);});
     }
   },
   Error: function (text, kind = "") {
     if (this.Enabled()) {
       console.error(`${this.DetermineKind(kind)}${text}`);
+    } else {
+      log_collection.push(function(){LOG.Error(text, kind);});
     }
   },
   InfoSpoiler: function (kind = "", base, ...reps) {
@@ -1236,6 +1318,13 @@ var LOG = {
           )}`
         );
       }
+    } else {
+      log_collection.push(function(){LOG.InfoSpoiler(kind, base, ...reps);});
+    }
+  },
+  Debug: function() {
+    for (var i = 0; i < log_collection.length; i++) {
+      log_collection[i]();
     }
   },
 };
