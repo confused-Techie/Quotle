@@ -1,0 +1,14 @@
+{
+  "js": {
+    "keep_fnames": true,
+    "keep_classnames": true,
+    "sourceMap": {
+      "filename": "home.js.map",
+      "url": "/js/home.js.map"
+    },
+    "format": {
+      "comments": false,
+    },
+    "mangle": false
+  }
+}

@@ -3,11 +3,15 @@
   "version": "0.0.1",
   "description": "Guess the movie based off only 6 Quotes!",
   "scripts": {
-    "lint": "powershell scripts/linting.ps1"
+    "lint": "powershell scripts/linting.ps1",
+    "minify-script": "minify ./assets/js/home.js > ./assets/js/home.min.js",
+    "mini": "node min.mjs"
   },
   "author": "confused-Techie",
   "license": "AGPL-3.0",
   "devDependencies": {
+    "minify": "^8.0.4",
     "prettier": "^2.6.2"
-  }
+  },
+  "dependencies": {}
 }

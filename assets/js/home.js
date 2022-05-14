@@ -7,6 +7,16 @@ var theme,
   debug_spoiler = false,
   log_collection = [];
 
+/* theme = text based value for the pages current theme applied.
+* replay = Value determining weather or not this is a replay of a previous game. Preventing data from being saved if so.
+* currentGuessNumber = int to count up as the game guesses go on.
+* guessesStrings = Array of strings of all previous guesses made on this game.
+* totalGameCount = An int value for every single game created.
+* game_debug = boolean to say weather or not generic logging is enabled.
+* debug_spoiler = boolean to say weatherr or not spoiler free logging is enabled.
+* log_collection = array of function calls, keeping the log history during gameplay for troubleshooting.
+*/
+
 // An array representation of the game board.
 // 0 = Unplayed Guess.
 // 1 = Winning Guess.
@@ -283,6 +293,19 @@ var DOM_MANAGER = {
 * @namespace
 */
 var UTILS_COLLECTION = {
+  /**
+  * @desc UnicornComposite is a carry-over function created in GoPage.
+  * It is used to mimic C# Composite formatting.
+  * @see {@link https://github.com/confused-Techie/GoPage/blob/main/docs/devDocs/JavaScript.md#LangHandlerJS|GoPage}
+  * @summary Implementation of Composite Formatting from C#, originating from confused-Techie/GoPage
+  * @param {string} arg0 The String to preform the method on.
+  * @param {string} argN All other arguments afterwards can be keys, with as many as needed to fill the string.
+  * Not enough or to many causing zero errors.
+  * @returns {string} Composited String.
+  * @example
+  * UTILS_COLLECTION.UnicornComposite("How is this for a {0}, I hope it {1}", "Test", "Works");
+  * // Outputs: "How is this for a Test, I hope it Works."
+  */
   UnicornComposite: function () {
     var str = arguments[0];
     if (arguments.length > 1) {
@@ -301,6 +324,15 @@ var UTILS_COLLECTION = {
     }
     return str;
   },
+  /**
+  * @desc Triggers all functions related to startup and initialization of the game.
+  * @implements {GAME_CONTROLLER.AnswerCheck}
+  * @implements {GAME_CONTROLLER.GameStatusCheck}
+  * @implements {GAME_CONTROLLER.MediaFeatures}
+  * @implements {DOM_MANAGER.InsertRating}
+  * @implements {AUDIO_MANAGER.SetAudioSrc}
+  * @implements {AUDIO_MANAGER.AudioController}
+  */
   GameLoad: function () {
     GAME_CONTROLLER.AnswerCheck();
     GAME_CONTROLLER.GameStatusCheck();
@@ -309,12 +341,25 @@ var UTILS_COLLECTION = {
     AUDIO_MANAGER.AudioController();
     GAME_CONTROLLER.MediaFeatures();
   },
+  /**
+  * @desc Triggers all functions related to startup and initialization of the DOM or Page.
+  * @implements {DOM_MANAGER.ThemeCheck}
+  * @implements {DOM_MANAGER.UpdateGuessesLeft}
+  * @implements {DOM_MANAGER.GlobalEventListeners}
+  * @implements {UTILS_COLLECTION.FirstTimeVisitor}
+  */
   PageLoad: function () {
     DOM_MANAGER.ThemeCheck();
     this.FirstTimeVisitor();
     DOM_MANAGER.UpdateGuessesLeft();
     DOM_MANAGER.GlobalEventListeners();
   },
+  /**
+  * @desc Will craft and append search results to the page.
+  * @param {string[]} results Array of strings, representing the search results.
+  * @implements {DOM_MANAGER.ClearSearchResults}
+  * @implements {LOG}
+  */
   SearchResults: function (results) {
     try {
       var searchRes = document.getElementById("searchResult");
@@ -331,6 +376,12 @@ var UTILS_COLLECTION = {
       LOG.Error(`Error Occured crafting search results: ${err}`);
     }
   },
+  /**
+  * @desc Will attempt to detect if this user has visited before. To choose weather or not they need to see instructions on launch.
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  * @implements {LOG}
+  * @implements {BTN_COLLECTION.AboutBtn}
+  */
   FirstTimeVisitor: function () {
     if (STORAGE_HANDLER.StorageAvailable) {
       if (!localStorage.getItem("visitor")) {
@@ -351,6 +402,12 @@ var UTILS_COLLECTION = {
       BTN_COLLECTION.AboutBtn();
     }
   },
+  /**
+  * @desc Will attempt to determine what platform the user is on.
+  * This only exists to fix and edge case bug occuring on iOS where the audio would fail to load properly.
+  * @returns {string} An Identifier of the platform the user is on. Currently possible returns: iOS, unkown
+  * @implements {LOG}
+  */
   FindPlatformViaNavigator: function () {
     // This will be a simple attempt at detecting the platform a user is using via the navigator.platform API.
     // Since the website only fails on Mobile Safari,
@@ -369,10 +426,21 @@ var UTILS_COLLECTION = {
       return "unknown";
     }
   },
+  /**
+  * @desc Cleans the users guess from search results. Since the search results contain extra data such as the year a movie was made
+  * but the guess value does not, it was required to strip that data.
+  * @param {string} guess The raw guess value, taken in from the search results.
+  * @returns {string} The same value with the year data stripped.
+  }
+  */
   CleanGuessInput: function (guess) {
     var reg = new RegExp(" \\([0-9]{4}\\)$"); // This will make a space and four numbers with parenthesis, at the end of a string.
     return guess.replace(reg, "");
   },
+  /**
+  * @desc Creates text that can be shared to share the progress of your game board.
+  * @returns {string} The proper game board represented as emojis to be shared.
+  */
   CraftShareText: function () {
     const emoji_purple_square = String.fromCodePoint(0x1f7ea);
     const emoji_black_square = String.fromCodePoint(0x2b1b);
@@ -411,6 +479,11 @@ var UTILS_COLLECTION = {
     finalString += '\n https://quotle.dev';
     return finalString;
   },
+  /**
+  * @desc A function that when called will copy the ShareText to the users clipboard and create a notification alerting of this action.
+  * @implements {LOG}
+  * @implements {DOM_MANAGER.Snackbar}
+  */
   CopyShareText: function () {
     if (!navigator.clipboard) {
       LOG.Warning("Clipboard API is not accessible");
@@ -423,6 +496,9 @@ var UTILS_COLLECTION = {
       });
     }
   },
+  /**
+  * @desc Existed purely to allow a user to call it and receive troubleshooting data in the cli of browser dev tools.
+  */
   Trouble: function() {
     console.log("Sorry to see you are having trouble.");
     console.log("Here are a few things you can do to gather helpful information to submit a bug report.");
@@ -436,13 +512,32 @@ var UTILS_COLLECTION = {
   },
 };
 
+/**
+* Namespace to access features related to button clicks, or other events.
+* @namespace
+*/
 var BTN_COLLECTION = {
+  /**
+  * @desc Exists to respond to the GlobalEventListener for the About Button.
+  * Enabling the about_modal when called.
+  */
   AboutBtn: function () {
     document.getElementById("about_modal").classList.add("show");
   },
+  /**
+  * @desc Exists to respond to the GlobalEventListener for the Settings Button.
+  * Enabling the settings_modal when called.
+  */
   SettingsBtn: function () {
     document.getElementById("settings_modal").classList.add("show");
   },
+  /**
+  * @desc Responds to the submit button on the game board.
+  * When clicked will take the value in the user guess text box and pass it to the Game Controller Pass Answer
+  * After linting it in the Utils Collection Clean Guess Input.
+  * @implements {GAME_CONTROLLER.PassAnswer}
+  * @implements {UTILS_COLLECTION.CleanGuessInput}
+  */
   CheckAnswerViaBtn: function () {
     GAME_CONTROLLER.PassAnswer(
       UTILS_COLLECTION.CleanGuessInput(
@@ -450,6 +545,13 @@ var BTN_COLLECTION = {
       )
     );
   },
+  /**
+  * @desc Is called during clicks or key presses into the user guess search text box.
+  * Passing this information to the Quotle API /search along with the users value.
+  * Afterwards then passing the results from the API to the search results builder.
+  * @implements {UTILS_COLLECTION.SearchResults}
+  * @implements {LOG}
+  */
   MediaSearchBtn: function (e) {
     console.log(e);
     var search = e.target.value;
@@ -461,13 +563,22 @@ var BTN_COLLECTION = {
         UTILS_COLLECTION.SearchResults(result);
       });
   },
+  /**
+  * @desc Exists to respond to the user clicking on one of the search results. After an element is clicked, the search results
+  * are cleared, since on mobile the submit button becomes covered by the search results.
+  * @implements {UTILS_COLLECTION.CleanGuessInput}
+  * @implements {DOM_MANAGER.ClearSearchResults}
+  */
   EnterTextEvent: function (e) {
     document.getElementById("user_guess_input").value =
       UTILS_COLLECTION.CleanGuessInput(e.target.innerText);
-
-    // on mobile the search results cover the submit btn so we want to remove those.
     DOM_MANAGER.ClearSearchResults();
   },
+  /**
+  * @desc Responds to the stats button being clicked. Once called it will access local storage to start building text to appear
+  * in the stats modal. And then enabling the modal.
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  */
   StatsBtn: function () {
     if (STORAGE_HANDLER.StorageAvailable) {
       if (localStorage.getItem("stats")) {
@@ -541,7 +652,15 @@ var BTN_COLLECTION = {
   },
 };
 
+/**
+* Namespace to access features related to audio playback.
+* @namespace
+*/
 var AUDIO_MANAGER = {
+  /**
+  * @desc This will set the audio source of the play button depending on the global currentGuessNumber.
+  * @implements {LOG}
+  */
   SetAudioSrc: function () {
     try {
       document.getElementById("audio-element").src =
@@ -553,6 +672,14 @@ var AUDIO_MANAGER = {
       LOG.Error(`Failed to set audio src: ${err}`, "audio");
     }
   },
+  /**
+  * @desc Will set the play button to a requested audio source.
+  * @param {Object} event An Event() Object, to allow us to check if the requested audio is coming from an on page audio index click, and
+  * if that requested audio is disabled.
+  * @param {float} req The Index of the requested audio source from a 1 up count.
+  * @implements {LOG}
+  * @implements {GAME_CONTROLLER.AudioAlerts}
+  */
   SetSpecificAudioSrc: function (event, req) {
     LOG.Info(`SetSpecificAudioSrc: ${req}`, "audio");
     try {
@@ -573,6 +700,12 @@ var AUDIO_MANAGER = {
       LOG.Error(`Failed to set specific audio src: ${err}`, "audio");
     }
   },
+  /**
+  * @desc Very closely mimics the functionality of AUDIO_MANAGER.SetSpecificAudioSrc but does without a click. And can be used to change
+  * the audio source programaticly.
+  * @param {float} req The Index of the audio source, frrom a 1 up count.
+  * @implements {LOG}
+  */
   SetSpecificAudioSrcNoClick: function (req) {
     try {
       document.getElementById("audio-element").src = answer.audioSrc[req];
@@ -581,6 +714,10 @@ var AUDIO_MANAGER = {
       LOG.Error(`Failed to set specific audio src: ${err}`, "audio");
     }
   },
+  /**
+  * @desc Enables all audio left in the game, starting at whatever the global currentGuessNumber is.
+  * @implements {LOG}
+  */
   EnableRemainingAudio: function () {
     try {
       for (var i = currentGuessNumber; i < 7; i++) {
@@ -590,6 +727,11 @@ var AUDIO_MANAGER = {
       LOG.Error(`Unable to enable all audio buttons: ${err}`, "audio");
     }
   },
+  /**
+  * @desc Starts the major audio controller. Responding to load events, and button clicks on the play button itself.
+  * @implements {UTILS_COLLECTION.FindPlatformViaNavigator}
+  * @implements {LOG}
+  */
   AudioController: function () {
     var playIconContainer = document.getElementById("play-icon");
     var playIconImg = document.getElementById("play-icon-img");
@@ -678,7 +820,20 @@ var AUDIO_MANAGER = {
   },
 };
 
+/**
+* Namespace to access features related to the game board.
+* @namespace
+*/
 var GAME_CONTROLLER = {
+  /**
+  * @desc Pass Answer handles taking a user guess, adding it to the guess history, clearing user guess text box, clearing search results.
+  * then finally calling GAME_CONTROLLER.ValidateAnswer with the proper Element ID to then append the guess too.
+  * @param {string} guess Raw text of the users guess.
+  * @implements {DOM_MANAGER.ClearSearchResults}
+  * @implements {GAME_CONTROLLER.ClearSearchResults}
+  * @implements {GAME_CONTROLLER.ValidateAnswer}
+  * @implements {LOG}
+  */
   PassAnswer: function (guess) {
     // The new rewrite of the checkAnswer function.
 
@@ -705,6 +860,23 @@ var GAME_CONTROLLER = {
       LOG.Error("Had trouble displaying the guess results.", "game");
     }
   },
+  /**
+  * @desc Is the bulk of the Game Controller, using Quotle API's (/movie_match) to check the users guess data against the correct answer data.
+  * Checking if they won, if they lost, got the director, genre, or both right. And calling required functions to make those changes, both in the
+  * backend and frontend.
+  * @param {string} guess Is the users raw guess text.
+  * @param {string} eleID Is the element ID to make any modifications to, depending on this guess.
+  * @implements {LOG}
+  * @implements {DOM_MANAGER.DisplayGuessAnswer}
+  * @implements {STORAGE_HANDLER.SetWinnerData}
+  * @implements {STORAGE_HANDLER.SetLoserData}
+  * @implements {STORAGE_HANDLER.SetProgressData}
+  * @implements {GAME_CONTROLLER.NextGuess}
+  * @implements {AUDIO_MANAGER.EnableRemainingAudio}
+  * @implements {DOM_MANAGER.WinnerModal}
+  * @implements {DOM_MANAGER.LoserModal}
+  * @implements {DOM_MANAGER.Snackbar}
+  */
   ValidateAnswer: function (guess, eleID) {
     fetch(`api/movie_match?value=${guess}`)
       .then((res) => res.json())
@@ -840,6 +1012,12 @@ var GAME_CONTROLLER = {
         }
       });
   },
+  /**
+  * @desc Calls all functions needed to move to the next guess. After incremening the global currentGuessNumber
+  * @implements {DOM_MANAGER.UpdateGuessesLeft}
+  * @implements {AUDIO_MANAGER.SetAudioSrc}
+  * @implements {GAME_CONTROLLER.AudioAlerts}
+  */
   NextGuess: function () {
     currentGuessNumber++;
     DOM_MANAGER.UpdateGuessesLeft();
@@ -847,6 +1025,11 @@ var GAME_CONTROLLER = {
 
     this.AudioAlerts(currentGuessNumber);
   },
+  /**
+  * @desc Handles the loading and checking for any Audio Alerts for the current audio source.
+  * @param {float} num Is the audio item to check for. Coutning 1+
+  * @implements {DOM_MANAGER.Snackbar}
+  */
   AudioAlerts: function (num) {
     // check if the feature is supported
     if (answer.alerts) {
@@ -864,9 +1047,20 @@ var GAME_CONTROLLER = {
       }
     }
   },
+  /**
+  * @desc Super simplistic way of adding a guess to the global guessesStrings array.
+  * @param {string} guess The raw text of the users guess.
+  */
   AddGuessToString: function (guess) {
     guessesStrings.push(guess);
   },
+  /**
+  * @desc Will check if a valid answer.js was served alongside this. And if it is invalid, its safe to assume it was inacccessible or more likely
+  * doesn't exist, meaning the game for this gameID was never created. And so we will fallback to loading a random one, and notify the user of such.
+  * @implements {LOG}
+  * @implements {UTILS_COLLECTION.GameLoad}
+  * @implements {DOM_MANAGER.Snackbar}
+  */
   AnswerCheck: function () {
     if (typeof answer == "undefined") {
       LOG.Warn("there is no answer available.", "game");
@@ -902,6 +1096,12 @@ var GAME_CONTROLLER = {
         });
     } // else the original answer was successfully loaded.
   },
+  /**
+  * @desc Used to initiate a random game load. Picking a random number from 1 - totalGameCount. And calling the Utils GameLoad functions.
+  * @implements {LOG}
+  * @implements {UTILS_COLLECTION.GameLoad}
+  * @implements {DOM_MANAGER.Snackbar}
+  */
   RandomPlay: function () {
     // this will replace answer with a new definition, chosen at random.
     LOG.Info(`Random Game load requested.`, "game");
@@ -928,6 +1128,12 @@ var GAME_CONTROLLER = {
         LOG.Error("Error when creating new anwser.", "game");
       });
   },
+  /**
+  * @desc Used to check if two arrays of genres, have ANY matches. Returning true if so, false otherwise.
+  * @param {Object} guess The Users guess Genre Array.
+  * @param {Object} correct The Correct Answer Genre Array.
+  * @returns {bool}
+  */
   GenreCheck: function (guess, correct) {
     for (let i = 0; i < guess.length; i++) {
       if (correct.includes(guess[i])) {
@@ -936,6 +1142,16 @@ var GAME_CONTROLLER = {
     }
     return false;
   },
+  /**
+  * @desc Checks the status of the game. Useful to be called to recreate the game board, if a user left halfway through
+  * and only has the progress local storage to go off of. Also is used to recreate after a return to a finished game.
+  * @implements {STORAGE_HANDLER.FindCurrentGame}
+  * @implements {DOM_MANAGER.DisplayGuessAnswer}
+  * @implements {AUDIO_MANAGER.SetSpecificAudioSrcNoClick}
+  * @implements {DOM_MANAGER.WinnerModal}
+  * @implements {DOM_MANAGER.LoserModal}
+  * @implements {DOM_MANAGER.EnableRemainingAudio}
+  */
   GameStatusCheck: function () {
     if (!replay) {
       var curData = STORAGE_HANDLER.FindCurrentGame();
@@ -1001,6 +1217,10 @@ var GAME_CONTROLLER = {
       } // else the currentgame cookie couldnt be found.
     } // else this game may or may not have been played. But we are replaying a previous game so we wont check.
   },
+  /**
+  * @desc Will log the available Media Features compatible for the current game.
+  * @implements {LOG}
+  */
   MediaFeatures: function() {
     if (typeof answer === "undefined") {
       LOG.Warn("Unable to find media features. Since answer is undefined.", "game");
@@ -1021,7 +1241,14 @@ var GAME_CONTROLLER = {
   },
 };
 
+/**
+* Namespace to access features related to storage.
+* @namespace
+*/
 var STORAGE_HANDLER = {
+  /**
+  * @desc Tests and checks if local storage is available. Returning true if so. False otherwise.
+  */
   StorageAvailable: function () {
     try {
       var x = "__storage_test__";
@@ -1046,6 +1273,11 @@ var STORAGE_HANDLER = {
       );
     }
   },
+  /**
+  * @desc Will get the item from local storage, after testing to ensure local storage is available.
+  * @param {string} key The key of the Local Storage Item to get.
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  */
   GetItem: function (key) {
     return new Promise((resolve, reject) => {
       if (this.StorageAvailable) {
@@ -1060,6 +1292,12 @@ var STORAGE_HANDLER = {
       }
     });
   },
+  /**
+  * @desc Will set the item to local storage after ensuring it is available.
+  * @param {string} key The Key to set.
+  * @param {Object} value The value to set as. Could be an Object, Array, String, etc.
+  * @implements {LOG}
+  */
   SetItem: function (key, value) {
     if (this.StorageAvailable) {
       localStorage.setItem(key, value);
@@ -1070,6 +1308,9 @@ var STORAGE_HANDLER = {
       );
     }
   },
+  /**
+  * @desc A simplified way of grabbing an item from local storage, where it grabs only the theme data. Then returning its value, or emtpy.
+  */
   GetTheme: function () {
     if (this.StorageAvailable) {
       if (!localStorage.getItem("theme")) {
@@ -1081,6 +1322,12 @@ var STORAGE_HANDLER = {
       return "";
     }
   },
+  /**
+  * @desc Will attempt to find if and the value of any cookies related to the current game being played.
+  * @returns {Object} Either the value of the key, unparsed. Or false if it fails or doesn't exist.
+  * @implements {LOG}
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  */
   FindCurrentGame: function () {
     if (this.StorageAvailable) {
       var allKeys = Object.keys(localStorage);
@@ -1117,6 +1364,12 @@ var STORAGE_HANDLER = {
       return false;
     }
   },
+  /**
+  * @desc Made to set the Winner data into local storage. This will take all needed game elements and put them into an object in local storage.
+  * @implements {STORAGE_HANDLER.UpdateStatsData}
+  * @implements {STORAGE_HANDLER.CleanLastGameData}
+  * @implements {LOG}
+  */
   SetWinnerData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
@@ -1144,6 +1397,13 @@ var STORAGE_HANDLER = {
       }
     } //else this game is being replayed, and data should not be saved.
   },
+
+  /**
+  * @desc Will set the Loser game data into local storage. Similar to Winner data.
+  * @implements {STORAGE_HANDLER.UpdateStatsData}
+  * @implements {STORAGE_HANDLER.CleanLastGameData}
+  * @implements {LOG}
+  */
   SetLoserData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
@@ -1171,6 +1431,11 @@ var STORAGE_HANDLER = {
       }
     } // else this is a replay and progress should not be saved.
   },
+  /**
+  * @desc Will set the games progress into local storage.
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  * @implements {LOG}
+  */
   SetProgressData: function () {
     if (!replay) {
       if (this.StorageAvailable) {
@@ -1191,6 +1456,11 @@ var STORAGE_HANDLER = {
       }
     }
   },
+  /**
+  * @desc Will update the last created or create a new Stats Local Storage Object, updating the data inside.
+  * @implements {LOG}
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  */
   UpdateStatsData: function (gameWon, guessIdx) {
     if (this.StorageAvailable) {
       if (!localStorage.getItem("stats")) {
@@ -1231,6 +1501,11 @@ var STORAGE_HANDLER = {
       );
     }
   },
+  /**
+  * @desc Will remove any old games local storage data that exists, to avoid uneeded data sticking around.
+  * @implements {STORAGE_HANDLER.StorageAvailable}
+  * @implements {LOG}
+  */
   CleanLastGameData: function () {
     if (this.StorageAvailable) {
       var allKeys = Object.keys(localStorage);
@@ -1252,7 +1527,16 @@ var STORAGE_HANDLER = {
   },
 };
 
+/**
+* Namespace to access better logging controls.
+* @namespace
+*/
 var LOG = {
+  /**
+  * @desc Determines the kind of logs to append into the log text based on predefined values.
+  * @param {string} kind Is the type of logs to find the right text for. Valid Values: audio, game, dom, store, or empty. Otherwise ignored.
+  * @returns {string} Formatted string to append into the beggining of logs.
+  */
   DetermineKind: function (kind) {
     // There will be a few services that can properly logged.
     if (kind == "audio") return "AUDIO_SERVICE:: ";
@@ -1261,18 +1545,31 @@ var LOG = {
     if (kind == "store") return "STORAGE_HANDLER:: ";
     if (kind == "") return "GENERAL:: ";
   },
+  /**
+  * @desc Will check if the generic logs are enabled.
+  * @returns {bool} True if logging is enabled. False otherwise.
+  */
   Enabled: function () {
     if (game_debug) {
       return true;
     }
     return false;
   },
+  /**
+  * @desc Determines if Spoiler Debug Logs are enabled.
+  * @returns {bool} True if they are, false otherwise.
+  */
   Spoil: function () {
     if (debug_spoiler) {
       return true;
     }
     return false;
   },
+  /**
+  * @desc Info level logs.
+  * @param {string} text Is the raw text to log.
+  * @param {string} [kind=""] Is the id of the caller.
+  */
   Info: function (text, kind = "") {
     if (this.Enabled()) {
       console.info(`${this.DetermineKind(kind)}${text}`);
@@ -1280,6 +1577,11 @@ var LOG = {
       log_collection.push(function(){LOG.Info(text, kind);});
     }
   },
+  /**
+  * @desc Warn Level Logs.
+  * @param {string} text Is the raw text to log.
+  * @param {string} [kind=""] Is the id of the caller.
+  */
   Warn: function (text, kind = "") {
     if (this.Enabled()) {
       console.warn(`${this.DetermineKind(kind)}${text}`);
@@ -1287,6 +1589,11 @@ var LOG = {
       log_collection.push(function(){LOG.Warn(text, kind);});
     }
   },
+  /**
+  * @desc Error Level Logs.
+  * @param {string} text Is the raw text to log.
+  * @param {string} [kind=""] Is the id of the caller.
+  */
   Error: function (text, kind = "") {
     if (this.Enabled()) {
       console.error(`${this.DetermineKind(kind)}${text}`);
@@ -1294,6 +1601,14 @@ var LOG = {
       log_collection.push(function(){LOG.Error(text, kind);});
     }
   },
+  /**
+  * @desc This is able to take pseudo variadic rest parameters as Composite Format Item Replacements. And will pass
+  * them along to UTILS_COLLECTION.UnicornComposite
+  * @summary Info Level Logs, supporting spoiler protection.
+  * @param {string} [kind=""] Is the id of the caller.
+  * @param {string} base The base string, with C# Composite String syntax.
+  * @param {string[]} reps Array of strings that will preform the replacements within the text.
+  */
   InfoSpoiler: function (kind = "", base, ...reps) {
     if (this.Enabled()) {
       if (this.Spoil()) {
@@ -1322,6 +1637,9 @@ var LOG = {
       log_collection.push(function(){LOG.InfoSpoiler(kind, base, ...reps);});
     }
   },
+  /**
+  * @desc Made to help end users grab logs more easily. This will print any stored logs out to the console on call.
+  */
   Debug: function() {
     for (var i = 0; i < log_collection.length; i++) {
       log_collection[i]();
