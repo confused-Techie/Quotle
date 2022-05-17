@@ -1,0 +1,14 @@
+0: 00:11:35 [20]
+1: 02:02:29 [58]
+2: 01:32:44 [22]
+3: 01:04:13 [9]
+4: 00:06:28 [35]
+5: 01:20:36 [13]
+
+----------------
+Below this line is used to explain the above and should not be included in final texts.
+
+Each line is counting up from guess 1.
+
+The first value is the start time in the original movie that audio takes place, the second value in brackets
+is how long from the start point the quote lasts.

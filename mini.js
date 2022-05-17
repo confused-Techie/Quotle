@@ -9,7 +9,7 @@ var options = {
   keep_classnames: true,
   sourceMap: {
     filename: "home.js",
-    url: "home.js.map"
+    url: "https://quotle.dev/js/home.js.map"
   },
   format: {
     comments: false,

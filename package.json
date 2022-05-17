@@ -4,11 +4,14 @@
   "description": "Guess the movie based off only 6 Quotes!",
   "scripts": {
     "lint": "powershell scripts/linting.ps1",
-    "mini": "node mini.js"
+    "mini-js": "node mini.js",
+    "mini-css": "powershell scripts/mini-css.ps1",
+    "doc": "./node_modules/.bin/jsdoc2md ./assets/js/home.js > ./docs/JavaScript.md"
   },
   "author": "confused-Techie",
   "license": "AGPL-3.0",
   "devDependencies": {
+    "jsdoc-to-markdown": "^7.1.1",
     "prettier": "^2.6.2",
     "terser": "^5.13.1"
   },

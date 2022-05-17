@@ -18,6 +18,7 @@
     "i18n_answer_text": "readonly",
     "i18n_guesses_left_one": "readonly",
     "i18n_guesses_left_many": "readonly",
-    "gtag": "readonly"
+    "gtag": "readonly",
+    "require": "readonly"
   }
 }

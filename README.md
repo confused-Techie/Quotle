@@ -11,7 +11,7 @@ Quotle is another Wordle variant, inspired by Heardle and Framed.
 
 This time instead using audio snippets or quotes to allow you, the player, to guess the movie it is from.
 
-## Contributing
+## [Contributing](https://github.com/confused-Techie/Quotle/blob/main/docs/CONTRIBUTING.md)
 
 Please feel welcome to contribute to this repo to help improve the experience.
 

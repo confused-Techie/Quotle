@@ -442,7 +442,6 @@ var UTILS_COLLECTION = {
   * @returns {string} The proper game board represented as emojis to be shared.
   */
   CraftShareText: function () {
-    const emoji_purple_square = String.fromCodePoint(0x1f7ea);
     const emoji_black_square = String.fromCodePoint(0x2b1b);
     const emoji_blue_square = String.fromCodePoint(0x1f7e6);
     const emoji_green_square = String.fromCodePoint(0x1f7e9);
@@ -1038,7 +1037,7 @@ var GAME_CONTROLLER = {
         // we know this specific peice of audio contains an alert
         // while in the future once more alerts are defined this can be more fleshed out, for now it will be rather simple.
         var curAlert = answer.alerts[`audio${num}`];
-        if (curAlert.type == "volume" && curAlert.reason == "load") {
+        if (curAlert.type == "volume" && curAlert.reason == "loud") {
           DOM_MANAGER.Snackbar("Warning! This next quote could be loud.");
         }
         if (curAlert.type == "content" && curAlert.reason == "violence") {
