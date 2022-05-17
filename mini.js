@@ -1,7 +1,6 @@
 const { minify } = require("terser");
 var fs = require("fs");
 
-
 var fileName = "./assets/js/home.js";
 
 var options = {
@@ -9,12 +8,12 @@ var options = {
   keep_classnames: true,
   sourceMap: {
     filename: "home.js",
-    url: "https://quotle.dev/js/home.js.map"
+    url: "https://quotle.dev/js/home.js.map",
   },
   format: {
     comments: false,
   },
-  mangle: false
+  mangle: false,
 };
 
 (async () => {
@@ -28,9 +27,8 @@ var options = {
 
     console.log("Done writing...");
     console.log("Done...");
-  } catch(err) {
+  } catch (err) {
     const { message, filename, line, col, pos } = err;
     console.log(`'${filename}':${line},${col}-- ${message}`);
   }
-
 })();
