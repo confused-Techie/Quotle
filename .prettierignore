@@ -19,3 +19,7 @@ logs-tlmy.txt
 # Ignore data files
 games/
 assets/static/media.json
+assets/js/home.js.map
+assets/js/home.min.js
+assets/css/home.min.css
+docs/
