@@ -21,4 +21,28 @@ You can contribute in three major ways.
 - Create Guesses
 - Improve the Source Code
 
+## Remember to Minify
+
+After moving to a workflow for minification there were great results seen.
+
+No Minification, GZipped
+
+Network:
+CSS: 3.1 kB
+JS: 14.9 kB
+
+Disk:
+CSS: 12.2 KB
+JS: 58.3 KB
+
+Minyfied, GZipped
+
+Network:
+CSS: 2.3 kB
+JS: 7.6 kB
+
+Disk:
+CSS: 8.96 KB
+JS: 26.2 KB
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/U7U0CHFPZ)

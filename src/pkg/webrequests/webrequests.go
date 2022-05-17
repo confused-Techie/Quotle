@@ -113,11 +113,9 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := models.PageTemplate{
 		Title:          "Quotle",
-		CSS:            []string{"/css/home.css?cache_buster=" + viper.GetString("env_variables.CSS_VERSION")},
+		CSS:            []string{"/css/home.min.css?cache_buster=" + viper.GetString("env_variables.CSS_VERSION")},
 		JS:             []string{"/js/home.min.js?cache_buster=" + viper.GetString("env_variables.JS_VERSION"), "https://storage.googleapis.com/quotle-games/" + strconv.Itoa(cycledata.GlobalGameID) + "/answer.js"},
 		DefaultStrings: returnDefaultStrings(),
-		//TargetStrings:  returnPrefferedStrings(strings.Split(r.Header.Get("Accept-Language"), ",")[0]),
-		//TargetLanguage: strings.Split(r.Header.Get("Accept-Language"), ",")[0],
 		TargetStrings:  langStrings.Strings,
 		TargetLanguage: langStrings.Lang,
 	}
