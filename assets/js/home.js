@@ -992,7 +992,7 @@ var GAME_CONTROLLER = {
             STORAGE_HANDLER.SetProgressData();
             STORAGE_HANDLER.SetLoserData();
             DOM_MANAGER.LoserModal();
-            this.NextGuess();
+            //this.NextGuess();
           } else {
             DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed"]);
             board[currentGuessNumber - 1] = 5;

@@ -7,8 +7,9 @@ var options = {
   keep_fnames: true,
   keep_classnames: true,
   sourceMap: {
+    root: "https://quotle.dev/js",
     filename: "home.js",
-    url: "https://quotle.dev/js/home.js.map",
+    url: "home.js.map",
   },
   format: {
     comments: false,
@@ -18,7 +19,7 @@ var options = {
 
 (async () => {
   try {
-    var result = await minify(fs.readFileSync(fileName, "utf8"), options);
+    var result = await minify({ "home.js": fs.readFileSync(fileName, "utf8") }, options);
 
     console.log("Done minifying...");
 
