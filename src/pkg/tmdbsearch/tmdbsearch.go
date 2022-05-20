@@ -28,8 +28,39 @@ func FindAPIKey() {
 	}
 }
 
+// DetailQueryByID is a Gen2 Rewrite of the matching model, instead taking only an ID to return EXACT movie details.
+func DetailQueryByID(id string) models.SearchResultItem {
+	matchURL := "https://api.themoviedb.org/3/movie/" + strconv.Itoa(id) + "?api_key=" + TmdbAPIKey + "&append_to_response=credits"
+	logger.InfoLogger.Println(url)
+	resp, err := http.Get(url)
+	if err != nil {
+		logger.ErrorLogger.Println(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logger.ErrorLogger.Println(err)
+	}
+
+	var res models.APIDetailItem
+	json.Unmarshal(body, &res)
+	resp.Body.Close()
+
+	var matchDetail models.SearchResultItem
+
+	for _, itmIn := range res.Credits.Crew {
+		if itmIn.Job == "Director" {
+			matchDetail.Director = itmIn.Name
+		}
+	}
+	for _, itmIn := range res.Genres {
+		matchDetail.Genre = append(matchDetail.Genre, itmIn.Name)
+	}
+	return matchDetail
+}
+
 // SearchQuery takes a search string, and returns the api results as an array.
 func SearchQuery(search string) []string {
+	// this needs to be migrated to a method that returns an object with the movie id in it.
 	url := "https://api.themoviedb.org/3/search/movie?api_key=" + TmdbAPIKey + "&query=" + url.QueryEscape(search) + "&page=1"
 	logger.InfoLogger.Println(url)
 	resp, err := http.Get(url)
