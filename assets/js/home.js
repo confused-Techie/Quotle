@@ -1022,6 +1022,22 @@ var GAME_CONTROLLER = {
         }
       });
   },
+  ValidateAnswerGen2: function(guess, guessID, eleID) {
+    fetch(`api/2/movie_match?value=${guessID}`)
+      .then((res) => res.json())
+      .then((result) => {
+        try {
+          LOG.InfoSpoiler("game", "ValidateAnswerGen2: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}",
+          guess, answer.name, answer.director);
+          LOG.Info(`ValidateAnswerGen2: Movie_Match: Name: ${result.Name}; Director: ${result.Director}; ID: ${guessID}`);
+          if (guess == answer.name && result.Director == answer.director) {
+            LOG.Info("Correct Answer!", "game");
+          }
+        } catch(err) {
+
+        }
+      });
+  },
   /**
    * @desc Calls all functions needed to move to the next guess. After incremening the global currentGuessNumber
    * @implements {DOM_MANAGER.UpdateGuessesLeft}
