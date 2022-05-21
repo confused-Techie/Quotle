@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/viper"
 	"html/template"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"os"
 	"strconv"
@@ -108,16 +109,31 @@ var tmpl = make(map[string]*template.Template)
 
 // HomeHandler is the http handler for the home page of Quotle.
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
+	gameIDToUse := cycledata.GlobalGameID
+	replayValue := false
+
+	requested_id := r.URL.Query().Get("requested_game")
+	if requested_id != "" {
+		gameIDToUse, _ = strconv.Atoi(requested_id)
+		replayValue = true
+	}
+	if gameIDToUse == 0 {
+		// here pick a random one. and somehow tell the browser
+		gameIDToUse = randomGameID()
+		replayValue = true
+	}
 
 	langStrings := returnPrefferedStrings(strings.Split(r.Header.Get("Accept-Language"), ",")[0])
 
 	data := models.PageTemplate{
 		Title:          "Quotle",
 		CSS:            []string{"/css/home.min.css?cache_buster=" + viper.GetString("env_variables.CSS_VERSION")},
-		JS:             []string{"/js/home.min.js?cache_buster=" + viper.GetString("env_variables.JS_VERSION"), "https://storage.googleapis.com/quotle-games/" + strconv.Itoa(cycledata.GlobalGameID) + "/answer.js"},
+		JS:             []string{"/js/home.min.js?cache_buster=" + viper.GetString("env_variables.JS_VERSION")},
 		DefaultStrings: returnDefaultStrings(),
 		TargetStrings:  langStrings.Strings,
 		TargetLanguage: langStrings.Lang,
+		Data:           getPageGameAnswer(strconv.Itoa(gameIDToUse)),
+		Replay:         replayValue,
 	}
 
 	// While tradditionally I would include a Template Array here, since this will be a SPA thats not a concern.
@@ -145,20 +161,104 @@ func errorPage(err error, w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SearchHandler is the generic search api endpoint handler.
-func SearchHandler(w http.ResponseWriter, r *http.Request) {
-	// First lets get the values we care about
+// SearchHandlerV2 is the new improved search handler. Using V2 SearchQuery from tmdbsearch.go
+func SearchHandlerV2(w http.ResponseWriter, r *http.Request) {
 	value := r.URL.Query().Get("value")
-
-	//json.NewEncoder(w).Encode(search.SearchIndex(value))
-	json.NewEncoder(w).Encode(tmdbsearch.SearchQuery(value))
+	json.NewEncoder(w).Encode(tmdbsearch.SearchQueryV2(value))
 }
 
-// MovieMatchHandler invokes search.FindInIndex to find an exact match within the movie db.
-func MovieMatchHandler(w http.ResponseWriter, r *http.Request) {
-	value := r.URL.Query().Get("value")
+// ValidateAnswerV2 is the new validation. Checking game answers server side.
+func ValidateAnswerV2(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	gameID := r.URL.Query().Get("gameID")
+	// get the guess movie details.
+	tmdbRes := tmdbsearch.DetailQueryByID(id)
+	// get the correct movie details.
+	answer := getGameAnswer(gameID)
 
-	json.NewEncoder(w).Encode(tmdbsearch.DetailQuery(value))
+	genreCorrect := checkGenre(answer.Genre, tmdbRes.Genre)
+
+	var pageAnswer models.PageAnswerResponse
+	pageAnswer.Result = "none"
+
+	logger.InfoLogger.Println("Provided Movie ID: " + id)
+	logger.InfoLogger.Println("Provided Game ID: " + gameID)
+	logger.InfoLogger.Println("Detail Query Name: " + tmdbRes.Name)
+	logger.InfoLogger.Println("Answer Name: " + answer.Name)
+
+	// in the future the games should list the ID, and we will check that first.
+	if answer.ID != "" {
+		if answer.ID == id {
+			pageAnswer.Result = "win"
+			json.NewEncoder(w).Encode(pageAnswer)
+			return
+			// Added a return here to avoid a double encoding, with details of the director or genre right.
+		}
+	}
+	// but for previous games that don't have it. Or the ID is not an exact match.
+	if answer.Director == tmdbRes.Director && !genreCorrect {
+		pageAnswer.Result = "director"
+	}
+	if answer.Director != tmdbRes.Director && genreCorrect {
+		pageAnswer.Result = "genre"
+	}
+	if answer.Director == tmdbRes.Director && genreCorrect {
+		pageAnswer.Result = "both"
+	}
+	json.NewEncoder(w).Encode(pageAnswer)
+}
+
+func checkGenre(an []string, gu []string) bool {
+	for _, v := range gu {
+		if contains(an, v) {
+			return true
+		}
+	}
+	return false
+}
+
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if v == str {
+			return true
+		}
+	}
+	return false
+}
+
+func randomGameID() int {
+	min := 1
+	max := 19
+	num := rand.Intn(max-min) + min
+	logger.InfoLogger.Println(num)
+	return num
+}
+
+func getPageGameAnswer(id string) models.GameAnswer {
+	fullAnswer := getGameAnswer(id)
+	fullAnswer.Name = ""
+	fullAnswer.Director = ""
+	fullAnswer.Genre = make([]string, 0)
+	fullAnswer.ID = ""
+	return fullAnswer
+}
+
+func getGameAnswer(id string) models.GameAnswer {
+	url := "https://storage.googleapis.com/quotle-games/" + id + "/answer.json?ignoreCache=1"
+	logger.InfoLogger.Println("getGameAnswer URL: " + url)
+	resp, err := http.Get(url)
+	if err != nil {
+		logger.ErrorLogger.Println(err)
+	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logger.ErrorLogger.Println(err)
+	}
+	var res models.GameAnswer
+	json.Unmarshal(body, &res)
+	resp.Body.Close()
+	logger.InfoLogger.Println("Ready to return Game Answer: " + res.Name)
+	return res
 }
 
 // ManifestHandler serves the manifest file.

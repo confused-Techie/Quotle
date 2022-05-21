@@ -1,15 +1,14 @@
 package cloudfeatures
 
 import (
+	"cloud.google.com/go/storage"
 	"context"
 	"encoding/json"
 	"fmt"
+	"google.golang.org/api/option"
 	"io/ioutil"
 	"os"
 	"time"
-
-	"cloud.google.com/go/storage"
-	"google.golang.org/api/option"
 )
 
 // IncrementGlobalGameData can be called to add 1 to the game id stored within the cloud.
@@ -61,21 +60,15 @@ func GetGlobalGameData() (string, error) {
 		return "", authErr
 	}
 
-	production := os.Getenv("PRODUCTION")
-	if production != "" {
-		bData, err := ReadDataAuth(bucket, object, authFile, timeout)
-		if err != nil {
-			return "", err
-		}
-		return string(bData), nil
-	}
-
-	bData, err := ReadDataNoAuth(bucket, object)
-
+	// While this originally checked for running in production, to use auth or not
+	// since this file is under access control, its been a longstanding dev
+	// annoynace, so just gonna remove it.
+	bData, err := ReadDataAuth(bucket, object, authFile, timeout)
 	if err != nil {
 		return "", err
 	}
 	return string(bData), nil
+
 }
 
 // GlobalGames is used to marshal the data from the cloud.
@@ -135,32 +128,6 @@ func ConstructGlobalGameFile(value int) ([]byte, error) {
 		return nil, fmt.Errorf("json.MarshalIndent: %v", err)
 	}
 	return []byte(file), nil
-}
-
-// ReadDataNoAuth is a fallback during development to test the basic functionality.
-func ReadDataNoAuth(bucket string, object string) ([]byte, error) {
-	ctx := context.Background()
-	client, err := storage.NewClient(ctx, option.WithoutAuthentication())
-	if err != nil {
-		return nil, fmt.Errorf("storage.NewClient: %v", err)
-	}
-	defer client.Close()
-
-	ctx, cancel := context.WithTimeout(ctx, time.Second*50)
-	defer cancel()
-
-	rc, err := client.Bucket(bucket).Object(object).NewReader(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("Object(%q).NewReader: %v", object, err)
-	}
-
-	defer rc.Close()
-
-	data, err := ioutil.ReadAll(rc)
-	if err != nil {
-		return nil, fmt.Errorf("ioutil.ReadAll: %v", err)
-	}
-	return data, nil
 }
 
 // ReadDataAuth reads the data from the cloud.

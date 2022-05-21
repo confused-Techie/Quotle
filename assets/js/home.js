@@ -1,8 +1,7 @@
 var theme,
-  replay = false,
   currentGuessNumber = 1,
   guessesStrings = [],
-  totalGameCount = 10,
+  totalGameCount = 19,
   game_debug = false,
   debug_spoiler = false,
   log_collection = [];
@@ -113,15 +112,6 @@ var DOM_MANAGER = {
     document
       .getElementById("shuffle_btn")
       .addEventListener("click", GAME_CONTROLLER.RandomPlay);
-    document
-      .getElementById("user_guess_input")
-      .addEventListener("keyup", function (event) {
-        if (event.key === "Enter" || event.keyCode === 13) {
-          GAME_CONTROLLER.PassAnswer(
-            document.getElementById("user_guess_input").value
-          );
-        }
-      });
   },
   /**
    * @desc Enables the theme requested. By adding the class to the body and changing images.
@@ -368,8 +358,12 @@ var UTILS_COLLECTION = {
       DOM_MANAGER.ClearSearchResults();
 
       // then craft results
-      for (let i = 0; i < results.length; i++) {
-        var tmpHTML = `<p onclick="BTN_COLLECTION.EnterTextEvent(event);">${results[i]}</p>`;
+      for (let i = 0; i < results.results.length; i++) {
+        var tmpHTML = `<p onclick="BTN_COLLECTION.EnterTextEvent(event);" data-id="${
+          results.results[i].id
+        }">${results.results[i].title} (${
+          results.results[i].release_date.split("-")[0]
+        })</p>`;
         searchRes.insertAdjacentHTML("beforeend", tmpHTML);
       }
     } catch (err) {
@@ -549,11 +543,24 @@ var BTN_COLLECTION = {
    * @implements {UTILS_COLLECTION.CleanGuessInput}
    */
   CheckAnswerViaBtn: function () {
-    GAME_CONTROLLER.PassAnswer(
-      UTILS_COLLECTION.CleanGuessInput(
-        document.getElementById("user_guess_input").value
-      )
-    );
+    console.log(document.getElementById("user_guess_input").dataset);
+    if (document.getElementById("user_guess_input").dataset.guessid != "") {
+      GAME_CONTROLLER.PassAnswerV2(
+        UTILS_COLLECTION.CleanGuessInput(
+          document.getElementById("user_guess_input").value
+        ),
+        document.getElementById("user_guess_input").dataset.guessid
+      );
+      // Clear the guess field.
+      document.getElementById("user_guess_input").value = "";
+      document.getElementById("user_guess_input").dataset.guessid = "";
+      // clear the search results.
+      DOM_MANAGER.ClearSearchResults();
+    } else {
+      DOM_MANAGER.Snackbar(
+        "Please select an option from the search result. (This is to ensure we know what you mean.)"
+      );
+    }
   },
   /**
    * @desc Is called during clicks or key presses into the user guess search text box.
@@ -567,7 +574,7 @@ var BTN_COLLECTION = {
     var search = e.target.value;
     LOG.Info(search);
 
-    fetch(`/api/search?value=${search}`)
+    fetch(`/api/2/search?value=${search}`)
       .then((res) => res.json())
       .then((result) => {
         UTILS_COLLECTION.SearchResults(result);
@@ -582,6 +589,9 @@ var BTN_COLLECTION = {
   EnterTextEvent: function (e) {
     document.getElementById("user_guess_input").value =
       UTILS_COLLECTION.CleanGuessInput(e.target.innerText);
+    // attach the data-attribute from the search results, to the guess, so it can be used properly later.
+    document.getElementById("user_guess_input").dataset.guessid =
+      e.target.dataset.id;
     DOM_MANAGER.ClearSearchResults();
   },
   /**
@@ -836,206 +846,79 @@ var AUDIO_MANAGER = {
  */
 var GAME_CONTROLLER = {
   /**
-   * @desc Pass Answer handles taking a user guess, adding it to the guess history, clearing user guess text box, clearing search results.
-   * then finally calling GAME_CONTROLLER.ValidateAnswer with the proper Element ID to then append the guess too.
-   * @param {string} guess Raw text of the users guess.
-   * @implements {DOM_MANAGER.ClearSearchResults}
-   * @implements {GAME_CONTROLLER.ClearSearchResults}
-   * @implements {GAME_CONTROLLER.ValidateAnswer}
-   * @implements {LOG}
+   * @desc This is the new improved method to check answers. Now relying on the V2 API to check answers for us.
+   * @param {string} guess This is the raw string guess for this turn.
+   * @param {string} id This is the GameID we are working with.
    */
-  PassAnswer: function (guess) {
-    // The new rewrite of the checkAnswer function.
-
+  PassAnswerV2: function (guess, id) {
+    console.log("PassAnswer V2");
     this.AddGuessToString(guess);
-
-    // Clear the guess field.
-    document.getElementById("user_guess_input").value = "";
-    // clear the search results.
-    DOM_MANAGER.ClearSearchResults();
+    var eleID;
 
     if (currentGuessNumber === 1) {
-      this.ValidateAnswer(guess, "guess-one");
+      eleID = "guess-one";
     } else if (currentGuessNumber === 2) {
-      this.ValidateAnswer(guess, "guess-two");
+      eleID = "guess-two";
     } else if (currentGuessNumber === 3) {
-      this.ValidateAnswer(guess, "guess-three");
+      eleID = "guess-three";
     } else if (currentGuessNumber === 4) {
-      this.ValidateAnswer(guess, "guess-four");
+      eleID = "guess-four";
     } else if (currentGuessNumber === 5) {
-      this.ValidateAnswer(guess, "guess-five");
+      eleID = "guess-five";
     } else if (currentGuessNumber === 6) {
-      this.ValidateAnswer(guess, "guess-six");
-    } else {
-      LOG.Error("Had trouble displaying the guess results.", "game");
+      eleID = "guess-six";
     }
-  },
-  /**
-   * @desc Is the bulk of the Game Controller, using Quotle API's (/movie_match) to check the users guess data against the correct answer data.
-   * Checking if they won, if they lost, got the director, genre, or both right. And calling required functions to make those changes, both in the
-   * backend and frontend.
-   * @param {string} guess Is the users raw guess text.
-   * @param {string} eleID Is the element ID to make any modifications to, depending on this guess.
-   * @implements {LOG}
-   * @implements {DOM_MANAGER.DisplayGuessAnswer}
-   * @implements {STORAGE_HANDLER.SetWinnerData}
-   * @implements {STORAGE_HANDLER.SetLoserData}
-   * @implements {STORAGE_HANDLER.SetProgressData}
-   * @implements {GAME_CONTROLLER.NextGuess}
-   * @implements {AUDIO_MANAGER.EnableRemainingAudio}
-   * @implements {DOM_MANAGER.WinnerModal}
-   * @implements {DOM_MANAGER.LoserModal}
-   * @implements {DOM_MANAGER.Snackbar}
-   */
-  ValidateAnswer: function (guess, eleID) {
-    fetch(`api/movie_match?value=${guess}`)
+
+    fetch(`/api/2/validate?id=${id}&gameID=${answer.gameID}`)
       .then((res) => res.json())
       .then((result) => {
-        try {
-          LOG.InfoSpoiler(
-            "game",
-            "ValidateAnswer: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}",
-            guess,
-            answer.name,
-            answer.director
-          );
-          //LOG.Info(`ValidateAnswer: Guess: ${guess}; Answer.Name: ${answer.name}; Answer.Director: ${answer.director}`, "game");
-          LOG.Info(
-            `ValidateAnswer: Movie_Match: Name: ${result.Name}; Director: ${result.Director}`,
-            "game"
-          );
-          if (guess == answer.name && result.Director == answer.director) {
+        if (result.Result != "win" && currentGuessNumber === 6) {
+          LOG.Info("Played guess the last guess.", "game");
+          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
+          STORAGE_HANDLER.SetProgressData();
+          STORAGE_HANDLER.SetLoserData();
+          DOM_MANAGER.LoserModal();
+          // lose
+        } else {
+          if (result.Result == "win") {
+            // win
             LOG.Info("Correct Answer!", "game");
-            // ITS CORRECT!
             DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
               "guessed",
               "correct",
             ]);
-
             board[currentGuessNumber - 1] = 1;
-            // set winner saved data here
             STORAGE_HANDLER.SetProgressData();
             STORAGE_HANDLER.SetWinnerData();
             AUDIO_MANAGER.EnableRemainingAudio();
-            this.NextGuess();
             DOM_MANAGER.WinnerModal();
           } else {
-            LOG.Info("Incorrect Answer.", "game");
-            // ITS INCORRECT
-            // But lets see what they got right.
-            var correctGenre = this.GenreCheck(result.Genre, answer.genre);
-            var amountCorrect = "none";
-
-            if (result.Director == answer.director && !correctGenre) {
-              amountCorrect = "director";
-            }
-            if (correctGenre && result.Director != answer.director) {
-              amountCorrect = "genre";
-            }
-            if (correctGenre && result.Director == answer.director) {
-              amountCorrect = "both";
-            }
-
-            if (amountCorrect == "none") {
-              LOG.Info("No extras correct.", "game");
+            // partial win maybe
+            if (result.Result == "none") {
               board[currentGuessNumber - 1] = 5;
-            } else if (amountCorrect == "director") {
-              LOG.Info("Director correct.", "game");
+            } else if (result.Result == "director") {
               board[currentGuessNumber - 1] = 2;
               DOM_MANAGER.Snackbar("Awesome you got the Director right!");
-            } else if (amountCorrect == "genre") {
-              LOG.Info("Genre Correct", "game");
+            } else if (result.Result == "genre") {
               board[currentGuessNumber - 1] = 3;
               DOM_MANAGER.Snackbar("Rad you got the Genre right!");
-            } else if (amountCorrect == "both") {
-              LOG.Info("Director & Genre Correct", "game");
+            } else if (result.Result == "both") {
               board[currentGuessNumber - 1] = 4;
               DOM_MANAGER.Snackbar(
-                "Fantastic you got both the Director and Genre right!"
+                "Fantastic you got both the Director and Genrre right!"
               );
             }
-
-            if (eleID == "guess-six") {
-              LOG.Info("Player guessed the last guess.", "game");
-              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
-                "guessed",
-                amountCorrect,
-                "lost",
-              ]);
-              // save progress, then losing data here.
-              STORAGE_HANDLER.SetProgressData();
-              STORAGE_HANDLER.SetLoserData();
-              DOM_MANAGER.LoserModal();
-            } else {
-              // While providing amountCorrect will cause it to append none in most cases,
-              // since no styling is applying to that class it'll be harmless, and simplify logic here.
-              DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
-                "guessed",
-                amountCorrect,
-              ]);
-              // save progress here
-              STORAGE_HANDLER.SetProgressData();
-              this.NextGuess();
-            }
-          }
-        } catch (err) {
-          LOG.Error(
-            `Made a bad guess buddy. It threw an error: ${err}`,
-            "game"
-          );
-
-          if (eleID == "guess-six") {
-            LOG.Info("Player made their last guess.", "game");
-            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
-            board[currentGuessNumber - 1] = 5;
-            // save progress here, then losing data here
-            STORAGE_HANDLER.SetProgressData();
-            STORAGE_HANDLER.SetLoserData();
-            DOM_MANAGER.LoserModal();
-            //this.NextGuess();
-          } else {
-            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed"]);
-            board[currentGuessNumber - 1] = 5;
-            // Save progress here
+            DOM_MANAGER.DisplayGuessAnswer(eleID, guess, [
+              "guessed",
+              result.Result,
+            ]);
             STORAGE_HANDLER.SetProgressData();
             this.NextGuess();
           }
         }
       })
       .catch((err) => {
-        LOG.Error(`Made a bad guess buddy. It threw an error: ${err}`, "game");
-
-        if (eleID == "guess-six") {
-          LOG.Info("Player made their last guess.", "game");
-          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed", "lost"]);
-          board[currentGuessNumber - 1] = 5;
-          // save progress here, then losing data here
-          STORAGE_HANDLER.SetProgressData();
-          STORAGE_HANDLER.SetLoserData();
-          DOM_MANAGER.LoserModal();
-        } else {
-          DOM_MANAGER.DisplayGuessAnswer(eleID, guess, ["guessed"]);
-          board[currentGuessNumber - 1] = 5;
-          // save progress here
-          STORAGE_HANDLER.SetProgressData();
-          this.NextGuess();
-        }
-      });
-  },
-  ValidateAnswerGen2: function(guess, guessID, eleID) {
-    fetch(`api/2/movie_match?value=${guessID}`)
-      .then((res) => res.json())
-      .then((result) => {
-        try {
-          LOG.InfoSpoiler("game", "ValidateAnswerGen2: Guess: {0}; Answer.Name: {1}; Answer.Director: {2}",
-          guess, answer.name, answer.director);
-          LOG.Info(`ValidateAnswerGen2: Movie_Match: Name: ${result.Name}; Director: ${result.Director}; ID: ${guessID}`);
-          if (guess == answer.name && result.Director == answer.director) {
-            LOG.Info("Correct Answer!", "game");
-          }
-        } catch(err) {
-
-        }
+        LOG.Error(`Encountered an error processing guess: ${err}`);
       });
   },
   /**
@@ -1090,39 +973,23 @@ var GAME_CONTROLLER = {
    * @implements {DOM_MANAGER.Snackbar}
    */
   AnswerCheck: function () {
-    if (typeof answer == "undefined") {
+    if (typeof answer.gameID == "undefined") {
       LOG.Warn("there is no answer available.", "game");
       LOG.Warn("adding a random previous answer to play.", "game");
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.
       // But since this should only show up in development, or in case I don't have a new game created, its not as important.
       const randomGameID = Math.floor(Math.random() * totalGameCount) + 1;
 
-      const scriptPromise = new Promise((resolve, reject) => {
-        const script = document.createElement("script");
-        document.body.appendChild(script);
-        script.onload = resolve;
-        script.onerror = reject;
-        script.async = true;
-        script.src = `https://storage.googleapis.com/quotle-games/${randomGameID}/answer.js`;
-      });
-
-      scriptPromise
-        .then(() => {
-          LOG.Info(
-            `Successfully added new random answer with Game ID: ${randomGameID}`,
-            "game"
-          );
-          // now this will recall the function to init all game dependent features.
-          replay = true;
-          UTILS_COLLECTION.GameLoad();
-          DOM_MANAGER.Snackbar(
-            "Unable to find the newest game. Grabbing a random one for you."
-          );
-        })
-        .catch(() => {
-          LOG.Error("had an error adding new answer script.", "game");
-        });
-    } // else the original answer was successfully loaded.
+      // Now with replay built into the server, we can just ask for a new page.
+      window.location = `?requested_game=${randomGameID}`;
+    } else {
+      // while this does mean another answer successfully loaded, we want to check if this a replay.
+      if (replay) {
+        DOM_MANAGER.Snackbar(
+          "This is a replay of a previous game. Could mean you hit replay or todays game was unavailable."
+        );
+      }
+    }
   },
   /**
    * @desc Used to initiate a random game load. Picking a random number from 1 - totalGameCount. And calling the Utils GameLoad functions.
@@ -1136,39 +1003,7 @@ var GAME_CONTROLLER = {
 
     const randomGameID = Math.floor(Math.random() * totalGameCount) + 1;
 
-    const scriptPromise = new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      document.body.appendChild(script);
-      script.onload = resolve;
-      script.onerror = reject;
-      script.async = true;
-      script.src = `https://storage.googleapis.com/quotle-games/${randomGameID}/answer.js`;
-    });
-
-    scriptPromise
-      .then(() => {
-        LOG.Info(`Successfully queried new game data`, "game");
-        replay = true;
-        UTILS_COLLECTION.GameLoad();
-        DOM_MANAGER.Snackbar("New Random Game Loaded");
-      })
-      .catch(() => {
-        LOG.Error("Error when creating new anwser.", "game");
-      });
-  },
-  /**
-   * @desc Used to check if two arrays of genres, have ANY matches. Returning true if so, false otherwise.
-   * @param {Object} guess The Users guess Genre Array.
-   * @param {Object} correct The Correct Answer Genre Array.
-   * @returns {bool}
-   */
-  GenreCheck: function (guess, correct) {
-    for (let i = 0; i < guess.length; i++) {
-      if (correct.includes(guess[i])) {
-        return true;
-      }
-    }
-    return false;
+    window.location = `?requested_game=${randomGameID}`;
   },
   /**
    * @desc Checks the status of the game. Useful to be called to recreate the game board, if a user left halfway through

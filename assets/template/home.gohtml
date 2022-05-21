@@ -108,7 +108,7 @@
     </div>
 
     <div class="user-guess">
-      <input class="input_field" type="text" placeholder="Enter a Guess" id="user_guess_input"/>
+      <input class="input_field" type="text" placeholder="Enter a Guess" id="user_guess_input" data-guessid="" />
       <button id="submit_btn">
         <span>
           {{ or (index .TargetStrings "submit") (index .DefaultStrings "submit") }}
@@ -287,6 +287,8 @@
   var i18n_answer_text = {{ or (index .TargetStrings "answer-text") (index .DefaultStrings "answer-text") }};
   var i18n_guesses_left_one = {{ or (index .TargetStrings "guesses_left_one") (index .DefaultStrings "guesses_left_one") }};
   var i18n_guesses_left_many = {{ or (index .TargetStrings "guesses_left_many") (index .DefaultStrings "guesses_left_many") }};
+  var answer = {{ .Data }};
+  var replay = {{ .Replay }};
 
 </script>
 

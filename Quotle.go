@@ -87,9 +87,9 @@ func main() {
 	mux.Handle("/favicon.png", http.HandlerFunc(webrequests.FaviconHandler))
 	mux.Handle("/apple-touch.png", http.HandlerFunc(webrequests.AppleTouchHandler))
 
-	// ========== API Endpoints ====================
-	mux.Handle("/api/search", http.HandlerFunc(webrequests.SearchHandler))
-	mux.Handle("/api/movie_match", http.HandlerFunc(webrequests.MovieMatchHandler))
+	// ========= API V2 Endpoints ==============
+	mux.Handle("/api/2/search", http.HandlerFunc(webrequests.SearchHandlerV2))
+	mux.Handle("/api/2/validate", http.HandlerFunc(webrequests.ValidateAnswerV2))
 
 	port := os.Getenv("PORT")
 	if port == "" {

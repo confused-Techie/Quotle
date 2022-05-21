@@ -275,7 +275,7 @@ When clicked will take the value in the user guess text box and pass it to the G
 After linting it in the Utils Collection Clean Guess Input.
 
 **Kind**: static method of [<code>BTN\_COLLECTION</code>](#BTN_COLLECTION)  
-**Implements**: [<code>PassAnswer</code>](#GAME_CONTROLLER.PassAnswer), [<code>CleanGuessInput</code>](#UTILS_COLLECTION.CleanGuessInput)  
+**Implements**: <code>GAME\_CONTROLLER.PassAnswer</code>, [<code>CleanGuessInput</code>](#UTILS_COLLECTION.CleanGuessInput)  
 <a name="BTN_COLLECTION.MediaSearchBtn"></a>
 
 ### BTN_COLLECTION.MediaSearchBtn()
@@ -370,44 +370,26 @@ Namespace to access features related to the game board.
 **Kind**: global namespace  
 
 * [GAME_CONTROLLER](#GAME_CONTROLLER) : <code>object</code>
-    * [.PassAnswer(guess)](#GAME_CONTROLLER.PassAnswer)
-    * [.ValidateAnswer(guess, eleID)](#GAME_CONTROLLER.ValidateAnswer)
+    * [.PassAnswerV2(guess, id)](#GAME_CONTROLLER.PassAnswerV2)
     * [.NextGuess()](#GAME_CONTROLLER.NextGuess)
     * [.AudioAlerts(num)](#GAME_CONTROLLER.AudioAlerts)
     * [.AddGuessToString(guess)](#GAME_CONTROLLER.AddGuessToString)
     * [.AnswerCheck()](#GAME_CONTROLLER.AnswerCheck)
     * [.RandomPlay()](#GAME_CONTROLLER.RandomPlay)
-    * [.GenreCheck(guess, correct)](#GAME_CONTROLLER.GenreCheck) ⇒ <code>bool</code>
     * [.GameStatusCheck()](#GAME_CONTROLLER.GameStatusCheck)
     * [.MediaFeatures()](#GAME_CONTROLLER.MediaFeatures)
 
-<a name="GAME_CONTROLLER.PassAnswer"></a>
+<a name="GAME_CONTROLLER.PassAnswerV2"></a>
 
-### GAME_CONTROLLER.PassAnswer(guess)
-Pass Answer handles taking a user guess, adding it to the guess history, clearing user guess text box, clearing search results.
-then finally calling GAME_CONTROLLER.ValidateAnswer with the proper Element ID to then append the guess too.
+### GAME_CONTROLLER.PassAnswerV2(guess, id)
+This is the new improved method to check answers. Now relying on the V2 API to check answers for us.
 
 **Kind**: static method of [<code>GAME\_CONTROLLER</code>](#GAME_CONTROLLER)  
-**Implements**: [<code>ClearSearchResults</code>](#DOM_MANAGER.ClearSearchResults), <code>GAME\_CONTROLLER.ClearSearchResults</code>, [<code>ValidateAnswer</code>](#GAME_CONTROLLER.ValidateAnswer), [<code>LOG</code>](#LOG)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| guess | <code>string</code> | Raw text of the users guess. |
-
-<a name="GAME_CONTROLLER.ValidateAnswer"></a>
-
-### GAME_CONTROLLER.ValidateAnswer(guess, eleID)
-Is the bulk of the Game Controller, using Quotle API's (/movie_match) to check the users guess data against the correct answer data.
-Checking if they won, if they lost, got the director, genre, or both right. And calling required functions to make those changes, both in the
-backend and frontend.
-
-**Kind**: static method of [<code>GAME\_CONTROLLER</code>](#GAME_CONTROLLER)  
-**Implements**: [<code>LOG</code>](#LOG), [<code>DisplayGuessAnswer</code>](#DOM_MANAGER.DisplayGuessAnswer), [<code>SetWinnerData</code>](#STORAGE_HANDLER.SetWinnerData), [<code>SetLoserData</code>](#STORAGE_HANDLER.SetLoserData), [<code>SetProgressData</code>](#STORAGE_HANDLER.SetProgressData), [<code>NextGuess</code>](#GAME_CONTROLLER.NextGuess), [<code>EnableRemainingAudio</code>](#AUDIO_MANAGER.EnableRemainingAudio), [<code>WinnerModal</code>](#DOM_MANAGER.WinnerModal), [<code>LoserModal</code>](#DOM_MANAGER.LoserModal), [<code>Snackbar</code>](#DOM_MANAGER.Snackbar)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| guess | <code>string</code> | Is the users raw guess text. |
-| eleID | <code>string</code> | Is the element ID to make any modifications to, depending on this guess. |
+| guess | <code>string</code> | This is the raw string guess for this turn. |
+| id | <code>string</code> | This is the GameID we are working with. |
 
 <a name="GAME_CONTROLLER.NextGuess"></a>
 
@@ -454,18 +436,6 @@ Used to initiate a random game load. Picking a random number from 1 - totalGameC
 
 **Kind**: static method of [<code>GAME\_CONTROLLER</code>](#GAME_CONTROLLER)  
 **Implements**: [<code>LOG</code>](#LOG), [<code>GameLoad</code>](#UTILS_COLLECTION.GameLoad), [<code>Snackbar</code>](#DOM_MANAGER.Snackbar)  
-<a name="GAME_CONTROLLER.GenreCheck"></a>
-
-### GAME_CONTROLLER.GenreCheck(guess, correct) ⇒ <code>bool</code>
-Used to check if two arrays of genres, have ANY matches. Returning true if so, false otherwise.
-
-**Kind**: static method of [<code>GAME\_CONTROLLER</code>](#GAME_CONTROLLER)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| guess | <code>Object</code> | The Users guess Genre Array. |
-| correct | <code>Object</code> | The Correct Answer Genre Array. |
-
 <a name="GAME_CONTROLLER.GameStatusCheck"></a>
 
 ### GAME_CONTROLLER.GameStatusCheck()

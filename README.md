@@ -12,8 +12,9 @@ Quotle is another Wordle variant, inspired by Heardle and Framed.
 This time instead using audio snippets or quotes to allow you, the player, to guess the movie it is from.
 
 ### Quotle is now fully translated into:
-* Chinese
-* Spanish
+
+- Chinese
+- Spanish
 
 ## [Contributing](https://github.com/confused-Techie/Quotle/blob/main/docs/CONTRIBUTING.md)
 

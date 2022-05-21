@@ -9,6 +9,7 @@ type PageTemplate struct {
 	TargetStrings  map[string]string
 	DefaultStrings map[string]string
 	TargetLanguage string
+	Replay         bool
 }
 
 // PrefferedStringsV2 is the object to contain string data as well as the locale
@@ -20,43 +21,6 @@ type PrefferedStringsV2 struct {
 // StringsSupported holds the struct for a strings.supported.json file
 type StringsSupported struct {
 	Langs []string `json:"langs"`
-}
-
-// MediaDB is an enrty in the media db JSON file.
-type MediaDB struct {
-	Name     string   `json:"name"`
-	Director string   `json:"director"`
-	Genre    []string `json:"genre"`
-}
-
-// MediaDBCollection is the collection of MediaDB Entries
-type MediaDBCollection struct {
-	Media []*MediaDB
-}
-
-// SearchItem holds the data for the search index entry of the media database.
-type SearchItem struct {
-	Value    []string
-	Original string
-	Director string
-	Genre    []string
-}
-
-// SearchList a collection wrapper of SearchItem entries.
-type SearchList struct {
-	Values []*SearchItem
-}
-
-// SearchResultItem holds the returned search result entry
-type SearchResultItem struct {
-	Name     string
-	Director string
-	Genre    []string
-}
-
-// SearchResultCollection a collection wrapper of SearchResultItem entries.
-type SearchResultCollection struct {
-	Results []*SearchResultItem
 }
 
 // APISearchResultItem is for the API call to tmdb.
@@ -71,6 +35,42 @@ type APISearchResultItem struct {
 type APISearchResultCollection struct {
 	Page    string                 `json:"page"`
 	Results []*APISearchResultItem `json:"results"`
+}
+
+type GameAnswerAlertItems struct {
+	Type   string `json:"type"`
+	Reason string `json:"reason"`
+}
+
+type GameAnswerAlerts struct {
+	Audio1 GameAnswerAlertItems `json:"audio1"`
+	Audio2 GameAnswerAlertItems `json:"audio2"`
+	Audio3 GameAnswerAlertItems `json:"audio3"`
+	Audio4 GameAnswerAlertItems `json:"audio4"`
+	Audio5 GameAnswerAlertItems `json:"audio5"`
+	Audio6 GameAnswerAlertItems `json:"audio6"`
+}
+
+type GameAnswer struct {
+	Name     string              `json:"name"`
+	Director string              `json:"director"`
+	Genre    []string            `json:"genre"`
+	Rating   string              `json:"rating"`
+	GameID   int                 `json:"gameID"`
+	ID       string              `json:"movieID"`
+	AudioSrc []string            `json:"audioSrc"`
+	Alerts   []*GameAnswerAlerts `json:"alerts"`
+}
+
+type PageAnswerResponse struct {
+	Result string
+}
+
+// SearchResultItem holds the returned search result entry
+type SearchResultItem struct {
+	Name     string
+	Director string
+	Genre    []string
 }
 
 // APIDetailItemCrew contains crew data for movie details.

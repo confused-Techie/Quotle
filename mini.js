@@ -19,7 +19,10 @@ var options = {
 
 (async () => {
   try {
-    var result = await minify({ "home.js": fs.readFileSync(fileName, "utf8") }, options);
+    var result = await minify(
+      { "home.js": fs.readFileSync(fileName, "utf8") },
+      options
+    );
 
     console.log("Done minifying...");
 
