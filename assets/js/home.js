@@ -973,7 +973,7 @@ var GAME_CONTROLLER = {
    * @implements {DOM_MANAGER.Snackbar}
    */
   AnswerCheck: function () {
-    if (typeof answer.gameID == "undefined") {
+    if (typeof answer.gameID == "undefined" || answer.gameID == 0) {
       LOG.Warn("there is no answer available.", "game");
       LOG.Warn("adding a random previous answer to play.", "game");
       // This uses 4 here since the highest level game created so far is 4. This could be periodically updated to include a more accurate number.

@@ -15,6 +15,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func returnAgnosticStrings(langCode string) map[string]string {
@@ -229,7 +230,10 @@ func contains(s []string, str string) bool {
 func randomGameID() int {
 	min := 1
 	max := 19
+	// to prevent an instance of Quotle always producing the same value,
+	rand.Seed(time.Now().UnixNano())
 	num := rand.Intn(max-min) + min
+	logger.InfoLogger.Println("Random Game ID Generated Below:")
 	logger.InfoLogger.Println(num)
 	return num
 }
@@ -244,7 +248,7 @@ func getPageGameAnswer(id string) models.GameAnswer {
 }
 
 func getGameAnswer(id string) models.GameAnswer {
-	url := "https://storage.googleapis.com/quotle-games/" + id + "/answer.json?ignoreCache=1"
+	url := "https://storage.googleapis.com/quotle-games/" + id + "/answer.json"
 	logger.InfoLogger.Println("getGameAnswer URL: " + url)
 	resp, err := http.Get(url)
 	if err != nil {
